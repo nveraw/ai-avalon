@@ -13,6 +13,7 @@ import Quest from "./screens/Quest/Quest";
 import Assassination from "./screens/Assassination/Assassination";
 import Results from "./screens/Results/Results";
 import TeamSelection from "./screens/TeamSelection/TeamSelection";
+import { randomRoleToAssign } from "./utils/shuffle";
 
 type Stage =
   | "lobby"
@@ -35,18 +36,9 @@ function App() {
   const [assassinated, setAssassinated] = useState<PlayerDetails | undefined>();
 
   const setNextLeader = () => {
-    const currentLeader = allPlayers.findIndex((p) => p === leader);
+    const currentLeader = allPlayers.findIndex((p) => p.name === leader?.name);
     setLeader(allPlayers[(currentLeader + 1) % allPlayers.length]);
   };
-
-  function randomRoleToAssign(activeRoles: PlayerRole[]): PlayerRole[] {
-    const shuffled = [...activeRoles];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  }
 
   const handleReady = (playerList: string[]) => {
     const activeRoles = Object.entries(PLAYER_ROLES)
@@ -63,10 +55,6 @@ function App() {
   const handleStart = () => {
     setLeader(allPlayers[Math.floor(Math.random() * allPlayers.length)]);
     setScreen("game");
-  };
-
-  const handleGoToSelectTeam = () => {
-    setScreen("team");
   };
 
   const handleProposeTeam = (selected: PlayerDetails[]) => {
@@ -121,7 +109,7 @@ function App() {
       {screen === "game" && leader && (
         <Board
           leader={leader}
-          onSelectTeam={handleGoToSelectTeam}
+          onSelectTeam={() => setScreen("team")}
           players={allPlayers}
           questResults={questResults}
           rejectCount={rejectCount}
@@ -139,7 +127,7 @@ function App() {
       )}
       {screen === "vote" && selectedTeam.length && allPlayers.length > 1 && (
         <Voting
-          allPlayer={allPlayers}
+          allPlayers={allPlayers}
           player={allPlayers[0]}
           team={selectedTeam}
           onResult={handleVotingResult}

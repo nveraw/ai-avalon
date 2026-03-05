@@ -11,7 +11,7 @@ function buildKnowledge(myRole: PlayerRole, allPlayers: PlayerDetails[]) {
       players: allPlayers
         .filter(
           (p: PlayerDetails) =>
-            !["modred", "oberon"].includes(p.role) &&
+            !["mordred", "oberon"].includes(p.role) &&
             PLAYER_ROLES[p.role]?.team === "evil",
         )
         .map((p: PlayerDetails) => ({

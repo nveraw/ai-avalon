@@ -20,12 +20,12 @@ const Assassination = ({
   useEffect(() => {
     // ai bot choose merlin to assassinate
     // setTimeout(() => onReveal(), 2200);
-  });
+  }, []);
 
   if (player.role !== "assassin") {
     return (
-      <div className="animate-fadeInUp">
-        <div className="text-6xl mb-5 animate-float">🗡</div>
+      <>
+        <div className="text-6xl mb-5">🗡</div>
         <div className="text-[11px] text-red-500 tracking-[4px] font-serif mb-2">
           FINAL JUDGMENT
         </div>
@@ -46,7 +46,7 @@ const Assassination = ({
             "Even in victory, you are not safe. I know who Merlin is."
           </p>
         </CardBox>
-      </div>
+      </>
     );
   }
 
@@ -72,19 +72,19 @@ const Assassination = ({
           SELECT THE TARGET
         </SectionLabel>
         <div className="grid grid-cols-2 gap-2.5">
-          {allPlayers.map((player) => (
+          {allPlayers.filter(p => p.role !== "assassin").map((player) => (
             <div
               key={player.name}
               onClick={() => setTarget(player)}
               className={`p-3.5 rounded-xl cursor-pointer transition-all border font-serif text-sm
                 ${
-                  target === player
+                  target?.name === player.name
                     ? "bg-red-800/30 border-red-600 text-red-300 shadow-[0_0_12px_#dc262633]"
                     : "bg-slate-950/80 border-red-950/50 text-gray-400 hover:border-red-900"
                 }`}
             >
               <div className="text-xl mb-1">
-                {target === player ? "🎯" : "👤"}
+                {target?.name === player.name ? "🎯" : "👤"}
               </div>
               {player.name}
             </div>

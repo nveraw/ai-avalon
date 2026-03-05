@@ -4,7 +4,7 @@ export const PLAYER_ROLES = {
     icon: "⭐",
     team: "good",
     color: "#a78bfa",
-    min: 0,
+    min: 5,
     hasKnowledge: true,
     mission:
       "You know the forces of evil — but if you reveal yourself, the Assassin will end your kingdom. Guide the good knights subtly.",
@@ -14,7 +14,7 @@ export const PLAYER_ROLES = {
     icon: "👁️",
     team: "good",
     color: "#60a5fa",
-    min: 0,
+    min: 5,
     hasKnowledge: true,
     mission:
       "Two figures appear to you in the dark — one is Merlin, one may be Morgana. Protect the true Merlin with your life.",
@@ -24,7 +24,7 @@ export const PLAYER_ROLES = {
     icon: "🛡",
     team: "good",
     color: "#34d399",
-    min: 0,
+    min: 5,
     hasKnowledge: false,
     mission:
       "You have no special knowledge. Observe carefully, build trust, and help root out the traitors among you.",
@@ -54,7 +54,7 @@ export const PLAYER_ROLES = {
     icon: "🗡",
     team: "evil",
     color: "#f87171",
-    min: 0,
+    min: 5,
     hasKnowledge: true,
     mission:
       "Blend in with the good knights. Fail quests when you can. When Good prevails, identify and eliminate Merlin.",
@@ -64,7 +64,7 @@ export const PLAYER_ROLES = {
     icon: "🌙",
     team: "evil",
     color: "#c084fc",
-    min: 0,
+    min: 5,
     hasKnowledge: true,
     mission:
       "You appear as Merlin to Percival. Sow confusion, protect your true identity, and let doubt do the work.",

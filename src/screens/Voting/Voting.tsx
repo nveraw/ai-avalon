@@ -3,7 +3,7 @@ import type { PlayerDetails } from "../../types/player";
 import CardBox from "../../components/CardBox";
 
 type VotingProps = {
-  allPlayer: PlayerDetails[];
+  allPlayers: PlayerDetails[];
   player: PlayerDetails;
   team: PlayerDetails[];
   onResult: (result: Exclude<VotingOutcome, null>) => void;
@@ -14,7 +14,7 @@ type VotedStatus = Exclude<VotingStatus, null>;
 type VotingOutcome = "approved" | "rejected" | null;
 type VotingPhase = "vote" | "waiting" | "reveal" | "outcome";
 
-const Voting = ({ allPlayer, player, team, onResult }: VotingProps) => {
+const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
   const [playerVote, setPlayerVote] = useState<VotingStatus>(null);
   const [phase, setPhase] = useState<VotingPhase>("vote");
   const [botVotes, setBotVotes] = useState<Record<string, VotedStatus>>({});
@@ -28,7 +28,7 @@ const Voting = ({ allPlayer, player, team, onResult }: VotingProps) => {
 
     // TODO ai Generate bot votes (slightly biased toward approve)
     const bots: Record<string, VotedStatus> = {};
-    allPlayer.forEach((p) => {
+    allPlayers.forEach((p) => {
       if (p !== player)
         bots[p.name] = Math.random() > 0.38 ? "approve" : "reject";
     });
@@ -37,32 +37,24 @@ const Voting = ({ allPlayer, player, team, onResult }: VotingProps) => {
     // Stagger the reveal
     setTimeout(() => setPhase("reveal"), 1400);
     setTimeout(() => setVisibleCards(1), 1600);
-    allPlayer.forEach((_, i) => {
+    allPlayers.forEach((_, i) => {
       setTimeout(() => setVisibleCards(i + 1), 1600 + i * 280);
     });
+    const allVotes = { [player.name]: vote, ...bots };
+    const approves = Object.values(allVotes).filter(
+      (v) => v === "approve",
+    ).length;
+    const result: VotingOutcome =
+      approves > allPlayers.length / 2 ? "approved" : "rejected";
+
     setTimeout(
       () => {
-        const allVotes = { [player.name]: vote, ...bots };
-        const approves = Object.values(allVotes).filter(
-          (v) => v === "approve",
-        ).length;
-        const result =
-          approves > allPlayer.length / 2 ? "approved" : "rejected";
         setOutcome(result);
         setPhase("outcome");
       },
-      1600 + allPlayer.length * 280 + 600,
+      1600 + allPlayers.length * 280 + 600,
     );
-    setTimeout(
-      () => {
-        const allVotes = { [player.name]: vote, ...bots };
-        const approves = Object.values(allVotes).filter(
-          (v) => v === "approve",
-        ).length;
-        onResult(approves > allPlayer.length / 2 ? "approved" : "rejected");
-      },
-      1600 + allPlayer.length * 280 + 2400,
-    );
+    setTimeout(() => onResult(result), 1600 + allPlayers.length * 280 + 2400);
   };
 
   const allVotesMap = { [player.name]: playerVote, ...botVotes };
@@ -147,7 +139,7 @@ const Voting = ({ allPlayer, player, team, onResult }: VotingProps) => {
               OTHER PLAYERS
             </div>
             <div className="grid gap-2">
-              {allPlayer
+              {allPlayers
                 .filter((p) => p !== player)
                 .map((botPlayer, i) => (
                   <div key={i} className="flex items-center gap-3 px-1 py-1">
@@ -173,7 +165,9 @@ const Voting = ({ allPlayer, player, team, onResult }: VotingProps) => {
       {/* ── PHASE: bots deliberating ── */}
       {phase === "waiting" && (
         <div className="text-center py-10">
-          <div className="text-5xl mb-5 animate-bounce [animation-duration:3s]">⚖</div>
+          <div className="text-5xl mb-5 animate-bounce [animation-duration:3s]">
+            ⚖
+          </div>
           <div className="cinzel text-amber-400 text-lg mb-2">
             Votes are being cast...
           </div>
@@ -197,10 +191,10 @@ const Voting = ({ allPlayer, player, team, onResult }: VotingProps) => {
         <>
           {/* Vote cards grid */}
           <div className="flex gap-3 justify-center flex-wrap mb-6">
-            {allPlayer.map((p, i) => {
+            {allPlayers.map((p, i) => {
               const v = allVotesMap[p.name];
               const visible = i < visibleCards;
-              const isHuman = p === player;
+              const isHuman = p.name === player.name;
               return (
                 <div key={i} className="text-center">
                   <div

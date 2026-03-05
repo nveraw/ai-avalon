@@ -60,8 +60,8 @@ const Lobby = ({ onStart }: { onStart: (names: string[]) => void }) => {
                   value={name}
                   onChange={(e) => {
                     setDuplicateName('');
-                    const value = e.target.value.trim();
-                    const duplicateIndex = names.map(n => n.toLocaleLowerCase()).indexOf(value.toLocaleLowerCase())
+                    const value = e.target.value.trim().toLocaleLowerCase();
+                    const duplicateIndex = names.map(n => n.toLocaleLowerCase()).indexOf(value)
                     if (duplicateIndex > -1 && duplicateIndex !== i) {
                       setDuplicateName(value);
                     }
@@ -69,7 +69,7 @@ const Lobby = ({ onStart }: { onStart: (names: string[]) => void }) => {
                     n[i] = value;
                     setNames(n);
                   }}
-                  className={`${name.toLocaleLowerCase() === duplicateName.toLocaleLowerCase() ? "border-red-800" : "border-indigo-950"} flex-1 bg-slate-950 border  rounded-lg px-3 py-2 text-slate-200 font-serif text-sm outline-none focus:border-violet-600 focus:shadow-[0_0_0_2px_rgba(124,58,237,0.2)]`}
+                  className={`${name.toLocaleLowerCase() === duplicateName ? "border-red-800" : "border-indigo-950"} flex-1 bg-slate-950 border  rounded-lg px-3 py-2 text-slate-200 font-serif text-sm outline-none focus:border-violet-600 focus:shadow-[0_0_0_2px_rgba(124,58,237,0.2)]`}
                 />
                 {i > 0 && <span>🤖</span>}
               </div>

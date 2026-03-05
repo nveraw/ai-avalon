@@ -71,7 +71,7 @@ const Board = ({ players, questResults, round, leader, rejectCount, onSelectTeam
       <CardBox className="players mb-5">
         <SectionLabel className="text-purple-600">KNIGHTS OF THE REALM</SectionLabel>
         <div className="flex flex-wrap gap-5 justify-center">
-          {players.map((p) => <PlayerToken key={p.name} name={p.name} isLeader={p === leader} />)}
+          {players.map((p) => <PlayerToken key={p.name} name={p.name} isLeader={p.name === leader.name} />)}
         </div>
       </CardBox>
 

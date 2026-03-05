@@ -20,36 +20,38 @@ const Quest = ({ team, player, onResult }: QuestProps) => {
   const [showResult, setShowResult] = useState(false);
 
   const humanOnTeam = team.includes(player);
-  const humanName = player.name;
 
   // TODO ai Bot card logic: good bots always play success; evil bots may play fail
-  const getBotCard = () => {
-    return Math.random() > 0.3 ? "fail" : "success";
+  const getBotCard = (member: PlayerDetails): CompletedQuestStatus => {
+    const isEvil = PLAYER_ROLES[member.role].team === "evil";
+    return isEvil && Math.random() > 0.3 ? "fail" : "success";
   };
 
-  const submitCard = (card: "fail" | "success") => {
+  const submitCard = (card?: "fail" | "success") => {
     setPhase("waiting");
 
     // Build all cards (bot cards auto-assigned)
-    const cards = team.map((player) => {
-      if (player === player) return card;
-      return getBotCard();
+    const cards = team.map((p) => {
+      if (card && p.name === player.name) return card;
+      return getBotCard(p);
     });
 
     // Shuffle for dramatic reveal
     const shuffled = [...cards].sort(() => Math.random() - 0.5);
     setAllCards(shuffled);
 
+    if (!card) setPhase("waiting");
+
     // Stagger reveal
-    setTimeout(() => setPhase("reveal"), 1200);
+    setTimeout(() => setPhase("reveal"), 900);
     shuffled.forEach((_, i) => {
-      setTimeout(() => setRevealedCount(i + 1), 1400 + i * 350);
+      setTimeout(() => setRevealedCount(i + 1), 1100 + i * 350);
     });
     const failed = shuffled.includes("fail");
-    setTimeout(() => setShowResult(true), 1400 + shuffled.length * 350 + 400);
+    setTimeout(() => setShowResult(true), 1100 + shuffled.length * 350 + 400);
     setTimeout(
       () => onResult(failed ? "fail" : "success"),
-      1400 + shuffled.length * 350 + 2200,
+      1100 + shuffled.length * 350 + 2200,
     );
   };
 
@@ -72,13 +74,13 @@ const Quest = ({ team, player, onResult }: QuestProps) => {
               key={teamPlayer.name}
               className={`px-3 py-1 rounded-full text-xs font-serif border
               ${
-                teamPlayer === player
+                teamPlayer.name === player.name
                   ? "bg-amber-950/30 border-amber-700 text-amber-300"
                   : "bg-indigo-950/40 border-indigo-800 text-gray-400"
               }`}
             >
               {teamPlayer.name}
-              {teamPlayer === player ? " (you)" : ""}
+              {teamPlayer.name === player.name ? " (you)" : ""}
             </span>
           ))}
         </div>
@@ -91,7 +93,7 @@ const Quest = ({ team, player, onResult }: QuestProps) => {
             <>
               <CardBox className="mb-5 text-center">
                 <div className="text-[10px] text-purple-600 tracking-widest font-serif mb-3">
-                  YOUR CARD, {humanName.toUpperCase()}
+                  YOUR CARD, {player.name.toUpperCase()}
                 </div>
                 <p className="font-serif text-gray-400 text-sm mb-6 leading-relaxed">
                   Choose wisely. Your card is played in secret — no one will
@@ -189,30 +191,7 @@ const Quest = ({ team, player, onResult }: QuestProps) => {
                 <br />
                 The chosen knights play their cards in secret.
               </p>
-              <GoldButton
-                onClick={() => {
-                  const cards: CompletedQuestStatus[] = [];
-                  for (let i = 0; i < team.length; i++) {
-                    cards.push(getBotCard());
-                  }
-                  const shuffled = [...cards].sort(() => Math.random() - 0.5);
-                  setAllCards(shuffled);
-                  setPhase("waiting");
-                  setTimeout(() => setPhase("reveal"), 900);
-                  shuffled.forEach((_, i) => {
-                    setTimeout(() => setRevealedCount(i + 1), 1100 + i * 350);
-                  });
-                  const failed = shuffled.includes("fail");
-                  setTimeout(
-                    () => setShowResult(true),
-                    1100 + shuffled.length * 350 + 400,
-                  );
-                  setTimeout(
-                    () => onResult(failed ? "fail" : "success"),
-                    1100 + shuffled.length * 350 + 2200,
-                  );
-                }}
-              >
+              <GoldButton onClick={() => submitCard()}>
                 Watch the quest unfold →
               </GoldButton>
             </CardBox>
