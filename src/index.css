@@ -1,0 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&display=swap');
+@import "tailwindcss";
+
+/* Fonts */
+.cinzel       { font-family: 'Cinzel', serif; }
+.cinzel-deco  { font-family: 'Cinzel Decorative', serif; }

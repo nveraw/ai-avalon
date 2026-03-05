@@ -1,0 +1,23 @@
+@use "sass:math";
+
+$particle-count: 50;
+
+.starDot {
+  border-radius: 50%;
+
+  @for $i from 1 through $particle-count {
+    &:nth-child(#{$i}) {
+      left: calc(math.random(100) * 1vw);
+      top: calc(math.random(100) * 1vh);
+      
+      $size: #{calc((math.random(20) / 10) + 1)}px;
+      width: $size;
+      height: $size;
+      
+      opacity: #{calc((math.random(6) / 10) + 0.1)};
+      
+      animation-duration: #{calc((math.random(30) / 10) + 2)}s;
+      animation-delay: #{calc(math.random(40) / 10)}s;
+    }
+  }
+}
