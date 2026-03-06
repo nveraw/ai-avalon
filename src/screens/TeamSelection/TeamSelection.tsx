@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import type { PlayerDetails } from "../types/player";
-import GoldButton from "../components/GoldButton";
+import type { PlayerDetails } from "../../types/player";
+import GoldButton from "../../components/GoldButton";
+import Header from "../../components/Header";
 
 type TeamSelectionProps = {
   allPlayers: PlayerDetails[];
@@ -60,34 +61,24 @@ const TeamSelection = ({
   ? aiPhase === "done" ? "⚔️ Send This Fellowship" : "Picking..."
   : selected.length === teamSize ? "⚔️ Propose This Team" : `Select ${teamSize - selected.length} more knight${teamSize - selected.length !== 1 ? "s" : ""}`;
 
+  const AiSubtitle = (aiPhase === "thinking"
+                ? "The Leader Deliberates..."
+                : "Fellowship Chosen");
+
   return (
     <div className="max-w-lg mx-auto px-5 py-8">
       <div className="text-center mb-7">
-        <div className="text-[11px] text-purple-600 tracking-[4px] font-serif">
-          TEAM SELECTION
-        </div>
+        <Header title="TEAM SELECTION" subtitle={leader.name === player.name ? 'Choose Your Fellowship' : AiSubtitle} hasFollowup={true} />
         {leader.name === player.name ? (
-          <>
-            <h2 className="cinzel text-amber-400 text-2xl mt-2">
-              Choose Your Fellowship
-            </h2>
-            <p className="text-gray-500 font-serif text-sm mt-1">
+            <p className="text-gray-500 font-serif text-sm">
               <span className="text-violet-400">{leader.name}</span> must choose{" "}
               {teamSize} knights
             </p>
-          </>
         ) : (
-          <>
-            <h2 className="cinzel text-amber-400 text-2xl mt-2">
-              {aiPhase === "thinking"
-                ? "The Leader Deliberates..."
-                : "Fellowship Chosen"}
-            </h2>
-            <p className="text-gray-500 font-serif text-sm mt-1">
+            <p className="text-gray-500 font-serif text-sm">
               <span className="text-violet-400">{leader.name}</span> is choosing{" "}
               {teamSize} knights
             </p>
-          </>
         )}
       </div>
 
@@ -152,7 +143,7 @@ const TeamSelection = ({
                     {p.name}
                   </div>
                   {isLeaderToken && (
-                    <div className="text-[10px] text-violet-400">Leader</div>
+                    <div className="text-xs text-violet-400">Leader</div>
                   )}
                 </div>
                 {isRevealed && (

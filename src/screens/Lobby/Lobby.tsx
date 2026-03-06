@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { PLAYER_ROLES, DEFAULT_PLAYER_NAMES } from "../constants/player";
-import CardBox from "../components/CardBox";
-import SectionLabel from "../components/SectionLabel";
-import GoldDivider from "../components/GoldDivider";
-import GoldButton from "../components/GoldButton";
+import { PLAYER_ROLES, DEFAULT_PLAYER_NAMES } from "../../constants/player";
+import CardBox from "../../components/CardBox";
+import SectionLabel from "../../components/SectionLabel";
+import GoldDivider from "../../components/GoldDivider";
+import GoldButton from "../../components/GoldButton";
+import Header from "../../components/Header";
 
 const DEFAULT_NUMBER = 7;
 
@@ -16,12 +17,10 @@ const Lobby = ({ onStart }: { onStart: (names: string[]) => void }) => {
     <div className="header max-w-xl mx-auto px-5 py-10">
       <div className="text-center mb-8">
         <div className="text-6xl mb-2 animate-bounce">🏰</div>
-        <h1 className="cinzel-deco text-5xl text-amber-400 tracking-widest m-0">
+        <h1 className="cinzel-deco text-5xl text-amber-400 tracking-widest m-0 mb-2">
           AVALON
         </h1>
-        <p className="text-purple-700 font-serif text-xs mt-2 tracking-[4px]">
-          THE RESISTANCE
-        </p>
+        <Header title="THE RESISTANCE" />
       </div>
 
       <CardBox className="player-count">
@@ -97,7 +96,7 @@ const Lobby = ({ onStart }: { onStart: (names: string[]) => void }) => {
                       {role?.name}
                     </div>
                     <div
-                      className={`text-[10px] ${role?.team === "good" ? "text-emerald-400" : "text-red-400"}`}
+                      className={`text-xs ${role?.team === "good" ? "text-emerald-400" : "text-red-400"}`}
                     >
                       {role?.team}
                     </div>

@@ -1,6 +1,7 @@
 import { useState } from "react";
-import type { PlayerDetails } from "../types/player";
-import CardBox from "../components/CardBox";
+import type { PlayerDetails } from "../../types/player";
+import CardBox from "../../components/CardBox";
+import Header from "../../components/Header";
 
 type VotingProps = {
   allPlayers: PlayerDetails[];
@@ -63,15 +64,7 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
     <div className="max-w-lg mx-auto px-5 py-8">
       {/* Header */}
       <div className="text-center mb-6">
-        <div className="text-[11px] text-purple-600 tracking-[4px] font-serif">
-          TEAM VOTE
-        </div>
-        <h2 className="cinzel text-amber-400 text-2xl mt-2">
-          Approve or Reject?
-        </h2>
-        <p className="text-gray-500 font-serif text-xs mt-1">
-          Majority decides — ties are rejected
-        </p>
+        <Header title="TEAM VOTE" subtitle="Approve or Reject?" description="Majority decides — ties are rejected" />
 
         {/* Proposed team badges */}
         <div className="flex gap-2 justify-center flex-wrap mt-3">
@@ -90,7 +83,7 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
       {phase === "vote" && (
         <>
           <CardBox className="mb-5 text-center">
-            <div className="text-[10px] text-purple-600 tracking-widest font-serif mb-3">
+            <div className="text-xs text-purple-600 tracking-widest font-serif mb-3">
               YOUR VOTE, {player.name.toUpperCase()}
             </div>
             <p className="font-serif text-gray-400 text-sm mb-6 leading-relaxed">
@@ -135,7 +128,7 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
           </CardBox>
 
           <CardBox className="play">
-            <div className="text-[10px] text-purple-600 tracking-widest font-serif mb-3">
+            <div className="text-xs text-purple-600 tracking-widest font-serif mb-3">
               OTHER PLAYERS
             </div>
             <div className="grid gap-2">
@@ -214,7 +207,7 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
                         <span className="text-2xl">
                           {v === "approve" ? "✅" : "❌"}
                         </span>
-                        <span className="text-[9px] text-white font-serif tracking-wider uppercase">
+                        <span className="text-xs text-white font-serif tracking-wider uppercase">
                           {v}
                         </span>
                       </>
@@ -222,11 +215,11 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
                       <span className="text-xl text-indigo-700">?</span>
                     )}
                   </div>
-                  <div className="text-[10px] text-gray-500 mt-1.5 font-serif">
+                  <div className="text-xs text-gray-500 mt-1.5 font-serif">
                     {p.name}
                   </div>
                   {isHuman && (
-                    <div className="text-[9px] text-amber-600 font-serif">
+                    <div className="text-xs text-amber-600 font-serif">
                       you
                     </div>
                   )}

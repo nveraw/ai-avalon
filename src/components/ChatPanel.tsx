@@ -56,7 +56,7 @@ const ChatPanel = ({ allPlayers, className }: ChatPanelProps) => {
           <div className="cinzel text-amber-400 text-sm tracking-widest">
             Round Table
           </div>
-          <div className="text-[10px] text-gray-600 font-serif mt-0.5">
+          <div className="text-xs text-gray-600 font-serif mt-0.5">
             {allPlayers.length} knights
           </div>
         </div>
@@ -68,7 +68,7 @@ const ChatPanel = ({ allPlayers, className }: ChatPanelProps) => {
           if (msg.from === "system")
             return (
               <div key={i} className="text-center py-1">
-                <span className="text-[10px] text-indigo-300 font-serif italic">
+                <span className="text-xs text-indigo-300 font-serif italic">
                   {msg.text}
                 </span>
               </div>
@@ -82,14 +82,14 @@ const ChatPanel = ({ allPlayers, className }: ChatPanelProps) => {
               <div className="flex items-center gap-1.5 px-1">
                 {!isHuman && (
                   <div
-                    className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px]
+                    className={`w-5 h-5 rounded-full flex items-center justify-center text-xs
                     font-serif font-bold border shrink-0 token-base ${PERSONAS[i].border} text-slate-300`}
                   >
                     {msg.from[0]}
                   </div>
                 )}
                 <span
-                  className={`text-[10px] font-serif ${isHuman ? "text-amber-400" : PERSONAS[i].colour}`}
+                  className={`text-xs font-serif ${isHuman ? "text-amber-400" : PERSONAS[i].colour}`}
                 >
                   {isHuman ? "You" : msg.from}
                 </span>
@@ -112,7 +112,7 @@ const ChatPanel = ({ allPlayers, className }: ChatPanelProps) => {
           <div className="flex items-center gap-2 px-1 animate-fadeInUp">
             <div
               className="w-5 h-5 rounded-full token-base border border-indigo-800
-              flex items-center justify-center text-[9px] font-serif text-slate-300"
+              flex items-center justify-center text-xs font-serif text-slate-300"
             >
               {typing[0]}
             </div>
@@ -161,7 +161,7 @@ const ChatPanel = ({ allPlayers, className }: ChatPanelProps) => {
             ➤
           </button>
         </div>
-        <div className="text-[9px] text-indigo-800 font-serif mt-1.5 text-right">
+        <div className="text-xs text-indigo-800 font-serif mt-1.5 text-right">
           Enter to send
         </div>
       </div>

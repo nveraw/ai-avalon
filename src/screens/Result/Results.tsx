@@ -1,9 +1,9 @@
-import CardBox from "../components/CardBox";
-import GoldButton from "../components/GoldButton";
-import GoldDivider from "../components/GoldDivider";
-import SectionLabel from "../components/SectionLabel";
-import { PLAYER_ROLES } from "../constants/player";
-import type { PlayerDetails } from "../types/player";
+import CardBox from "../../components/CardBox";
+import GoldButton from "../../components/GoldButton";
+import GoldDivider from "../../components/GoldDivider";
+import SectionLabel from "../../components/SectionLabel";
+import { PLAYER_ROLES } from "../../constants/player";
+import type { PlayerDetails } from "../../types/player";
 
 type ResultsProps = {
   winner: "good" | "evil";
@@ -32,7 +32,7 @@ const Results = ({
       >
         <div className="text-7xl mb-4 animate-bounce">{good ? "🏆" : "💀"}</div>
         <div
-          className={`text-xs tracking-[4px] font-serif mb-2
+          className={`text-xs tracking-hero font-serif mb-2
           ${good ? "text-green-300" : "text-red-300"}`}
         >
           {good ? "ARTHUR'S KINGDOM PREVAILS" : "DARKNESS DESCENDS"}
@@ -90,7 +90,7 @@ const Results = ({
                   </span>
                 </div>
                 <div
-                  className={`text-[11px] font-serif text-[${PLAYER_ROLES[player.role].color}]`}
+                  className={`text-xs font-serif text-[${PLAYER_ROLES[player.role].color}]`}
                 >
                   {PLAYER_ROLES[player.role].name}
                 </div>

@@ -1,18 +1,18 @@
 import { useState } from "react";
 import "./App.css";
 import StarField from "./components/StarField";
-import Lobby from "./screens/Lobby";
+import Lobby from "./screens/Lobby/Lobby";
 import type { PlayerDetails, PlayerRole } from "./types/player";
 import { PLAYER_ROLES } from "./constants/player";
-import Night from "./screens/Night";
-import Board from "./screens/Board";
+import Night from "./screens/Night/Night";
+import Board from "./screens/Board/Board";
 import { type CompletedQuestStatus } from "./types/quest";
 import { QUEST_SIZES } from "./constants/quest";
-import Voting from "./screens/Voting";
-import Quest from "./screens/Quest";
-import Assassination from "./screens/Assassination";
-import Results from "./screens/Results";
-import TeamSelection from "./screens/TeamSelection";
+import Voting from "./screens/Voting/Voting";
+import Quest from "./screens/Quest/Quest";
+import Assassination from "./screens/Assassination/Assassination";
+import Results from "./screens/Result/Results";
+import TeamSelection from "./screens/TeamSelection/TeamSelection";
 import { randomRoleToAssign } from "./utils/shuffle";
 import ChatPanel from "./components/ChatPanel";
 

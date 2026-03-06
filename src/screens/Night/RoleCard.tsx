@@ -1,6 +1,7 @@
-import { PLAYER_ROLES } from "../constants/player";
-import type { PlayerDetails } from "../types/player";
-import CardBox from "./CardBox";
+import { PLAYER_ROLES } from "../../constants/player";
+import type { PlayerDetails } from "../../types/player";
+import CardBox from "../../components/CardBox";
+import Header from "../../components/Header";
 
 type RoleCardProps = {
   player: PlayerDetails;
@@ -18,15 +19,10 @@ const RoleCard = ({
 
   return (
     <div className="max-w-sm mx-auto px-5 py-8 text-center">
-      <div className="text-[10px] text-purple-700 tracking-[4px] font-serif mb-1">
-        YOUR ROLE
-      </div>
-      <p className="cinzel text-amber-400 text-xl mb-8">
-        {player.name}, your fate is sealed.
-      </p>
+      <Header title="YOUR ROLE" subtitle={`${player.name}, your fate is sealed.`} />
 
       <div
-        className="flex justify-center mb-8"
+        className="flex justify-center my-8"
         style={{ perspective: "900px" }}
       >
         <div className="w-50 h-70 transition-transform duration-200">
@@ -45,7 +41,7 @@ const RoleCard = ({
                 {role?.name}
               </div>
               <div
-                className={`text-[10px] tracking-[3px] font-serif uppercase px-4 py-1 rounded-full mt-1
+                className={`text-xs tracking-hero font-serif uppercase px-4 py-1 rounded-full mt-1
                 ${isEvil ? "bg-red-950/60 text-red-500" : "bg-emerald-950/60 text-emerald-600"}`}
               >
                 {isEvil ? "⚔ Evil" : "✦ Good"}
@@ -60,7 +56,7 @@ const RoleCard = ({
           className={`text-left border ${isEvil ? "border-red-950" : "border-emerald-950"}`}
         >
           <div
-            className={`text-[10px] tracking-widest font-serif mb-2 ${isEvil ? "text-red-500" : "text-emerald-500"}`}
+            className={`text-xs tracking-widest font-serif mb-2 ${isEvil ? "text-red-500" : "text-emerald-500"}`}
           >
             YOUR MISSION
           </div>

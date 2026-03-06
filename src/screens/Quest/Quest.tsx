@@ -1,9 +1,10 @@
 import { useState } from "react";
-import type { PlayerDetails } from "../types/player";
-import CardBox from "../components/CardBox";
-import GoldButton from "../components/GoldButton";
-import type { CompletedQuestStatus } from "../types/quest";
-import { PLAYER_ROLES } from "../constants/player";
+import type { PlayerDetails } from "../../types/player";
+import CardBox from "../../components/CardBox";
+import GoldButton from "../../components/GoldButton";
+import type { CompletedQuestStatus } from "../../types/quest";
+import { PLAYER_ROLES } from "../../constants/player";
+import Header from "../../components/Header";
 
 type QuestPhase = "pick" | "waiting" | "reveal" | "result";
 
@@ -62,10 +63,7 @@ const Quest = ({ team, player, onResult }: QuestProps) => {
     <div className="max-w-lg mx-auto px-5 py-8 text-center">
       {/* Header */}
       <div className="mb-7">
-        <div className="text-[11px] text-purple-600 tracking-[4px] font-serif">
-          QUEST IN PROGRESS
-        </div>
-        <h2 className="cinzel text-amber-400 text-2xl mt-2">Cast Your Fate</h2>
+        <Header title="QUEST IN PROGRESS" subtitle="Cast Your Fate" hasFollowup={true} />
 
         {/* Team on this quest */}
         <div className="flex gap-2 justify-center flex-wrap mt-3">
@@ -92,7 +90,7 @@ const Quest = ({ team, player, onResult }: QuestProps) => {
           {humanOnTeam ? (
             <>
               <CardBox className="mb-5 text-center">
-                <div className="text-[10px] text-purple-600 tracking-widest font-serif mb-3">
+                <div className="text-xs text-purple-600 tracking-widest font-serif mb-3">
                   YOUR CARD, {player.name.toUpperCase()}
                 </div>
                 <p className="font-serif text-gray-400 text-sm mb-6 leading-relaxed">
@@ -150,7 +148,7 @@ const Quest = ({ team, player, onResult }: QuestProps) => {
               {team.filter((teamPlayer) => teamPlayer !== player).length >
                 0 && (
                 <CardBox className="bot-card">
-                  <div className="text-[10px] text-purple-600 tracking-widest font-serif mb-3">
+                  <div className="text-xs text-purple-600 tracking-widest font-serif mb-3">
                     FELLOW KNIGHTS
                   </div>
                   <div className="grid gap-2">
@@ -253,7 +251,7 @@ const Quest = ({ team, player, onResult }: QuestProps) => {
                         {card === "success" ? "⚔" : "💀"}
                       </span>
                       <span
-                        className={`text-[9px] font-serif tracking-wider uppercase
+                        className={`text-xs font-serif tracking-wider uppercase
                           ${card === "success" ? "text-green-400" : "text-red-400"}`}
                       >
                         {card}

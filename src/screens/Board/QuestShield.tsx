@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import styles from './QuestShield.module.scss';
-import { QUEST_STATUS } from "../constants/quest";
-import type { QuestStatus } from "../types/quest";
+import { QUEST_STATUS } from "../../constants/quest";
+import type { QuestStatus } from "../../types/quest";
 
 const QuestShield = ({ status, index }: {status: QuestStatus; index: number}) => {
   const icon = QUEST_STATUS[status] || QUEST_STATUS.pending;
@@ -13,7 +13,7 @@ const QuestShield = ({ status, index }: {status: QuestStatus; index: number}) =>
   return (
     <div className={clsx(styles.questShield, classNames[status], "relative h-18 w-16 flex flex-col items-center justify-center transition-all duration-500")}>
       <span className="text-2xl">{icon}</span>
-      <span className="text-[10px] font-bold font-serif mt-0.5">Q{index + 1}</span>
+      <span className="text-xs font-bold font-serif mt-0.5">Q{index + 1}</span>
     </div>
   );
 };

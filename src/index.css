@@ -1,6 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&display=swap');
 @import "tailwindcss";
 
+/* ── Theme ────────────────────────────────────────────────── */
+@theme {
+
+  --tracking-hero: 4px;
+}
+
 /* Fonts */
 .cinzel       { font-family: 'Cinzel', serif; }
 .cinzel-deco  { font-family: 'Cinzel Decorative', serif; }
+.app-bg { background: radial-gradient(ellipse at top, #0d0b1a 0%, #050310 70%); }

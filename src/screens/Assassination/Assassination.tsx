@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import type { PlayerDetails } from "../types/player";
-import SectionLabel from "../components/SectionLabel";
-import CardBox from "../components/CardBox";
-import GoldDivider from "../components/GoldDivider";
+import type { PlayerDetails } from "../../types/player";
+import SectionLabel from "../../components/SectionLabel";
+import AssassinationView from "./AssassinationView";
 
 type AssassinationProps = {
   player: PlayerDetails;
@@ -22,31 +21,13 @@ const Assassination = ({
     // setTimeout(() => onReveal(), 2200);
   }, []);
 
+  const assassin = allPlayers.find((p) => p.role === "assassin")?.name
+
+  if (!assassin) return null;
+
   if (player.role !== "assassin") {
     return (
-      <>
-        <div className="text-6xl mb-5">🗡</div>
-        <div className="text-[11px] text-red-500 tracking-[4px] font-serif mb-2">
-          FINAL JUDGMENT
-        </div>
-        <h2 className="cinzel text-red-400 text-3xl mb-6">The Assassination</h2>
-        <CardBox className="border-red-950/60 text-center">
-          <p className="font-serif text-gray-300 text-sm leading-relaxed mb-2">
-            Good has triumphed on the quests...
-          </p>
-          <p className="font-serif text-red-400 text-sm leading-relaxed">
-            But{" "}
-            <span className="cinzel text-red-300">
-              {allPlayers.find((p) => p.role === "assassin")?.name}
-            </span>{" "}
-            steps forward from the shadows. One blade remains.
-          </p>
-          <GoldDivider />
-          <p className="font-serif text-gray-500 text-xs italic">
-            "Even in victory, you are not safe. I know who Merlin is."
-          </p>
-        </CardBox>
-      </>
+      <AssassinationView assassinName={assassin} />
     );
   }
 
@@ -54,7 +35,7 @@ const Assassination = ({
     <div className="max-w-lg mx-auto px-5 py-10 text-center">
       <div className="mb-8">
         <div className="text-5xl mb-3 animate-bounce">🗡</div>
-        <div className="text-[11px] text-red-500 tracking-[4px] font-serif">
+        <div className="text-xs text-red-500 tracking-hero font-serif">
           FINAL JUDGMENT
         </div>
         <h2 className="cinzel text-red-400 text-3xl mt-2">The Assassination</h2>

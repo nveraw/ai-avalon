@@ -1,6 +1,7 @@
-import { PLAYER_ROLES } from "../constants/player";
-import type { PlayerDetails, PlayerRole } from "../types/player";
-import GoldButton from "./GoldButton";
+import { PLAYER_ROLES } from "../../constants/player";
+import type { PlayerDetails, PlayerRole } from "../../types/player";
+import GoldButton from "../../components/GoldButton";
+import Header from "../../components/Header";
 
 function buildKnowledge(myRole: PlayerRole, allPlayers: PlayerDetails[]) {
   if (myRole === "merlin") {
@@ -90,30 +91,24 @@ const KnowledgeScreen = ({
 
   return (
     <div className="max-w-sm mx-auto px-5 py-8 text-center">
-      <div className="text-[10px] text-purple-700 tracking-[4px] font-serif mb-2">
-        NIGHT VISION
-      </div>
-      <div
-        className={`atmospheric-orb w-20 h-20 rounded-full mx-auto flex items-center justify-center text-4xl
-        border-2 mb-5 animate-bounce [animation-duration:3s] ${
-          knowledge.type === "evil"
-            ? "bg-[radial-gradient(circle,#3b0a0a,#050310)] border-red-900 shadow-[0_0_40px_#7f1d1d55]"
-            : knowledge.type === "ambiguous"
-              ? "bg-[radial-gradient(circle,#1e0a3d,#050310)] border-violet-800 shadow-[0_0_40px_#6d28d955]"
-              : "bg-[radial-gradient(circle,#1a0a3d,#050310)] border-indigo-900 shadow-[0_0_30px_#1e1b4b55]"
-        }`}
-      >
-        {knowledge.type === "evil" ? "🔱" : knowledge.type === "ambiguous" ? "✦" : "🌑"}
-      </div>
-
-      <h2 className="cinzel text-amber-400 text-xl mb-2">{knowledge.flavour}</h2>
-      <p className="font-serif text-gray-400 text-sm leading-relaxed mb-6">
-        {knowledge.desc}
-      </p>
+      <Header title="NIGHT VISION" subtitle={knowledge.flavour} description={knowledge.desc}>
+        <div
+          className={`atmospheric-orb w-20 h-20 rounded-full mx-auto flex items-center justify-center text-4xl
+          border-2 mt-5 animate-bounce [animation-duration:3s] ${
+            knowledge.type === "evil"
+              ? "bg-[radial-gradient(circle,#3b0a0a,#050310)] border-red-900 shadow-[0_0_40px_#7f1d1d55]"
+              : knowledge.type === "ambiguous"
+                ? "bg-[radial-gradient(circle,#1e0a3d,#050310)] border-violet-800 shadow-[0_0_40px_#6d28d955]"
+                : "bg-[radial-gradient(circle,#1a0a3d,#050310)] border-indigo-900 shadow-[0_0_30px_#1e1b4b55]"
+          }`}
+        >
+          {knowledge.type === "evil" ? "🔱" : knowledge.type === "ambiguous" ? "✦" : "🌑"}
+        </div>
+      </Header>
 
       {knowledge.players.length > 0 ? (
         <div
-          className={`grid gap-2.5 mb-6 ${knowledge.players.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}
+          className={`grid gap-2.5 my-6 ${knowledge.players.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}
         >
           {knowledge.players.map((p, i) => (
             <div
@@ -128,7 +123,7 @@ const KnowledgeScreen = ({
               </div>
               <div className="cinzel text-slate-100 text-sm mb-1">{p.name}</div>
               <div
-                className={`text-[10px] tracking-widest font-serif
+                className={`text-xs tracking-widest font-serif
                 ${knowledge.type === "evil" ? "text-red-400" : "text-violet-400"}`}
               >
                 {p.label}
@@ -137,7 +132,7 @@ const KnowledgeScreen = ({
           ))}
         </div>
       ) : (
-        <div className="mb-6">
+        <div className="my-6">
           <p className="font-serif text-gray-600 text-sm italic">
             No one reveals themselves to you tonight.
           </p>

@@ -15,7 +15,7 @@ const PlayerToken = ({ name, isSelected, isLeader }: {name: string, isSelected?:
       )}
       {name[0].toUpperCase()}
     </div>
-    <span className={`text-[11px] font-serif ${isSelected ? "text-amber-400" : "text-gray-400"}`}>
+    <span className={`text-xs font-serif ${isSelected ? "text-amber-400" : "text-gray-400"}`}>
       {name}
     </span>
   </div>

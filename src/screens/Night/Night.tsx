@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { PLAYER_ROLES } from "../constants/player";
-import RoleCard from "../components/RoleCard";
-import KnowledgeScreen from "../components/Knowledge";
-import type { PlayerDetails } from "../types/player";
+import { PLAYER_ROLES } from "../../constants/player";
+import RoleCard from "./RoleCard";
+import Knowledge from "./Knowledge";
+import type { PlayerDetails } from "../../types/player";
 
 const Night = ({
   player,
@@ -42,7 +42,7 @@ const Night = ({
             />
           ))}
         </div>
-        <div className="flex justify-between text-[9px] font-serif text-gray-700 tracking-widest px-0.5">
+        <div className="flex justify-between text-xs font-serif text-gray-700 tracking-widest px-0.5">
           <span>
             PHASE {phase + 1} OF {phases.length}
           </span>
@@ -58,7 +58,7 @@ const Night = ({
         />
       )}
       {phases[phase] === "knowledge" && (
-        <KnowledgeScreen
+        <Knowledge
           player={player}
           allPlayers={allPlayers}
           onDone={next}
