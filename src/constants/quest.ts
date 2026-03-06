@@ -1,3 +1,5 @@
+import type { QuestStatus } from "../types/quest";
+
 export const QUEST_SIZES: Record<number,number[]> = {
   5: [2, 3, 2, 3, 3],
   6: [2, 3, 4, 3, 4],
@@ -7,7 +9,7 @@ export const QUEST_SIZES: Record<number,number[]> = {
   10: [3, 4, 4, 5, 5],
 };
 
-export const QUEST_STATUS = {
+export const QUEST_STATUS: Record<QuestStatus, string> = {
   pending: "🛡",
   success: "⚔️",
   fail: "💀",

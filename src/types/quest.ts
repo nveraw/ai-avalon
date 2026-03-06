@@ -1,4 +1,2 @@
-import type { QUEST_STATUS } from "../constants/quest";
-
-export type QuestStatus = keyof typeof QUEST_STATUS;
+export type QuestStatus = "pending" | "success" | "fail";
 export type CompletedQuestStatus = Exclude<QuestStatus, "pending">;

@@ -1,16 +1,18 @@
-import CardBox from "../../../components/CardBox";
-import { PLAYER_ROLES } from "../../../constants/player";
-import type { PlayerDetails } from "../../../types/player";
+import { PLAYER_ROLES } from "../constants/player";
+import type { PlayerDetails } from "../types/player";
+import CardBox from "./CardBox";
+
+type RoleCardProps = {
+  player: PlayerDetails;
+  onContinue: () => void;
+  hasKnowledge: boolean;
+}
 
 const RoleCard = ({
   player,
   onContinue,
   hasKnowledge,
-}: {
-  player: PlayerDetails;
-  onContinue: () => void;
-  hasKnowledge: boolean;
-}) => {
+}: RoleCardProps) => {
   const role = PLAYER_ROLES[player.role];
   const isEvil = role?.team === "evil";
 

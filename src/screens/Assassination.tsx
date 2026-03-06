@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import type { PlayerDetails } from "../../types/player";
-import SectionLabel from "../../components/SectionLabel";
-import CardBox from "../../components/CardBox";
-import GoldDivider from "../../components/GoldDivider";
+import type { PlayerDetails } from "../types/player";
+import SectionLabel from "../components/SectionLabel";
+import CardBox from "../components/CardBox";
+import GoldDivider from "../components/GoldDivider";
 
 type AssassinationProps = {
   player: PlayerDetails;

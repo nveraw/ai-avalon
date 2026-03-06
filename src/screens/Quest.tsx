@@ -1,9 +1,9 @@
 import { useState } from "react";
-import type { PlayerDetails } from "../../types/player";
-import CardBox from "../../components/CardBox";
-import GoldButton from "../../components/GoldButton";
-import type { CompletedQuestStatus } from "../../types/quest";
-import { PLAYER_ROLES } from "../../constants/player";
+import type { PlayerDetails } from "../types/player";
+import CardBox from "../components/CardBox";
+import GoldButton from "../components/GoldButton";
+import type { CompletedQuestStatus } from "../types/quest";
+import { PLAYER_ROLES } from "../constants/player";
 
 type QuestPhase = "pick" | "waiting" | "reveal" | "result";
 

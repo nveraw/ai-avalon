@@ -1,6 +1,8 @@
-import type { CommonProps } from "../types/componentProps";
+import type { ReactNode } from "react";
 
-const SectionLabel = ({ children, className = "" }: CommonProps) => (
+interface SectionLabelProps { children: ReactNode; className?: string; }
+
+const SectionLabel = ({ children, className = "" }: SectionLabelProps) => (
   <div className={`text-xs tracking-widest font-serif mb-4 ${className}`}>{children}</div>
 );
 

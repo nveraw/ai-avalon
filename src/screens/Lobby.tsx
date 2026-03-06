@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { PLAYER_ROLES, PLAYERS_DEMO } from "../../constants/player";
-import CardBox from "../../components/CardBox";
-import SectionLabel from "../../components/SectionLabel";
-import GoldDivider from "../../components/GoldDivider";
-import GoldButton from "../../components/GoldButton";
+import { PLAYER_ROLES, DEFAULT_PLAYER_NAMES } from "../constants/player";
+import CardBox from "../components/CardBox";
+import SectionLabel from "../components/SectionLabel";
+import GoldDivider from "../components/GoldDivider";
+import GoldButton from "../components/GoldButton";
 
 const DEFAULT_NUMBER = 7;
 
 const Lobby = ({ onStart }: { onStart: (names: string[]) => void }) => {
   const [playerCount, setPlayerCount] = useState(DEFAULT_NUMBER);
-  const [names, setNames] = useState(PLAYERS_DEMO.slice(0, DEFAULT_NUMBER));
+  const [names, setNames] = useState(DEFAULT_PLAYER_NAMES.slice(0, DEFAULT_NUMBER));
   const [duplicateName, setDuplicateName] = useState('');
 
   return (
@@ -35,7 +35,7 @@ const Lobby = ({ onStart }: { onStart: (names: string[]) => void }) => {
                 key={n}
                 onClick={() => {
                   setPlayerCount(n);
-                  setNames(PLAYERS_DEMO.slice(0, n));
+                  setNames(DEFAULT_PLAYER_NAMES.slice(0, n));
                 }}
                 className={`flex-1 py-2.5 rounded-lg border-none font-serif text-base font-bold cursor-pointer transition-all ${
                   playerCount === n

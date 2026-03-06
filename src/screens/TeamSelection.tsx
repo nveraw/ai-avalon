@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import type { PlayerDetails } from "../../types/player";
-import GoldButton from "../../components/GoldButton";
+import type { PlayerDetails } from "../types/player";
+import GoldButton from "../components/GoldButton";
 
 type TeamSelectionProps = {
   allPlayers: PlayerDetails[];

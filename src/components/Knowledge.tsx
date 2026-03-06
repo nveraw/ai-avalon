@@ -1,6 +1,6 @@
-import GoldButton from "../../../components/GoldButton";
-import { PLAYER_ROLES } from "../../../constants/player";
-import type { PlayerDetails, PlayerRole } from "../../../types/player";
+import { PLAYER_ROLES } from "../constants/player";
+import type { PlayerDetails, PlayerRole } from "../types/player";
+import GoldButton from "./GoldButton";
 
 function buildKnowledge(myRole: PlayerRole, allPlayers: PlayerDetails[]) {
   if (myRole === "merlin") {

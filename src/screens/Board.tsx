@@ -1,11 +1,11 @@
-import CardBox from "../../components/CardBox";
-import GoldButton from "../../components/GoldButton";
-import SectionLabel from "../../components/SectionLabel";
-import { QUEST_SIZES } from "../../constants/quest";
-import type { PlayerDetails } from "../../types/player";
-import type { QuestStatus } from "../../types/quest";
-import PlayerToken from "./component/PlayerToken";
-import QuestShield from "./component/QuestShield/QuestShield";
+import CardBox from "../components/CardBox";
+import GoldButton from "../components/GoldButton";
+import SectionLabel from "../components/SectionLabel";
+import QuestShield from "../components/QuestShield";
+import { QUEST_SIZES } from "../constants/quest";
+import type { PlayerDetails } from "../types/player";
+import type { QuestStatus } from "../types/quest";
+import PlayerToken from "../components/PlayerToken";
 
 interface BoardProps {
     players: PlayerDetails[];

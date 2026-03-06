@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { PLAYER_ROLES } from "../../constants/player";
-import RoleCard from "./component/RoleCard";
-import KnowledgeScreen from "./component/KnowledgeScreen";
-import type { PlayerDetails } from "../../types/player";
+import { PLAYER_ROLES } from "../constants/player";
+import RoleCard from "../components/RoleCard";
+import KnowledgeScreen from "../components/Knowledge";
+import type { PlayerDetails } from "../types/player";
 
 const Night = ({
   player,
