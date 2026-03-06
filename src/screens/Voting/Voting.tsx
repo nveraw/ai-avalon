@@ -1,7 +1,7 @@
+import CardBox from "@/components/CardBox";
+import Header from "@/components/Header";
+import type { PlayerDetails } from "@/types/Player";
 import { useState } from "react";
-import type { PlayerDetails } from "../../types/player";
-import CardBox from "../../components/CardBox";
-import Header from "../../components/Header";
 
 type VotingProps = {
   allPlayers: PlayerDetails[];

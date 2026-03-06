@@ -1,9 +1,9 @@
-import CardBox from "../../components/CardBox";
-import GoldButton from "../../components/GoldButton";
-import GoldDivider from "../../components/GoldDivider";
-import SectionLabel from "../../components/SectionLabel";
-import { PLAYER_ROLES } from "../../constants/player";
-import type { PlayerDetails } from "../../types/player";
+import CardBox from "@/components/CardBox";
+import GoldButton from "@/components/GoldButton";
+import GoldDivider from "@/components/GoldDivider";
+import SectionLabel from "@/components/SectionLabel";
+import { PLAYER_ROLES } from "@/constants/playerRoles";
+import type { PlayerDetails } from "@/types/Player";
 
 type ResultsProps = {
   winner: "good" | "evil";

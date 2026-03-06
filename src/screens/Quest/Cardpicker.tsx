@@ -1,5 +1,5 @@
-import type { PlayerDetails } from "../../types/player";
-import CardBox from "../../components/CardBox";
+import CardBox from "@/components/CardBox";
+import type { PlayerDetails } from "@/types/Player";
 
 type CardPickerProps = {
   player: PlayerDetails;

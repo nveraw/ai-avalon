@@ -1,4 +1,10 @@
-const PlayerToken = ({ name, isSelected, isLeader }: {name: string, isSelected?: boolean, isLeader: boolean}) => (
+type PlayerTokenProps = {
+  name: string;
+  isSelected?: boolean;
+  isLeader: boolean;
+}
+
+const PlayerToken = ({ name, isSelected, isLeader }: PlayerTokenProps) => (
   <div
     className={`flex flex-col items-center gap-1.5 transition-all duration-300
       ${isSelected ? "-translate-y-2" : ""}`}

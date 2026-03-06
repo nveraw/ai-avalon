@@ -1,7 +1,7 @@
+import { QUEST_STATUS } from "@/constants/questConfigs";
+import type { QuestStatus } from "@/types/Quest";
 import clsx from "clsx";
 import styles from './QuestShield.module.scss';
-import { QUEST_STATUS } from "../../constants/quest";
-import type { QuestStatus } from "../../types/quest";
 
 const QuestShield = ({ status, index }: {status: QuestStatus; index: number}) => {
   const icon = QUEST_STATUS[status] || QUEST_STATUS.pending;

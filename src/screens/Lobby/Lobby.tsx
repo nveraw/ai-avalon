@@ -1,10 +1,10 @@
+import CardBox from "@/components/CardBox";
+import GoldButton from "@/components/GoldButton";
+import GoldDivider from "@/components/GoldDivider";
+import Header from "@/components/Header";
+import SectionLabel from "@/components/SectionLabel";
+import { DEFAULT_PLAYER_NAMES, PLAYER_ROLES } from "@/constants/playerRoles";
 import { useState } from "react";
-import { PLAYER_ROLES, DEFAULT_PLAYER_NAMES } from "../../constants/player";
-import CardBox from "../../components/CardBox";
-import SectionLabel from "../../components/SectionLabel";
-import GoldDivider from "../../components/GoldDivider";
-import GoldButton from "../../components/GoldButton";
-import Header from "../../components/Header";
 
 const DEFAULT_NUMBER = 7;
 

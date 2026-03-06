@@ -1,4 +1,4 @@
-import type { QuestStatus } from "../types/quest";
+import { QuestStatus } from "@/types/Quest";
 
 export const QUEST_SIZES: Record<number,number[]> = {
   5: [2, 3, 2, 3, 3],

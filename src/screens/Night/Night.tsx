@@ -1,17 +1,19 @@
+import type { PlayerDetails } from "@/types/Player";
 import { useState } from "react";
-import RoleCard from "./RoleCard";
 import Knowledge from "./Knowledge";
-import type { PlayerDetails } from "../../types/player";
+import RoleCard from "./RoleCard";
+
+type NightProps = {
+  player: PlayerDetails;
+  allPlayers: PlayerDetails[];
+  onDone: () => void;
+}
 
 const Night = ({
   player,
   allPlayers,
   onDone,
-}: {
-  player: PlayerDetails;
-  allPlayers: PlayerDetails[];
-  onDone: () => void;
-}) => {
+}: NightProps) => {
   const [phase, setPhase] = useState(0); // role | knowledge
   const hasKnowledge = String(player.role).indexOf("loyal") === -1;
   const phases = hasKnowledge ? ["role", "knowledge"] : ["role"];

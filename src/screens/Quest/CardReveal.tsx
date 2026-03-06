@@ -1,4 +1,4 @@
-import type { CompletedQuestStatus } from "../../types/quest";
+import type { CompletedQuestStatus } from "@/types/Quest";
 
 type QuestRevealProps = {
   allCards: CompletedQuestStatus[];

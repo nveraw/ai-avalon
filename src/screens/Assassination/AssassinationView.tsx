@@ -1,5 +1,5 @@
-import CardBox from "../../components/CardBox";
-import GoldDivider from "../../components/GoldDivider";
+import CardBox from "@/components/CardBox";
+import GoldDivider from "@/components/GoldDivider";
 
 const AssassinationView = ({ assassinName }: { assassinName: string }) => (
   <>
@@ -18,7 +18,7 @@ const AssassinationView = ({ assassinName }: { assassinName: string }) => (
       </p>
       <GoldDivider />
       <p className="font-serif text-gray-500 text-xs italic">
-        "Even in victory, you are not safe. I know who Merlin is."
+        Even in victory, you are not safe. I know who Merlin is.
       </p>
     </CardBox>
   </>

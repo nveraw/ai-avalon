@@ -1,7 +1,7 @@
-import { PLAYER_ROLES } from "../../constants/player";
-import type { PlayerDetails } from "../../types/player";
-import CardBox from "../../components/CardBox";
-import Header from "../../components/Header";
+import CardBox from "@/components/CardBox";
+import Header from "@/components/Header";
+import { PLAYER_ROLES } from "@/constants/playerRoles";
+import type { PlayerDetails } from "@/types/Player";
 
 type RoleCardProps = {
   player: PlayerDetails;

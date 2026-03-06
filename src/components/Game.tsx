@@ -1,20 +1,21 @@
+"use client";
+
+import { PLAYER_ROLES } from "@/constants/playerRoles";
+import { QUEST_SIZES } from "@/constants/questConfigs";
+import Assassination from "@/screens/Assassination/Assassination";
+import Board from "@/screens/Board/Board";
+import Lobby from "@/screens/Lobby/Lobby";
+import Night from "@/screens/Night/Night";
+import Quest from "@/screens/Quest/Quest";
+import Results from "@/screens/Result/Results";
+import TeamSelection from "@/screens/TeamSelection/TeamSelection";
+import Voting from "@/screens/Voting/Voting";
+import type { PlayerDetails, PlayerRole } from "@/types/Player";
+import { CompletedQuestStatus } from "@/types/Quest";
+import { randomRoleToAssign } from "@/utils/shuffle";
 import { useState } from "react";
-import "./App.css";
-import StarField from "./components/StarField";
-import Lobby from "./screens/Lobby/Lobby";
-import type { PlayerDetails, PlayerRole } from "./types/player";
-import { PLAYER_ROLES } from "./constants/player";
-import Night from "./screens/Night/Night";
-import Board from "./screens/Board/Board";
-import { type CompletedQuestStatus } from "./types/quest";
-import { QUEST_SIZES } from "./constants/quest";
-import Voting from "./screens/Voting/Voting";
-import Quest from "./screens/Quest/Quest";
-import Assassination from "./screens/Assassination/Assassination";
-import Results from "./screens/Result/Results";
-import TeamSelection from "./screens/TeamSelection/TeamSelection";
-import { randomRoleToAssign } from "./utils/shuffle";
-import ChatPanel from "./components/ChatPanel";
+import ChatPanel from "./ChatPanel";
+import StarField from "./StarField";
 
 type Stage =
   | "lobby"
@@ -26,7 +27,7 @@ type Stage =
   | "assassin"
   | "results";
 
-function App() {
+const Game = () => {
   const [allPlayers, setAllPlayers] = useState<PlayerDetails[]>([]);
   const [screen, setScreen] = useState<Stage>("lobby");
   const [round, setRound] = useState(1);
@@ -168,11 +169,14 @@ function App() {
         )}
       </div>
       {showChat && (
-        <ChatPanel className="top-14 right-0 bottom-0 z-30 w-72 min-h-screen flex flex-col
-      border-l border-indigo-950 bg-black/95 backdrop-blur-xl" allPlayers={allPlayers} />
+        <ChatPanel
+          className="top-14 right-0 bottom-0 z-30 w-72 min-h-screen flex flex-col
+      border-l border-indigo-950 bg-black/95 backdrop-blur-xl"
+          allPlayers={allPlayers}
+        />
       )}
     </div>
   );
-}
+};
 
-export default App;
+export default Game;

@@ -1,7 +1,7 @@
-import { PLAYER_ROLES } from "../../constants/player";
-import type { PlayerDetails, PlayerRole } from "../../types/player";
-import GoldButton from "../../components/GoldButton";
-import Header from "../../components/Header";
+import GoldButton from "@/components/GoldButton";
+import Header from "@/components/Header";
+import { PLAYER_ROLES } from "@/constants/playerRoles";
+import type { PlayerDetails, PlayerRole } from "@/types/Player";
 
 function buildKnowledge(myRole: PlayerRole, allPlayers: PlayerDetails[]) {
   if (myRole === "merlin") {
@@ -102,7 +102,7 @@ const KnowledgeScreen = ({
         </p>
       </div>
 
-      <GoldButton onClick={onDone}>I've seen enough</GoldButton>
+      <GoldButton onClick={onDone}>I&apos;ve seen enough</GoldButton>
     </div>
   );
 };

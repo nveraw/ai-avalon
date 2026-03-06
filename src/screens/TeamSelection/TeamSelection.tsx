@@ -1,7 +1,7 @@
+import GoldButton from "@/components/GoldButton";
+import Header from "@/components/Header";
+import type { PlayerDetails } from "@/types/Player";
 import { useEffect, useState } from "react";
-import type { PlayerDetails } from "../../types/player";
-import GoldButton from "../../components/GoldButton";
-import Header from "../../components/Header";
 
 type TeamSelectionProps = {
   allPlayers: PlayerDetails[];

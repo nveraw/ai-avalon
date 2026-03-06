@@ -1,11 +1,9 @@
 @use "sass:math";
 
-$particle-count: 50;
-
 .starDot {
   border-radius: 50%;
 
-  @for $i from 1 through $particle-count {
+  @for $i from 1 through 50 {
     &:nth-child(#{$i}) {
       left: calc(math.random(100) * 1vw);
       top: calc(math.random(100) * 1vh);

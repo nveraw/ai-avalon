@@ -1,6 +1,6 @@
+import SectionLabel from "@/components/SectionLabel";
+import type { PlayerDetails } from "@/types/Player";
 import { useEffect, useState } from "react";
-import type { PlayerDetails } from "../../types/player";
-import SectionLabel from "../../components/SectionLabel";
 import AssassinationView from "./AssassinationView";
 
 type AssassinationProps = {
@@ -18,7 +18,7 @@ const Assassination = ({
 
   useEffect(() => {
     // ai bot choose merlin to assassinate
-    // setTimeout(() => onReveal(), 2200);
+    // setTimeout(() => onReveal(maybeMerlin), 2200);
   }, []);
 
   const assassin = allPlayers.find((p) => p.role === "assassin")?.name

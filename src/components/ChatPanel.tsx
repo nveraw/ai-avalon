@@ -1,6 +1,6 @@
+import { PERSONAS } from "@/constants/playerRoles";
+import type { PlayerDetails } from "@/types/Player";
 import { useEffect, useRef, useState } from "react";
-import type { PlayerDetails } from "../types/player";
-import { PERSONAS } from "../constants/player";
 
 type ChatPanelProps = {
   allPlayers: PlayerDetails[];
@@ -156,9 +156,6 @@ const ChatPanel = ({ allPlayers, className }: ChatPanelProps) => {
           >
             ➤
           </button>
-        </div>
-        <div className="text-xs text-indigo-500 font-serif mt-1.5 text-right">
-          Enter to send
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import type { PlayerRole, PlayerRoleConfig } from "../types/player";
+import type { PlayerRole, PlayerRoleConfig } from "@/types/Player";
 
 const loyalServant: PlayerRoleConfig = {
     name: "Loyal Servant",

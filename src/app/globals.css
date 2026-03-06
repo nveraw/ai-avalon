@@ -1,7 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&display=swap');
 @import "tailwindcss";
 
-@theme {
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
   --tracking-hero: 4px;
 
   /* Team colours */
@@ -12,7 +22,20 @@
   --bg-reveal-evil: linear-gradient(135deg, #2d0a0a, #7f1d1d);
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
 /* Fonts */
 .cinzel       { font-family: 'Cinzel', serif; }
 .cinzel-deco  { font-family: 'Cinzel Decorative', serif; }
 .app-bg { background: radial-gradient(ellipse at top, #0d0b1a 0%, #050310 70%); }
+
