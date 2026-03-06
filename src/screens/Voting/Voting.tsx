@@ -83,7 +83,7 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
       {phase === "vote" && (
         <>
           <CardBox className="mb-5 text-center">
-            <div className="text-xs text-purple-600 tracking-widest font-serif mb-3">
+            <div className="text-xs text-purple-400 tracking-widest font-serif mb-3">
               YOUR VOTE, {player.name.toUpperCase()}
             </div>
             <p className="font-serif text-gray-400 text-sm mb-6 leading-relaxed">
@@ -103,7 +103,7 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
                 <span className="cinzel text-green-400 text-sm tracking-widest">
                   APPROVE
                 </span>
-                <span className="text-gray-600 text-xs font-serif">
+                <span className="text-gray-400 text-xs font-serif">
                   Send them on the quest
                 </span>
               </button>
@@ -120,7 +120,7 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
                 <span className="cinzel text-red-400 text-sm tracking-widest">
                   REJECT
                 </span>
-                <span className="text-gray-600 text-xs font-serif">
+                <span className="text-gray-400 text-xs font-serif">
                   Refuse this fellowship
                 </span>
               </button>
@@ -128,7 +128,7 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
           </CardBox>
 
           <CardBox className="play">
-            <div className="text-xs text-purple-600 tracking-widest font-serif mb-3">
+            <div className="text-xs text-purple-400 tracking-widest font-serif mb-3">
               OTHER PLAYERS
             </div>
             <div className="grid gap-2">
@@ -191,16 +191,14 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
               return (
                 <div key={i} className="text-center">
                   <div
-                    className={`w-18 h-24 rounded-xl flex flex-col items-center justify-center gap-2
-                    border-2 transition-all duration-500
-                    ${
+                    className={`w-18 h-24 rounded-xl flex flex-col items-center justify-center gap-2 ${
+                      isHuman ? "ring-2 ring-amber-500/50 ring-offset-1 ring-offset-transparent" : ""} ${
                       visible
                         ? v === "approve"
                           ? "bg-reveal-good border-green-600"
                           : "bg-reveal-evil border-red-600"
                         : "bg-indigo-950/40 border-indigo-900"
-                    }
-                    ${isHuman ? "ring-2 ring-amber-500/50 ring-offset-1 ring-offset-transparent" : ""}`}
+                    } border-2 transition-all duration-500`}
                   >
                     {visible ? (
                       <>
@@ -231,8 +229,7 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
           {/* Outcome banner */}
           {phase === "outcome" && outcome && (
             <div
-              className={`p-5 rounded-2xl border-2 text-center
-              ${
+              className={`p-5 rounded-2xl border-2 text-center ${
                 outcome === "approved"
                   ? "bg-green-950/40 border-green-700"
                   : "bg-red-950/40 border-red-800"
@@ -242,7 +239,8 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
                 {outcome === "approved" ? "⚔" : "🚫"}
               </div>
               <div
-                className={`cinzel text-xl tracking-widest ${outcome === "approved" ? "text-green-400" : "text-red-400"}`}
+                className={`cinzel text-xl tracking-widest ${
+                  outcome === "approved" ? "text-green-400" : "text-red-400"}`}
               >
                 TEAM {outcome === "approved" ? "APPROVED" : "REJECTED"}
               </div>

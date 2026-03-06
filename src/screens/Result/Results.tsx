@@ -23,8 +23,7 @@ const Results = ({
   return (
     <div className="max-w-lg mx-auto px-5 py-10 text-center">
       <div
-        className={`px-6 py-12 rounded-3xl mb-6 border-2
-        ${
+        className={`px-6 py-12 rounded-3xl mb-6 border-2 ${
           good
             ? "bg-[radial-gradient(ellipse_at_top,rgba(5,46,22,0.8), rgba(10,12,25,0.95))] border-green-700"
             : "bg-[radial-gradient(ellipse_at_top,rgba(127,29,29,0.8), rgba(10,12,25,0.95))] border-red-700"
@@ -32,14 +31,12 @@ const Results = ({
       >
         <div className="text-7xl mb-4 animate-bounce">{good ? "🏆" : "💀"}</div>
         <div
-          className={`text-xs tracking-hero font-serif mb-2
-          ${good ? "text-green-300" : "text-red-300"}`}
+          className={`text-xs tracking-hero font-serif mb-2 ${good ? "text-green-300" : "text-red-300"}`}
         >
           {good ? "ARTHUR'S KINGDOM PREVAILS" : "DARKNESS DESCENDS"}
         </div>
         <h1
-          className={`cinzel-deco text-4xl tracking-widest mb-0
-          ${
+          className={`cinzel-deco text-4xl tracking-widest mb-0 ${
             good
               ? "text-emerald-400 [text-shadow:0_0_30px_#34d39977]"
               : "text-red-400 [text-shadow:0_0_30px_#f8717177]"
@@ -56,17 +53,16 @@ const Results = ({
       </div>
 
       <CardBox className="mb-6">
-        <SectionLabel className="text-purple-600 text-center">
+        <SectionLabel className="text-purple-400 text-center">
           ROLE REVEAL
         </SectionLabel>
         <div className="grid grid-cols-2 gap-2.5">
-          {allPlayers.map((player, i) => {
+          {allPlayers.map((player) => {
             return (
               <div
-                key={i}
-                className={`p-3 rounded-xl border relative
-                ${player.name === assassinated?.name ? "ring-2 ring-red-500/60" : ""}
-                ${
+                key={player.name}
+                className={`p-3 rounded-xl border relative ${
+                  player.name === assassinated?.name ? "ring-2 ring-red-500/60" : ""} ${
                   PLAYER_ROLES[player.role].team === "good"
                     ? "bg-green-950/30 border-green-900"
                     : "bg-red-950/30 border-red-950"

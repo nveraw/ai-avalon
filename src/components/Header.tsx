@@ -15,7 +15,7 @@ const Header = ({
 }) => (
   <>
     <p
-      className={`text-purple-700 font-serif text-xs tracking-hero ${subtitle ? "mb-2" : ""}`}
+      className={`text-violet-500 font-serif text-xs tracking-hero ${subtitle ? "mb-2" : ""}`}
     >
       {title}
     </p>

@@ -82,8 +82,8 @@ const ChatPanel = ({ allPlayers, className }: ChatPanelProps) => {
               <div className="flex items-center gap-1.5 px-1">
                 {!isHuman && (
                   <div
-                    className={`w-5 h-5 rounded-full flex items-center justify-center text-xs
-                    font-serif font-bold border shrink-0 token-base ${PERSONAS[i].border} text-slate-300`}
+                    className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${
+                      PERSONAS[i].border} font-serif font-bold border shrink-0 token-base text-slate-300`}
                   >
                     {msg.from[0]}
                   </div>
@@ -95,8 +95,7 @@ const ChatPanel = ({ allPlayers, className }: ChatPanelProps) => {
                 </span>
               </div>
               <div
-                className={`max-w-[85%] px-3 py-2 rounded-xl text-xs font-serif leading-relaxed
-                ${
+                className={`max-w-[85%] px-3 py-2 rounded-xl text-xs font-serif leading-relaxed ${
                   isHuman
                     ? "bg-amber-950/30 border border-amber-900/50 text-amber-100 rounded-br-sm"
                     : `${PERSONAS[i].bg} border ${PERSONAS[i].border} text-slate-300 rounded-bl-sm`
@@ -146,22 +145,19 @@ const ChatPanel = ({ allPlayers, className }: ChatPanelProps) => {
             rows={2}
             className="flex-1 bg-slate-950 border border-indigo-900 rounded-xl px-3 py-2
               text-slate-200 font-serif text-xs resize-none outline-none leading-relaxed
-              focus:border-violet-700 placeholder-indigo-800"
+              focus:border-violet-700 placeholder-indigo-500"
           />
           <button
             onClick={send}
             disabled={!input.trim()}
-            className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-all
-              ${
-                input.trim()
-                  ? "bg-amber-950/40 border-amber-700 text-amber-400 cursor-pointer hover:brightness-110"
-                  : "bg-slate-950 border-indigo-900 text-indigo-800 cursor-not-allowed"
-              }`}
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-all
+                  bg-amber-950/40 border-amber-700 text-amber-400 cursor-pointer hover:brightness-110
+                  disabled:bg-slate-950 disabled:border-indigo-900 disabled:text-indigo-500 disabled:cursor-not-allowed"
           >
             ➤
           </button>
         </div>
-        <div className="text-xs text-indigo-800 font-serif mt-1.5 text-right">
+        <div className="text-xs text-indigo-500 font-serif mt-1.5 text-right">
           Enter to send
         </div>
       </div>

@@ -5,68 +5,22 @@ import Header from "../../components/Header";
 
 function buildKnowledge(myRole: PlayerRole, allPlayers: PlayerDetails[]) {
   if (myRole === "merlin") {
-    return {
-      flavour: "Your eyes open to the darkness...",
-      desc: "These servants of evil are known to you. Remember their faces — but guard your knowledge carefully.",
-      type: "evil",
-      players: allPlayers
-        .filter(
-          (p: PlayerDetails) =>
+    return allPlayers.filter((p: PlayerDetails) =>
             !["mordred", "oberon"].includes(p.role) &&
-            PLAYER_ROLES[p.role]?.team === "evil",
-        )
-        .map((p: PlayerDetails) => ({
-          name: p.name,
-          label: "Servant of Evil",
-          icon: "🔱",
-        })),
-    };
+            PLAYER_ROLES[p.role]?.team === "evil");
   }
 
   if (myRole === "percival") {
-    return {
-      flavour: "Two figures emerge from the veil...",
-      desc: "One wields the light of Merlin. The other wears a mask. You cannot tell them apart.",
-      type: "ambiguous",
-      players: allPlayers
-        .filter((p: PlayerDetails) => ["merlin", "morgana"].includes(p.role))
-        .map((p: PlayerDetails) => ({
-          name: p.name,
-          label: "Merlin?",
-          icon: "✨",
-        })),
-    };
+    return allPlayers.filter((p: PlayerDetails) => ["merlin", "morgana"].includes(p.role));
   }
 
   if (PLAYER_ROLES[myRole]?.team === "evil" && myRole !== "oberon") {
-    return {
-      flavour: "Your allies step out of the shadows...",
-      desc: "These players stand with you in darkness. Their exact roles are hidden — even from each other.",
-      type: "evil",
-      players: allPlayers
-        .filter(
-          (p: PlayerDetails) =>
+    return allPlayers.filter((p: PlayerDetails) =>
             p.role !== "oberon" &&
             p.role !== myRole &&
-            PLAYER_ROLES[p.role]?.team === "evil",
-        )
-        .map((p: PlayerDetails) => ({
-          name: p.name,
-          label: "Evil Ally",
-          icon: "🔱",
-        })),
-    };
+            PLAYER_ROLES[p.role]?.team === "evil");
   }
-
-  return {
-    flavour: "The night reveals nothing to you.",
-    desc:
-      myRole === "oberon"
-        ? "You are Oberon — isolated, unknown. Your allies do not know you, and you do not know them."
-        : "You are a loyal servant. No special knowledge is granted to you. Watch, listen, and deduce.",
-    type: "none",
-    players: [],
-  };
+  return [];
 }
 
 const KnowledgeScreen = ({
@@ -74,7 +28,8 @@ const KnowledgeScreen = ({
   allPlayers,
   onDone,
 }: {player: PlayerDetails; allPlayers: PlayerDetails[], onDone: () => void}) => {
-  const knowledge = buildKnowledge(player.role, allPlayers);
+  const players = buildKnowledge(player.role, allPlayers);
+  const knowledge = PLAYER_ROLES[player.role].knowledge;
 
   const cardStyle =
     {
@@ -99,34 +54,34 @@ const KnowledgeScreen = ({
     <div className="max-w-sm mx-auto px-5 py-8 text-center">
       <Header title="NIGHT VISION" subtitle={knowledge.flavour} description={knowledge.desc}>
         <div
-          className={`atmospheric-orb w-20 h-20 rounded-full mx-auto flex items-center justify-center text-4xl
-          border-2 mt-5 animate-bounce [animation-duration:3s] ${orbBgBorder}`}
+          className={`atmospheric-orb w-20 h-20 rounded-full mx-auto flex items-center justify-center text-4xl ${
+          orbBgBorder} border-2 mt-5 animate-bounce [animation-duration:3s]`}
         >
           {knowledge.type === "evil" ? "🔱" : knowledge.type === "ambiguous" ? "✦" : "🌑"}
         </div>
       </Header>
 
-      {knowledge.players.length > 0 ? (
+      {players.length > 0 ? (
         <div
-          className={`grid gap-2.5 my-6 ${knowledge.players.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}
+          className={`grid gap-2.5 my-6 ${players.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}
         >
-          {knowledge.players.map((p, i) => (
+          {players.map((p, i) => (
             <div
               key={i}
               className={`border rounded-xl p-4 animate-pulse [animation-duration:3s] ${cardStyle}`}
             >
               <div
-                className={`w-12 h-12 rounded-full flex items-center justify-center
-                text-xl font-serif font-bold text-slate-200 border-2 mx-auto mb-3 ${iconBg}`}
+                className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                iconBg} text-xl font-serif font-bold text-slate-200 border-2 mx-auto mb-3`}
               >
                 {p.name[0]}
               </div>
               <div className="cinzel text-slate-100 text-sm mb-1">{p.name}</div>
               <div
-                className={`text-xs tracking-widest font-serif
-                ${knowledge.type === "evil" ? "text-red-400" : "text-violet-400"}`}
+                className={`text-xs tracking-widest font-serif ${
+                  knowledge.type === "evil" ? "text-red-400" : "text-violet-400"}`}
               >
-                {p.label}
+                {knowledge.seenPlayer}
               </div>
             </div>
           ))}
@@ -139,7 +94,7 @@ const KnowledgeScreen = ({
         </div>
       )}
 
-      <div className="warning flex items-start gap-3 bg-amber-950/20 border border-amber-900/40 rounded-xl px-4 py-3 mb-5 text-left">
+      <div className="warning flex items-start gap-3 bg-amber-950/20 border border-amber-500/40 rounded-xl px-4 py-3 mb-5 text-left">
         <span className="text-amber-500 text-base mt-0.5 shrink-0">⚠</span>
         <p className="font-serif text-amber-200/60 text-xs leading-relaxed">
           Memorise this. Once you proceed, this screen closes forever. Pass the

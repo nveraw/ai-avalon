@@ -57,12 +57,11 @@ const Assassination = ({
             <div
               key={player.name}
               onClick={() => setTarget(player)}
-              className={`p-3.5 rounded-xl cursor-pointer transition-all border font-serif text-sm
-                ${
-                  target?.name === player.name
-                    ? "bg-red-800/30 border-red-600 text-red-300"
-                    : "bg-slate-950/80 border-red-950/50 text-gray-400 hover:border-red-900"
-                }`}
+              className={`p-3.5 rounded-xl cursor-pointer transition-all border font-serif text-sm ${
+                target?.name === player.name
+                  ? "bg-red-800/30 border-red-600 text-red-300"
+                  : "bg-slate-950/80 border-red-950/50 text-gray-400 hover:border-red-900"
+              }`}
             >
               <div className="text-xl mb-1">
                 {target?.name === player.name ? "🎯" : "👤"}
@@ -78,12 +77,9 @@ const Assassination = ({
         onClick={() => {
           if (target !== null) onReveal(target);
         }}
-        className={`w-full py-4 rounded-xl cinzel text-base tracking-widest transition-all border
-          ${
-            target !== null
-              ? "bg-linear-to-br from-red-900 to-red-950 border-red-600 text-red-300 cursor-pointer hover:brightness-110"
-              : "bg-slate-950 border-red-950/30 text-gray-600 cursor-not-allowed"
-          }`}
+        className="w-full py-4 rounded-xl cinzel text-base tracking-widest transition-all border
+          bg-linear-to-br from-red-900 to-red-950 border-red-600 text-red-300 cursor-pointer hover:brightness-110
+          disabled:bg-slate-950 disabled:border-red-950/30 disabled:text-gray-600 disabled:cursor-not-allowed"
       >
         🗡 Strike the Killing Blow
       </button>

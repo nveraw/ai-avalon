@@ -21,6 +21,11 @@ export type PlayerRoleConfig = {
   team: string;
   color: string;
   min: number;
-  hasKnowledge: boolean;
   mission: string;
+  knowledge: {
+    flavour: string,
+    desc: string,
+    type: "evil" | "none" | "ambiguous",
+    seenPlayer?: string;
+  };
 };

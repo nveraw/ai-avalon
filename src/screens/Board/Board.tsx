@@ -27,12 +27,12 @@ const Board = ({ players, questResults, round, leader, rejectCount, onSelectTeam
       </div>
 
       <CardBox className="quest-track mb-4">
-        <SectionLabel className="text-purple-600">QUEST TRACK</SectionLabel>
+        <SectionLabel className="text-purple-400">QUEST TRACK</SectionLabel>
         <div className="flex justify-between items-end">
           {[0,1,2,3,4].map(i => (
             <div key={i} className="text-center">
               <QuestShield status={questResults[i] || "pending"} index={i} />
-              <div className="text-xs text-indigo-800 mt-1.5 font-serif">{questSizes[i]}P</div>
+              <div className="text-xs text-indigo-500 mt-1.5 font-serif">{questSizes[i]}P</div>
             </div>
           ))}
         </div>
@@ -50,13 +50,12 @@ const Board = ({ players, questResults, round, leader, rejectCount, onSelectTeam
         </div>
       </CardBox>
 
-      <div className="rejection-tracker bg-slate-950/80 border border-indigo-950 rounded-xl px-5 py-3.5 mb-4
+      <div className="rejection-tracker bg-slate-950/80 border border-indigo-800 rounded-xl px-5 py-3.5 mb-4
         flex items-center gap-4">
-        <div className="text-xs text-purple-600 tracking-widest font-serif whitespace-nowrap">REJECTIONS</div>
+        <div className="text-xs text-purple-400 tracking-widest font-serif whitespace-nowrap">REJECTIONS</div>
         <div className="flex gap-1.5">
           {Array.from({ length: questSizes.length }).map((_, i) => (
-            <div key={i} className={`w-7 h-7 rounded-full flex items-center justify-center text-sm border transition-all
-              ${i < rejectCount
+            <div key={i} className={`w-7 h-7 rounded-full flex items-center justify-center text-sm border transition-all ${i < rejectCount
                 ? "bg-red-950 border-red-600"
                 : "bg-indigo-950 border-indigo-900"}`}>
               {i < rejectCount ? "💢" : ""}
@@ -69,7 +68,7 @@ const Board = ({ players, questResults, round, leader, rejectCount, onSelectTeam
       </div>
 
       <CardBox className="players mb-5">
-        <SectionLabel className="text-purple-600">KNIGHTS OF THE REALM</SectionLabel>
+        <SectionLabel className="text-purple-400">KNIGHTS OF THE REALM</SectionLabel>
         <div className="flex flex-wrap gap-5 justify-center">
           {players.map((p) => <PlayerToken key={p.name} name={p.name} isLeader={p.name === leader.name} />)}
         </div>

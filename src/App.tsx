@@ -103,7 +103,7 @@ function App() {
   return (
     <div className="flex min-h-screen min-w-178.25 overflow-auto text-slate-200 app-bg">
       <StarField />
-      <div className={`relative h-screen overflow-auto z-10 transition-all duration-300 flex-1`}>
+      <div className="relative h-screen overflow-auto z-10 transition-all duration-300 flex-1">
         {screen === "lobby" && <Lobby onStart={handleReady} />}
         {screen === "night" && allPlayers.length > 1 && (
           <Night

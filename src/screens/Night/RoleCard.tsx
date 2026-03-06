@@ -14,8 +14,8 @@ const RoleCard = ({
   onContinue,
   hasKnowledge,
 }: RoleCardProps) => {
-  const role = PLAYER_ROLES[player.role];
-  const isEvil = role?.team === "evil";
+  const roleDetails = PLAYER_ROLES[player.role];
+  const isEvil = roleDetails?.team === "evil";
 
   return (
     <div className="max-w-sm mx-auto px-5 py-8 text-center">
@@ -34,15 +34,15 @@ const RoleCard = ({
                   : "bg-[radial-gradient(circle_at_30%_20%,#052e16,#0a0f1e)] border-[#166534]"
               }`}
             >
-              <div className="text-6xl mb-3 select-none">{role?.icon}</div>
+              <div className="text-6xl mb-3 select-none">{roleDetails?.icon}</div>
               <div
                 className={`cinzel text-2xl font-bold mb-1 ${isEvil ? "text-red-300" : "text-emerald-300"}`}
               >
-                {role?.name}
+                {roleDetails?.name}
               </div>
               <div
-                className={`text-xs tracking-hero font-serif uppercase px-4 py-1 rounded-full mt-1
-                ${isEvil ? "bg-red-950/60 text-red-500" : "bg-emerald-950/60 text-emerald-600"}`}
+                className={`text-xs tracking-hero font-serif uppercase px-4 py-1 rounded-full mt-1 ${
+                  isEvil ? "bg-red-950/60 text-red-500" : "bg-emerald-950/60 text-emerald-600"}`}
               >
                 {isEvil ? "⚔ Evil" : "✦ Good"}
               </div>
@@ -61,7 +61,7 @@ const RoleCard = ({
             YOUR MISSION
           </div>
           <p className="font-serif text-slate-300 text-sm leading-relaxed">
-            {role?.mission}
+            {roleDetails?.mission}
           </p>
         </CardBox>
 

@@ -102,9 +102,7 @@ const TeamSelection = ({
       )}
 
       {/* Player grid — lights up as AI picks */}
-      <div
-        className={`${aiPhase === "reveal" || aiPhase === "done" ? "" : ""}`}
-      >
+      <div>
         <div className="grid grid-cols-2 gap-3 mb-7">
           {allPlayers.map((p) => {
             const isRevealed = selected.includes(p);
@@ -137,8 +135,8 @@ const TeamSelection = ({
                 </div>
                 <div className="flex-1">
                   <div
-                    className={`font-serif text-sm transition-colors duration-300
-                    ${isRevealed ? "text-amber-200" : "text-slate-400"}`}
+                    className={`font-serif text-sm transition-colors duration-300 ${
+                      isRevealed ? "text-amber-200" : "text-slate-400"}`}
                   >
                     {p.name}
                   </div>
@@ -162,13 +160,11 @@ const TeamSelection = ({
             return (
               <div
                 key={i}
-                className={`w-11 h-11 rounded-full flex items-center justify-center
-                text-sm font-serif font-bold border-2 transition-all duration-500
-                ${
+                className={`w-11 h-11 rounded-full flex items-center justify-center ${
                   selected[i] !== undefined
                     ? "border-amber-400 bg-amber-950/20 text-amber-400"
                     : "border-indigo-900 bg-slate-950/80 text-indigo-800"
-                }`}
+                } text-sm font-serif font-bold border-2 transition-all duration-500`}
               >
                 {selected[i] !== undefined ? selected[i].name[0] : "?"}
               </div>
