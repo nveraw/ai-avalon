@@ -30,8 +30,8 @@ const RoleCard = ({
             <div
               className={`absolute inset-0 flex flex-col items-center justify-center rounded-2xl border-2 border-[#4a3f6b] ${
                 isEvil
-                  ? "bg-[radial-gradient(circle_at_30%_20%,#2d0a0a,#0a0305)] border-[#7f1d1d] shadow-[0_0_40px_#dc262633]"
-                  : "bg-[radial-gradient(circle_at_30%_20%,#052e16,#0a0f1e)] border-[#166534] shadow-[0_0_40px_#16a34a33]"
+                  ? "bg-[radial-gradient(circle_at_30%_20%,#2d0a0a,#0a0305)] border-[#7f1d1d]"
+                  : "bg-[radial-gradient(circle_at_30%_20%,#052e16,#0a0f1e)] border-[#166534]"
               }`}
             >
               <div className="text-6xl mb-3 select-none">{role?.icon}</div>

@@ -26,8 +26,8 @@ const Results = ({
         className={`px-6 py-12 rounded-3xl mb-6 border-2
         ${
           good
-            ? "bg-[radial-gradient(ellipse_at_top,rgba(5,46,22,0.8), rgba(10,12,25,0.95))] border-green-700 shadow-[0_0_80px_#16a34a33]"
-            : "bg-[radial-gradient(ellipse_at_top,rgba(127,29,29,0.8), rgba(10,12,25,0.95))] border-red-700 shadow-[0_0_80px_#dc262633]"
+            ? "bg-[radial-gradient(ellipse_at_top,rgba(5,46,22,0.8), rgba(10,12,25,0.95))] border-green-700"
+            : "bg-[radial-gradient(ellipse_at_top,rgba(127,29,29,0.8), rgba(10,12,25,0.95))] border-red-700"
         }`}
       >
         <div className="text-7xl mb-4 animate-bounce">{good ? "🏆" : "💀"}</div>

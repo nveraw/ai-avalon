@@ -118,7 +118,7 @@ const TeamSelection = ({
                 }}
                 className={`flex items-center gap-3 px-4 py-3.5 rounded-xl border transition-all duration-500 ${
                   isRevealed
-                    ? "bg-amber-950/20 border-amber-700 shadow-[0_0_14px_#d4af3722]"
+                    ? "bg-amber-950/20 border-amber-700"
                     : isLeaderToken
                       ? "bg-violet-950/20 border-violet-800"
                       : "bg-slate-950 border-indigo-950 opacity-50"

@@ -95,7 +95,7 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
                 onClick={() => submitVote("approve")}
                 className="flex-1 py-8 rounded-2xl border-2 border-green-900 bg-green-950/20
                   flex flex-col items-center gap-3 cursor-pointer transition-all
-                  hover:border-green-600 hover:bg-green-950/40 hover:shadow-[0_0_24px_#16a34a33] group"
+                  hover:border-green-600 hover:bg-green-950/40 group"
               >
                 <span className="text-5xl group-hover:scale-110 transition-transform duration-200">
                   ✅
@@ -112,7 +112,7 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
                 onClick={() => submitVote("reject")}
                 className="flex-1 py-8 rounded-2xl border-2 border-red-900 bg-red-950/20
                   flex flex-col items-center gap-3 cursor-pointer transition-all
-                  hover:border-red-600 hover:bg-red-950/40 hover:shadow-[0_0_24px_#dc262633] group"
+                  hover:border-red-600 hover:bg-red-950/40 group"
               >
                 <span className="text-5xl group-hover:scale-110 transition-transform duration-200">
                   ❌
@@ -196,8 +196,8 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
                     ${
                       visible
                         ? v === "approve"
-                          ? "bg-[linear-gradient(circle_at_135%,#052e16,#166534)] border-green-600 shadow-[0_0_16px_#16a34a44]"
-                          : "bg-[linear-gradient(circle_at_135%,#2d0a0a,#7f1d1d)] border-red-600 shadow-[0_0_16px_#dc262644]"
+                          ? "bg-reveal-good border-green-600"
+                          : "bg-reveal-evil border-red-600"
                         : "bg-indigo-950/40 border-indigo-900"
                     }
                     ${isHuman ? "ring-2 ring-amber-500/50 ring-offset-1 ring-offset-transparent" : ""}`}
@@ -234,8 +234,8 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
               className={`p-5 rounded-2xl border-2 text-center
               ${
                 outcome === "approved"
-                  ? "bg-green-950/40 border-green-700 shadow-[0_0_30px_#16a34a33]"
-                  : "bg-red-950/40 border-red-800 shadow-[0_0_30px_#dc262633]"
+                  ? "bg-green-950/40 border-green-700"
+                  : "bg-red-950/40 border-red-800"
               }`}
             >
               <div className="text-4xl mb-2">

@@ -60,7 +60,7 @@ const Assassination = ({
               className={`p-3.5 rounded-xl cursor-pointer transition-all border font-serif text-sm
                 ${
                   target?.name === player.name
-                    ? "bg-red-800/30 border-red-600 text-red-300 shadow-[0_0_12px_#dc262633]"
+                    ? "bg-red-800/30 border-red-600 text-red-300"
                     : "bg-slate-950/80 border-red-950/50 text-gray-400 hover:border-red-900"
                 }`}
             >
@@ -81,7 +81,7 @@ const Assassination = ({
         className={`w-full py-4 rounded-xl cinzel text-base tracking-widest transition-all border
           ${
             target !== null
-              ? "bg-linear-to-br from-red-900 to-red-950 border-red-600 text-red-300 cursor-pointer hover:brightness-110 shadow-[0_0_20px_#dc262622]"
+              ? "bg-linear-to-br from-red-900 to-red-950 border-red-600 text-red-300 cursor-pointer hover:brightness-110"
               : "bg-slate-950 border-red-950/30 text-gray-600 cursor-not-allowed"
           }`}
       >

@@ -1,10 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&display=swap');
 @import "tailwindcss";
 
-/* ── Theme ────────────────────────────────────────────────── */
 @theme {
-
   --tracking-hero: 4px;
+
+  /* Team colours */
+  --color-good-dim:    #052e16;   /* green-950 */
+  --color-evil-dim:    #2d0a0a;   /* red-950 */
+
+  --bg-reveal-good: linear-gradient(135deg, #052e16, #166534);
+  --bg-reveal-evil: linear-gradient(135deg, #2d0a0a, #7f1d1d);
 }
 
 /* Fonts */

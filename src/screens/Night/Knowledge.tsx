@@ -89,18 +89,18 @@ const KnowledgeScreen = ({
     none: "bg-indigo-950 border-indigo-800",
   }[knowledge.type];
 
+  const orbBgBorder = {
+    evil: "bg-[radial-gradient(circle,#3b0a0a,#050310)] border-red-900",
+    ambiguous: "bg-[radial-gradient(circle,#1e0a3d,#050310)] border-violet-800",
+    none: "bg-[radial-gradient(circle,#1a0a3d,#050310)] border-indigo-900",
+  }[knowledge.type];
+
   return (
     <div className="max-w-sm mx-auto px-5 py-8 text-center">
       <Header title="NIGHT VISION" subtitle={knowledge.flavour} description={knowledge.desc}>
         <div
           className={`atmospheric-orb w-20 h-20 rounded-full mx-auto flex items-center justify-center text-4xl
-          border-2 mt-5 animate-bounce [animation-duration:3s] ${
-            knowledge.type === "evil"
-              ? "bg-[radial-gradient(circle,#3b0a0a,#050310)] border-red-900 shadow-[0_0_40px_#7f1d1d55]"
-              : knowledge.type === "ambiguous"
-                ? "bg-[radial-gradient(circle,#1e0a3d,#050310)] border-violet-800 shadow-[0_0_40px_#6d28d955]"
-                : "bg-[radial-gradient(circle,#1a0a3d,#050310)] border-indigo-900 shadow-[0_0_30px_#1e1b4b55]"
-          }`}
+          border-2 mt-5 animate-bounce [animation-duration:3s] ${orbBgBorder}`}
         >
           {knowledge.type === "evil" ? "🔱" : knowledge.type === "ambiguous" ? "✦" : "🌑"}
         </div>

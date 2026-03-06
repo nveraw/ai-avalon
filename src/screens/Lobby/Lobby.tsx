@@ -38,7 +38,7 @@ const Lobby = ({ onStart }: { onStart: (names: string[]) => void }) => {
                 }}
                 className={`flex-1 py-2.5 rounded-lg border-none font-serif text-base font-bold cursor-pointer transition-all ${
                   playerCount === n
-                    ? "bg-violet-900 text-violet-200 shadow-[0_0_12px_#7c3aed55]"
+                    ? "bg-violet-900 text-violet-200"
                     : "bg-indigo-950 text-gray-500 hover:bg-indigo-900"
                 }`}
               >
@@ -68,7 +68,7 @@ const Lobby = ({ onStart }: { onStart: (names: string[]) => void }) => {
                     n[i] = value;
                     setNames(n);
                   }}
-                  className={`${name.toLocaleLowerCase() === duplicateName ? "border-red-800" : "border-indigo-950"} flex-1 bg-slate-950 border  rounded-lg px-3 py-2 text-slate-200 font-serif text-sm outline-none focus:border-violet-600 focus:shadow-[0_0_0_2px_rgba(124,58,237,0.2)]`}
+                  className={`${name.toLocaleLowerCase() === duplicateName ? "border-red-800" : "border-indigo-950"} flex-1 bg-slate-950 border  rounded-lg px-3 py-2 text-slate-200 font-serif text-sm outline-none focus:border-violet-600`}
                 />
                 {i > 0 && <span>🤖</span>}
               </div>
@@ -88,7 +88,7 @@ const Lobby = ({ onStart }: { onStart: (names: string[]) => void }) => {
               .map(([key, role]) => (
                 <div
                   key={key}
-                  className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl cursor-pointer transition-all bg-violet-950/30 border border-violet-700"
+                  className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl transition-all bg-violet-950/30 border border-violet-700"
                 >
                   <span className="text-lg">{role?.icon}</span>
                   <div>

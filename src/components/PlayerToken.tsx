@@ -6,7 +6,7 @@ const PlayerToken = ({ name, isSelected, isLeader }: {name: string, isSelected?:
     <div className={`relative w-13 h-13 rounded-full flex items-center justify-center
       text-xl font-bold font-serif text-slate-200 transition-all
       token-base
-      ${isSelected ? "border-2 border-amber-400 shadow-[0_0_16px_#d4af3788]" : ""}
+      ${isSelected ? "border-2 border-amber-400" : ""}
       ${isLeader  ? "border-2 border-violet-400" : ""}
       ${!isSelected && !isLeader ? "border-2 border-indigo-800" : ""}`}
     >

@@ -103,7 +103,7 @@ const Quest = ({ team, player, onResult }: QuestProps) => {
                     onClick={() => submitCard("success")}
                     className="flex-1 py-8 rounded-2xl border-2 border-green-900 bg-green-950/20
                       flex flex-col items-center gap-3 cursor-pointer transition-all
-                      hover:border-green-600 hover:bg-green-950/40 hover:shadow-[0_0_24px_#16a34a33] group"
+                      hover:border-green-600 hover:bg-green-950/40 group"
                   >
                     <span className="text-5xl group-hover:scale-110 transition-transform duration-200">
                       ⚔
@@ -126,7 +126,7 @@ const Quest = ({ team, player, onResult }: QuestProps) => {
                     }
                     className={`flex-1 py-8 rounded-2xl border-2 flex flex-col items-center gap-3 transition-all ${
                       humanIsEvil
-                        ? "border-red-900 bg-red-950/20 cursor-pointer hover:border-red-600 hover:bg-red-950/40 hover:shadow-[0_0_24px_#dc262633] group"
+                        ? "border-red-900 bg-red-950/20 cursor-pointer hover:border-red-600 hover:bg-red-950/40 group"
                         : "border-indigo-950/50 bg-slate-950/40 cursor-not-allowed opacity-30"
                     }`}
                   >
@@ -240,8 +240,8 @@ const Quest = ({ team, player, onResult }: QuestProps) => {
                     ${
                       visible
                         ? card === "success"
-                          ? "bg-[linear-gradient(circle_at_135%,#052e16,#166534)] border-green-600 shadow-[0_0_20px_#16a34a44]"
-                          : "bg-[linear-gradient(circle_at_135%,#2d0a0a,#7f1d1d)] border-red-600 shadow-[0_0_20px_#dc262644]"
+                          ? "bg-reveal-good border-green-600"
+                          : "bg-reveal-evil border-red-600"
                         : "bg-indigo-950/40 border-indigo-900"
                     }`}
                 >
@@ -271,8 +271,8 @@ const Quest = ({ team, player, onResult }: QuestProps) => {
               className={`p-6 rounded-2xl border-2
               ${
                 failed
-                  ? "bg-red-950/40 border-red-600 shadow-[0_0_40px_#dc262633]"
-                  : "bg-green-950/40 border-green-600 shadow-[0_0_40px_#16a34a33]"
+                  ? "bg-red-950/40 border-red-600"
+                  : "bg-green-950/40 border-green-600"
               }`}
             >
               <div className="text-5xl mb-2">{failed ? "💀" : "⚔"}</div>
