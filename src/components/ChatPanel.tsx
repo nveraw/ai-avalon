@@ -1,70 +1,60 @@
 import { PERSONAS } from "@/constants/playerRoles";
-import type { PlayerDetails } from "@/types/Player";
+import { sendChat } from "@/lib/api";
+import { addMessagesAtom, ChatMessage, messagesAtom } from "@/store/chat";
+import type { PlayerDetails } from "@/types/player.types";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
+import Header from "./Header";
 
 type ChatPanelProps = {
   allPlayers: PlayerDetails[];
   className: string;
 };
 
-type Message = {
-  from: string;
-  text: string;
-};
-
 const ChatPanel = ({ allPlayers, className }: ChatPanelProps) => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      from: "system",
-      text: "The Round Table convenes. Speak freely — but trust no one.",
-    },
-  ]);
+  const messages = useAtomValue(messagesAtom);
+  const addMessage = useSetAtom(addMessagesAtom);
+  const [displayMessages, setDisplayMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, typing]);
 
-  const triggerBotMessage = (name: string, text: string) => {
-    setTyping(name);
-    setTimeout(
-      () => {
-        setTyping(null);
-        setMessages((m) => [...m, { from: name, text }]);
-      },
-      900 + Math.random() * 700,
-    );
-  };
+    messages.forEach((msg, i) => {
+      setTimeout(() => {
+        setTyping(msg.from);
 
-  const send = () => {
-    const trimmed = input.trim();
-    if (!trimmed) return;
-    setMessages((m) => [...m, { from: allPlayers[0].name, text: trimmed }]);
+        setTimeout(() => {
+          setTyping(null);
+          setDisplayMessages((prev) => [...prev, msg]);
+        }, 800);
+      }, i * 1200);
+    });
+  }, [messages]);
+
+  const send = async () => {
+    const message = input.trim();
+    if (!message) return;
+    addMessage([{ from: allPlayers[0].name, text: message }]);
     setInput("");
 
-    // TODO ai typed message
-    triggerBotMessage(allPlayers[1].name, "hello");
+    const res = await sendChat({ message });
+    addMessage(res.messages);
   };
 
   return (
     <div className={className}>
-      {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-indigo-950 shrink-0">
-        <div>
-          <div className="cinzel text-amber-400 text-sm tracking-widest">
-            Round Table
-          </div>
-          <div className="text-xs text-gray-600 font-serif mt-0.5">
-            {allPlayers.length} knights
-          </div>
-        </div>
+        <Header
+          title="Round Table"
+          description={`${allPlayers.length} knights`}
+        />
       </div>
 
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3 min-h-0">
-        {messages.map((msg, i) => {
+        {displayMessages.map((msg, i) => {
           if (msg.from === "system")
             return (
               <div key={i} className="text-center py-1">
@@ -73,7 +63,9 @@ const ChatPanel = ({ allPlayers, className }: ChatPanelProps) => {
                 </span>
               </div>
             );
+
           const isHuman = msg.from === allPlayers[0].name;
+
           return (
             <div
               key={i}
@@ -83,7 +75,8 @@ const ChatPanel = ({ allPlayers, className }: ChatPanelProps) => {
                 {!isHuman && (
                   <div
                     className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${
-                      PERSONAS[i].border} font-serif font-bold border shrink-0 token-base text-slate-300`}
+                      PERSONAS[i].border
+                    } font-serif font-bold border shrink-0 token-base text-slate-300`}
                   >
                     {msg.from[0]}
                   </div>
@@ -129,7 +122,6 @@ const ChatPanel = ({ allPlayers, className }: ChatPanelProps) => {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
       <div className="px-3 py-3 border-t border-indigo-950 shrink-0">
         <div className="flex gap-2 items-end">
           <textarea

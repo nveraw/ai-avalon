@@ -1,80 +1,74 @@
 import CardBox from "@/components/CardBox";
 import Header from "@/components/Header";
-import type { PlayerDetails } from "@/types/Player";
+import { submitVote } from "@/lib/api";
+import { addMessagesAtom } from "@/store/chat";
+import { VoteResponse } from "@/types/api.types";
+import { VotedStatus, VotingStatus } from "@/types/vote.types";
+import { useSetAtom } from "jotai";
 import { useState } from "react";
 
 type VotingProps = {
-  allPlayers: PlayerDetails[];
-  player: PlayerDetails;
-  team: PlayerDetails[];
-  onResult: (result: Exclude<VotingOutcome, null>) => void;
+  playerNames: string[];
+  humanName: string;
+  team: string[];
+  onResult: (result: VoteResponse) => void;
 };
 
-type VotingStatus = "approve" | "reject" | null;
-type VotedStatus = Exclude<VotingStatus, null>;
-type VotingOutcome = "approved" | "rejected" | null;
 type VotingPhase = "vote" | "waiting" | "reveal" | "outcome";
 
-const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
+const Voting = ({ playerNames, humanName, team, onResult }: VotingProps) => {
+  const addMessages = useSetAtom(addMessagesAtom);
+
   const [playerVote, setPlayerVote] = useState<VotingStatus>(null);
   const [phase, setPhase] = useState<VotingPhase>("vote");
   const [botVotes, setBotVotes] = useState<Record<string, VotedStatus>>({});
   const [visibleCards, setVisibleCards] = useState(0);
-  const [outcome, setOutcome] = useState<VotingOutcome>(null);
+  const [outcome, setOutcome] = useState<VotedStatus | null>(null);
 
-  // After player votes, simulate bots deliberating then reveal
-  const submitVote = (vote: VotedStatus) => {
+  const handleVoting = async (vote: VotedStatus) => {
     setPlayerVote(vote);
     setPhase("waiting");
 
-    // TODO ai Generate bot votes (slightly biased toward approve)
-    const bots: Record<string, VotedStatus> = {};
-    allPlayers.forEach((p) => {
-      if (p !== player)
-        bots[p.name] = Math.random() > 0.38 ? "approve" : "reject";
-    });
-    setBotVotes(bots);
+    const res = await submitVote({ humanVote: vote });
+    setBotVotes(res.votes);
+    addMessages(res.messages);
 
-    // Stagger the reveal
-    setTimeout(() => setPhase("reveal"), 1400);
-    setTimeout(() => setVisibleCards(1), 1600);
-    allPlayers.forEach((_, i) => {
-      setTimeout(() => setVisibleCards(i + 1), 1600 + i * 280);
+    setTimeout(() => setPhase("reveal"), 400);
+    // stagger reveal as before
+    playerNames.forEach((_, i) => {
+      setTimeout(() => setVisibleCards(i + 1), 600 + i * 280);
     });
-    const allVotes = { [player.name]: vote, ...bots };
-    const approves = Object.values(allVotes).filter(
-      (v) => v === "approve",
-    ).length;
-    const result: VotingOutcome =
-      approves > allPlayers.length / 2 ? "approved" : "rejected";
-
     setTimeout(
       () => {
-        setOutcome(result);
+        setOutcome(res.result as VotedStatus);
         setPhase("outcome");
       },
-      1600 + allPlayers.length * 280 + 600,
+      600 + playerNames.length * 280 + 400,
     );
-    setTimeout(() => onResult(result), 1600 + allPlayers.length * 280 + 2400);
+    setTimeout(() => onResult(res), 600 + playerNames.length * 280 + 2000);
   };
 
-  const allVotesMap = { [player.name]: playerVote, ...botVotes };
+  const allVotesMap = { [humanName]: playerVote, ...botVotes };
 
   return (
     <div className="max-w-lg mx-auto px-5 py-8">
       {/* Header */}
       <div className="text-center mb-6">
-        <Header title="TEAM VOTE" subtitle="Approve or Reject?" description="Majority decides — ties are rejected" />
+        <Header
+          title="TEAM VOTE"
+          subtitle="Approve or Reject?"
+          description="Majority decides — ties are rejected"
+        />
 
         {/* Proposed team badges */}
         <div className="flex gap-2 justify-center flex-wrap mt-3">
-          {team.map((teamPlayer) => (
+          {team.map((name) => (
             <span
-              key={teamPlayer.name}
+              key={name}
               className="px-3 py-1 rounded-full bg-amber-950/20
               border border-amber-700 text-amber-200 text-xs font-serif"
             >
-              {teamPlayer.name}
+              {name}
             </span>
           ))}
         </div>
@@ -84,7 +78,7 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
         <>
           <CardBox className="mb-5 text-center">
             <div className="text-xs text-purple-400 tracking-widest font-serif mb-3">
-              YOUR VOTE, {player.name.toUpperCase()}
+              YOUR VOTE, {humanName.toUpperCase()}
             </div>
             <p className="font-serif text-gray-400 text-sm mb-6 leading-relaxed">
               Do you support this team being sent on the quest?
@@ -92,7 +86,7 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
             <div className="flex gap-4">
               {/* Approve card */}
               <button
-                onClick={() => submitVote("approve")}
+                onClick={() => handleVoting("approve")}
                 className="flex-1 py-8 rounded-2xl border-2 border-green-900 bg-green-950/20
                   flex flex-col items-center gap-3 cursor-pointer transition-all
                   hover:border-green-600 hover:bg-green-950/40 group"
@@ -109,7 +103,7 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
               </button>
               {/* Reject card */}
               <button
-                onClick={() => submitVote("reject")}
+                onClick={() => handleVoting("reject")}
                 className="flex-1 py-8 rounded-2xl border-2 border-red-900 bg-red-950/20
                   flex flex-col items-center gap-3 cursor-pointer transition-all
                   hover:border-red-600 hover:bg-red-950/40 group"
@@ -132,18 +126,18 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
               OTHER PLAYERS
             </div>
             <div className="grid gap-2">
-              {allPlayers
-                .filter((p) => p !== player)
-                .map((botPlayer, i) => (
+              {playerNames
+                .filter((p) => p !== humanName)
+                .map((name, i) => (
                   <div key={i} className="flex items-center gap-3 px-1 py-1">
                     <div
                       className="w-8 h-8 rounded-full bg-indigo-950 border border-indigo-800
                     flex items-center justify-center text-slate-300 font-serif font-bold text-sm shrink-0"
                     >
-                      {botPlayer.name[0]}
+                      {name[0]}
                     </div>
                     <span className="text-gray-400 font-serif text-sm flex-1">
-                      {botPlayer.name}
+                      {name}
                     </span>
                     <span className="text-indigo-700 text-xs font-serif italic animate-pulse [animation-duration:3s]">
                       waiting...
@@ -184,15 +178,18 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
         <>
           {/* Vote cards grid */}
           <div className="flex gap-3 justify-center flex-wrap mb-6">
-            {allPlayers.map((p, i) => {
-              const v = allVotesMap[p.name];
+            {playerNames.map((name, i) => {
+              const v = allVotesMap[name];
               const visible = i < visibleCards;
-              const isHuman = p.name === player.name;
+              const isHuman = name === humanName;
               return (
                 <div key={i} className="text-center">
                   <div
                     className={`w-18 h-24 rounded-xl flex flex-col items-center justify-center gap-2 ${
-                      isHuman ? "ring-2 ring-amber-500/50 ring-offset-1 ring-offset-transparent" : ""} ${
+                      isHuman
+                        ? "ring-2 ring-amber-500/50 ring-offset-1 ring-offset-transparent"
+                        : ""
+                    } ${
                       visible
                         ? v === "approve"
                           ? "bg-reveal-good border-green-600"
@@ -214,12 +211,10 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
                     )}
                   </div>
                   <div className="text-xs text-gray-500 mt-1.5 font-serif">
-                    {p.name}
+                    {name}
                   </div>
                   {isHuman && (
-                    <div className="text-xs text-amber-600 font-serif">
-                      you
-                    </div>
+                    <div className="text-xs text-amber-600 font-serif">you</div>
                   )}
                 </div>
               );
@@ -230,22 +225,23 @@ const Voting = ({ allPlayers, player, team, onResult }: VotingProps) => {
           {phase === "outcome" && outcome && (
             <div
               className={`p-5 rounded-2xl border-2 text-center ${
-                outcome === "approved"
+                outcome === "approve"
                   ? "bg-green-950/40 border-green-700"
                   : "bg-red-950/40 border-red-800"
               }`}
             >
               <div className="text-4xl mb-2">
-                {outcome === "approved" ? "⚔" : "🚫"}
+                {outcome === "approve" ? "⚔" : "🚫"}
               </div>
               <div
                 className={`cinzel text-xl tracking-widest ${
-                  outcome === "approved" ? "text-green-400" : "text-red-400"}`}
+                  outcome === "approve" ? "text-green-400" : "text-red-400"
+                }`}
               >
-                TEAM {outcome === "approved" ? "APPROVED" : "REJECTED"}
+                TEAM {outcome === "approve" ? "APPROVED" : "REJECTED"}
               </div>
               <p className="font-serif text-gray-500 text-xs mt-2">
-                {outcome === "approved"
+                {outcome === "approve"
                   ? "The fellowship advances to the quest."
                   : "The proposal has been refused. Leadership passes on."}
               </p>

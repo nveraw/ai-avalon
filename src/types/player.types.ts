@@ -15,17 +15,18 @@ export type PlayerDetails = {
   role: PlayerRole;
 };
 
+export type PlayerTeam = "evil" | "good";
+
 export type PlayerRoleConfig = {
   name: string;
   icon: string;
-  team: string;
+  team: PlayerTeam;
   color: string;
-  min: number;
   mission: string;
   knowledge: {
-    flavour: string,
-    desc: string,
-    type: "evil" | "none" | "ambiguous",
+    flavour: string;
+    desc: string;
+    type: "evil" | "none" | "ambiguous";
     seenPlayer?: string;
   };
 };

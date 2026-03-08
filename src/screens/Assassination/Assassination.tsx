@@ -1,34 +1,69 @@
 import SectionLabel from "@/components/SectionLabel";
-import type { PlayerDetails } from "@/types/Player";
+import { assassinate } from "@/lib/api";
+import { addMessagesAtom } from "@/store/chat";
+import { AssassinationResponse } from "@/types/api.types";
+import type { PlayerDetails } from "@/types/player.types";
+import { useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import AssassinationView from "./AssassinationView";
 
 type AssassinationProps = {
   player: PlayerDetails;
-  allPlayers: PlayerDetails[];
-  onReveal: (toKill: PlayerDetails) => void;
+  playerNames: string[];
+  onReveal: (res: AssassinationResponse) => void;
 };
 
 const Assassination = ({
   player,
-  allPlayers,
+  playerNames,
   onReveal,
 }: AssassinationProps) => {
-  const [target, setTarget] = useState<PlayerDetails | null>(null);
+  const [target, setTarget] = useState<string>("");
+  const [assassinName, setAssassinName] = useState<string>("");
+  const [data, setData] = useState<AssassinationResponse>();
+  const addMessages = useSetAtom(addMessagesAtom);
 
   useEffect(() => {
-    // ai bot choose merlin to assassinate
-    // setTimeout(() => onReveal(maybeMerlin), 2200);
-  }, []);
+    if (player.role !== "assassin") {
+      handleAssassination();
+    } else {
+      setAssassinName(player.name);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [player]);
 
-  const assassin = allPlayers.find((p) => p.role === "assassin")?.name
+  const handleClick = async () => {
+    if (player.role === "assassin") {
+      handleAssassination();
+    } else {
+      setTarget(data?.targetName || "");
+    }
+  };
 
-  if (!assassin) return null;
+  const handleAssassination = async () => {
+    const res = await assassinate({
+      name: target,
+    });
+    addMessages(res.messages);
+    setData(res);
+    setAssassinName(
+      data?.players?.find((p) => p.role === "assassin")?.name || "",
+    );
+  };
+
+  // !TRICK:
+  // when bot assassinate, there is no target until user click button
+  // when user assassinate, there is no data until user click button
+  // only when button is clicked, will we move to the next screen
+  useEffect(() => {
+    if (target && data?.targetName) {
+      onReveal(data);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target, data]);
 
   if (player.role !== "assassin") {
-    return (
-      <AssassinationView assassinName={assassin} />
-    );
+    return <AssassinationView assassinName={assassinName} />;
   }
 
   return (
@@ -53,30 +88,30 @@ const Assassination = ({
           SELECT THE TARGET
         </SectionLabel>
         <div className="grid grid-cols-2 gap-2.5">
-          {allPlayers.filter(p => p.role !== "assassin").map((player) => (
-            <div
-              key={player.name}
-              onClick={() => setTarget(player)}
-              className={`p-3.5 rounded-xl cursor-pointer transition-all border font-serif text-sm ${
-                target?.name === player.name
-                  ? "bg-red-800/30 border-red-600 text-red-300"
-                  : "bg-slate-950/80 border-red-950/50 text-gray-400 hover:border-red-900"
-              }`}
-            >
-              <div className="text-xl mb-1">
-                {target?.name === player.name ? "🎯" : "👤"}
+          {playerNames
+            .filter((name) => name === assassinName)
+            .map((name) => (
+              <div
+                key={name}
+                onClick={() => setTarget(name)}
+                className={`p-3.5 rounded-xl cursor-pointer transition-all border font-serif text-sm ${
+                  target === name
+                    ? "bg-red-800/30 border-red-600 text-red-300"
+                    : "bg-slate-950/80 border-red-950/50 text-gray-400 hover:border-red-900"
+                }`}
+              >
+                <div className="text-xl mb-1">
+                  {target === name ? "🎯" : "👤"}
+                </div>
+                {name}
               </div>
-              {player.name}
-            </div>
-          ))}
+            ))}
         </div>
       </div>
 
       <button
         disabled={target === null}
-        onClick={() => {
-          if (target !== null) onReveal(target);
-        }}
+        onClick={handleClick}
         className="w-full py-4 rounded-xl cinzel text-base tracking-widest transition-all border
           bg-linear-to-br from-red-900 to-red-950 border-red-600 text-red-300 cursor-pointer hover:brightness-110
           disabled:bg-slate-950 disabled:border-red-950/30 disabled:text-gray-600 disabled:cursor-not-allowed"

@@ -1,35 +1,18 @@
 import GoldButton from "@/components/GoldButton";
 import Header from "@/components/Header";
 import { PLAYER_ROLES } from "@/constants/playerRoles";
-import type { PlayerDetails, PlayerRole } from "@/types/Player";
-
-function buildKnowledge(myRole: PlayerRole, allPlayers: PlayerDetails[]) {
-  if (myRole === "merlin") {
-    return allPlayers.filter((p: PlayerDetails) =>
-            !["mordred", "oberon"].includes(p.role) &&
-            PLAYER_ROLES[p.role]?.team === "evil");
-  }
-
-  if (myRole === "percival") {
-    return allPlayers.filter((p: PlayerDetails) => ["merlin", "morgana"].includes(p.role));
-  }
-
-  if (PLAYER_ROLES[myRole]?.team === "evil" && myRole !== "oberon") {
-    return allPlayers.filter((p: PlayerDetails) =>
-            p.role !== "oberon" &&
-            p.role !== myRole &&
-            PLAYER_ROLES[p.role]?.team === "evil");
-  }
-  return [];
-}
+import type { PlayerRole } from "@/types/player.types";
 
 const KnowledgeScreen = ({
-  player,
-  allPlayers,
+  humanRole,
+  playerRevelation,
   onDone,
-}: {player: PlayerDetails; allPlayers: PlayerDetails[], onDone: () => void}) => {
-  const players = buildKnowledge(player.role, allPlayers);
-  const knowledge = PLAYER_ROLES[player.role].knowledge;
+}: {
+  humanRole: PlayerRole;
+  playerRevelation: string[];
+  onDone: () => void;
+}) => {
+  const knowledge = PLAYER_ROLES[humanRole].knowledge;
 
   const cardStyle =
     {
@@ -52,34 +35,45 @@ const KnowledgeScreen = ({
 
   return (
     <div className="max-w-sm mx-auto px-5 py-8 text-center">
-      <Header title="NIGHT VISION" subtitle={knowledge.flavour} description={knowledge.desc}>
+      <Header
+        title="NIGHT VISION"
+        subtitle={knowledge.flavour}
+        description={knowledge.desc}
+      >
         <div
           className={`atmospheric-orb w-20 h-20 rounded-full mx-auto flex items-center justify-center text-4xl ${
-          orbBgBorder} border-2 mt-5 animate-bounce [animation-duration:3s]`}
+            orbBgBorder
+          } border-2 mt-5 animate-bounce [animation-duration:3s]`}
         >
-          {knowledge.type === "evil" ? "🔱" : knowledge.type === "ambiguous" ? "✦" : "🌑"}
+          {knowledge.type === "evil"
+            ? "🔱"
+            : knowledge.type === "ambiguous"
+              ? "✦"
+              : "🌑"}
         </div>
       </Header>
 
-      {players.length > 0 ? (
+      {playerRevelation.length > 0 ? (
         <div
-          className={`grid gap-2.5 my-6 ${players.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}
+          className={`grid gap-2.5 my-6 ${playerRevelation.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}
         >
-          {players.map((p, i) => (
+          {playerRevelation.map((name) => (
             <div
-              key={i}
+              key={name}
               className={`border rounded-xl p-4 animate-pulse [animation-duration:3s] ${cardStyle}`}
             >
               <div
                 className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                iconBg} text-xl font-serif font-bold text-slate-200 border-2 mx-auto mb-3`}
+                  iconBg
+                } text-xl font-serif font-bold text-slate-200 border-2 mx-auto mb-3`}
               >
-                {p.name[0]}
+                {name[0]}
               </div>
-              <div className="cinzel text-slate-100 text-sm mb-1">{p.name}</div>
+              <div className="cinzel text-slate-100 text-sm mb-1">{name}</div>
               <div
                 className={`text-xs tracking-widest font-serif ${
-                  knowledge.type === "evil" ? "text-red-400" : "text-violet-400"}`}
+                  knowledge.type === "evil" ? "text-red-400" : "text-violet-400"
+                }`}
               >
                 {knowledge.seenPlayer}
               </div>

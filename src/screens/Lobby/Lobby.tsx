@@ -3,15 +3,21 @@ import GoldButton from "@/components/GoldButton";
 import GoldDivider from "@/components/GoldDivider";
 import Header from "@/components/Header";
 import SectionLabel from "@/components/SectionLabel";
-import { DEFAULT_PLAYER_NAMES, PLAYER_ROLES } from "@/constants/playerRoles";
+import {
+  DEFAULT_PLAYER_NAMES,
+  PLAYER_ROLES,
+  roleList,
+} from "@/constants/playerRoles";
 import { useState } from "react";
 
 const DEFAULT_NUMBER = 7;
 
 const Lobby = ({ onStart }: { onStart: (names: string[]) => void }) => {
   const [playerCount, setPlayerCount] = useState(DEFAULT_NUMBER);
-  const [names, setNames] = useState(DEFAULT_PLAYER_NAMES.slice(0, DEFAULT_NUMBER));
-  const [duplicateName, setDuplicateName] = useState('');
+  const [names, setNames] = useState(
+    DEFAULT_PLAYER_NAMES.slice(0, DEFAULT_NUMBER),
+  );
+  const [duplicateName, setDuplicateName] = useState("");
 
   return (
     <div className="header max-w-xl mx-auto px-5 py-10">
@@ -58,9 +64,11 @@ const Lobby = ({ onStart }: { onStart: (names: string[]) => void }) => {
                 <input
                   value={name}
                   onChange={(e) => {
-                    setDuplicateName('');
+                    setDuplicateName("");
                     const value = e.target.value.trim().toLocaleLowerCase();
-                    const duplicateIndex = names.map(n => n.toLocaleLowerCase()).indexOf(value)
+                    const duplicateIndex = names
+                      .map((n) => n.toLocaleLowerCase())
+                      .indexOf(value);
                     if (duplicateIndex > -1 && duplicateIndex !== i) {
                       setDuplicateName(value);
                     }
@@ -79,34 +87,35 @@ const Lobby = ({ onStart }: { onStart: (names: string[]) => void }) => {
         <GoldDivider />
 
         <div className="roles mb-7">
-          <SectionLabel className="text-violet-400">
-            Playing Roles
-          </SectionLabel>
+          <SectionLabel className="text-violet-400">Playing Roles</SectionLabel>
           <div className="grid grid-cols-2 gap-2.5 mt-3">
-            {Object.entries(PLAYER_ROLES)
-              .filter(([, roles]) => playerCount >= roles.min)
-              .map(([key, role]) => (
-                <div
-                  key={key}
-                  className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl transition-all bg-violet-950/30 border border-violet-700"
-                >
-                  <span className="text-lg">{role?.icon}</span>
-                  <div>
-                    <div className="font-serif text-[13px] text-violet-200">
-                      {role?.name}
-                    </div>
-                    <div
-                      className={`text-xs ${role?.team === "good" ? "text-emerald-400" : "text-red-400"}`}
-                    >
-                      {role?.team}
-                    </div>
+            {roleList.splice(0, playerCount).map((role) => (
+              <div
+                key={role}
+                className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl transition-all bg-violet-950/30 border border-violet-700"
+              >
+                <span className="text-lg">{PLAYER_ROLES[role].icon}</span>
+                <div>
+                  <div className="font-serif text-[13px] text-violet-200">
+                    {PLAYER_ROLES[role].name}
+                  </div>
+                  <div
+                    className={`text-xs ${PLAYER_ROLES[role].team === "good" ? "text-emerald-400" : "text-red-400"}`}
+                  >
+                    {PLAYER_ROLES[role].team}
                   </div>
                 </div>
-              ))}
+              </div>
+            ))}
           </div>
         </div>
 
-        <GoldButton onClick={() => onStart(names)} disabled={duplicateName !== ""}>⚔️ Begin the Quest ⚔️</GoldButton>
+        <GoldButton
+          onClick={() => onStart(names)}
+          disabled={duplicateName !== ""}
+        >
+          ⚔️ Begin the Quest ⚔️
+        </GoldButton>
       </CardBox>
     </div>
   );

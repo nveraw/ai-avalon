@@ -1,30 +1,29 @@
 import CardBox from "@/components/CardBox";
 import Header from "@/components/Header";
 import { PLAYER_ROLES } from "@/constants/playerRoles";
-import type { PlayerDetails } from "@/types/Player";
+import type { PlayerRole } from "@/types/player.types";
 
 type RoleCardProps = {
-  player: PlayerDetails;
+  name: string;
+  humanRole: PlayerRole;
   onContinue: () => void;
   hasKnowledge: boolean;
-}
+};
 
 const RoleCard = ({
-  player,
+  name,
+  humanRole,
   onContinue,
   hasKnowledge,
 }: RoleCardProps) => {
-  const roleDetails = PLAYER_ROLES[player.role];
+  const roleDetails = PLAYER_ROLES[humanRole];
   const isEvil = roleDetails?.team === "evil";
 
   return (
     <div className="max-w-sm mx-auto px-5 py-8 text-center">
-      <Header title="YOUR ROLE" subtitle={`${player.name}, your fate is sealed.`} />
+      <Header title="YOUR ROLE" subtitle={`${name}, your fate is sealed.`} />
 
-      <div
-        className="flex justify-center my-8"
-        style={{ perspective: "900px" }}
-      >
+      <div className="flex justify-center my-8">
         <div className="w-50 h-70 transition-transform duration-200">
           <div className="relative w-full h-full">
             <div
@@ -34,7 +33,9 @@ const RoleCard = ({
                   : "bg-[radial-gradient(circle_at_30%_20%,#052e16,#0a0f1e)] border-[#166534]"
               }`}
             >
-              <div className="text-6xl mb-3 select-none">{roleDetails?.icon}</div>
+              <div className="text-6xl mb-3 select-none">
+                {roleDetails?.icon}
+              </div>
               <div
                 className={`cinzel text-2xl font-bold mb-1 ${isEvil ? "text-red-300" : "text-emerald-300"}`}
               >
@@ -42,7 +43,10 @@ const RoleCard = ({
               </div>
               <div
                 className={`text-xs tracking-hero font-serif uppercase px-4 py-1 rounded-full mt-1 ${
-                  isEvil ? "bg-red-950/60 text-red-500" : "bg-emerald-950/60 text-emerald-600"}`}
+                  isEvil
+                    ? "bg-red-950/60 text-red-500"
+                    : "bg-emerald-950/60 text-emerald-600"
+                }`}
               >
                 {isEvil ? "⚔ Evil" : "✦ Good"}
               </div>

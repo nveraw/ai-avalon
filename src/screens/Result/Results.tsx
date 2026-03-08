@@ -3,12 +3,12 @@ import GoldButton from "@/components/GoldButton";
 import GoldDivider from "@/components/GoldDivider";
 import SectionLabel from "@/components/SectionLabel";
 import { PLAYER_ROLES } from "@/constants/playerRoles";
-import type { PlayerDetails } from "@/types/Player";
+import type { PlayerDetails, PlayerTeam } from "@/types/player.types";
 
 type ResultsProps = {
-  winner: "good" | "evil";
+  winner: PlayerTeam;
   allPlayers: PlayerDetails[];
-  assassinated?: PlayerDetails;
+  assassinated?: string;
   onRestart: () => void;
 };
 
@@ -62,13 +62,14 @@ const Results = ({
               <div
                 key={player.name}
                 className={`p-3 rounded-xl border relative ${
-                  player.name === assassinated?.name ? "ring-2 ring-red-500/60" : ""} ${
+                  player.name === assassinated ? "ring-2 ring-red-500/60" : ""
+                } ${
                   PLAYER_ROLES[player.role].team === "good"
                     ? "bg-green-950/30 border-green-900"
                     : "bg-red-950/30 border-red-950"
                 }`}
               >
-                {player.name === assassinated?.name && (
+                {player.name === assassinated && (
                   <div
                     className={
                       "absolute -top-2 -right-2 text-xs rounded-full px-1.5 py-0.5 font-serif border bg-red-950 border-red-700 text-red-400"
