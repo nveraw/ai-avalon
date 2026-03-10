@@ -6,29 +6,32 @@ import { roleDescription } from "./role";
 // Safe to include in any agent's context — contains only public information.
 function buildPublicContext(state: GameState): string {
   const questSizes = QUEST_SIZES[state.players.length] ?? QUEST_SIZES[7];
-  const questTrack =
-    state.questResults.length > 0
-      ? state.questResults.map((r, i) => `Quest ${i + 1}: ${r}`).join(", ")
-      : "No quests completed yet";
-
   const successes = state.questResults.filter((r) => r === "success").length;
   const fails = state.questResults.filter((r) => r === "fail").length;
+
+  const questTrack =
+    state.questResults.length > 0
+      ? state.questResults
+          .map((r, i) => `Quest ${i + 1}: ${r.toUpperCase()}`)
+          .join(" | ")
+      : "No quests completed yet";
+
+  const urgency =
+    successes === 2
+      ? "\n WARNING: GOOD needs one more success. EVIL must prevent it at all costs."
+      : fails === 2
+        ? "\n WARNING: EVIL needs one more failure. GOOD must keep evil players off this quest."
+        : "";
 
   const summary = state.summary
     ? `\n=== CONVERSATION SUMMARY ===\n${state.summary}\n=== END SUMMARY ===`
     : "";
 
-  return `
-=== GAME STATE ===
-Players (${state.players.length}): ${state.players.map((p) => p.name).join(", ")}
-Current round: ${state.round} of 5
-Current leader: ${state.players[state.leaderIndex].name}
-Quest team size this round: ${questSizes[state.round - 1]}
-Consecutive rejections: ${state.rejectCount} (5 = evil wins automatically)
-Quest results: ${questTrack}
-Score — Good: ${successes} | Evil: ${fails} (first to 3 wins)
-=== END GAME STATE ===
-${summary}`;
+  return `Players (${state.players.length}): ${state.players.map((p) => p.name).join(", ")}
+Round: ${state.round} of 5  |  Leader: ${state.players[state.leaderIndex].name}  |  Team size this round: ${questSizes[state.round - 1]}
+Rejections: ${state.rejectCount}/5 (reaching 5 = automatic evil win)
+Score - Good: ${successes}  Evil: ${fails}  (first to 3 wins)
+Quest results: ${questTrack}${urgency}${summary}`;
 }
 
 // ── Agent system prompt ───────────────────────────────────────────────────────
@@ -188,13 +191,13 @@ Actions should:
 * Avoid revealing hidden knowledge
 * Influence player perception
 
-privateReasoning
+PRIVATE REASONING
 
 * Suspicion model
 * Team evaluation
 * Decision reasoning
 
-publicMessage
+PUBLIC MESSAGE
 (1–3 conversational sentences addressed to the table.)
 
 RULES

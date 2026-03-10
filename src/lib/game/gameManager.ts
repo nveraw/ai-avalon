@@ -235,7 +235,7 @@ export const assassinate = async (
 
   const target = (await runAssassination(state)) ?? name;
   const isCorrect =
-    state.players.find((p) => p.name === name)?.role === "merlin";
+    state.players.find((p) => p.name === target)?.role === "merlin";
 
   const nonAssassinPlayers = state.players.filter(
     (player) => player.role !== "assassin",

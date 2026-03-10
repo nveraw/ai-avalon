@@ -34,12 +34,11 @@ const Assassination = ({
   }, [player]);
 
   const handleClick = async () => {
-    if (!data) {
-      // player.role === "assassin"
+    if (player.role === "assassin") {
       const res = await handleAssassination();
       onReveal(res);
     } else {
-      onReveal(data);
+      if (data) onReveal(data);
     }
   };
 
