@@ -3,7 +3,7 @@ import GoldButton from "@/components/GoldButton";
 import GoldDivider from "@/components/GoldDivider";
 import SectionLabel from "@/components/SectionLabel";
 import { PLAYER_ROLES } from "@/constants/playerRoles";
-import type { PlayerDetails, PlayerTeam } from "@/types/player.types";
+import type { PlayerDetails, PlayerTeam } from "@/types/game.types";
 
 type ResultsProps = {
   winner: PlayerTeam;

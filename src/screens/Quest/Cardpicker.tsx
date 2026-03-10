@@ -1,11 +1,14 @@
 import CardBox from "@/components/CardBox";
-import type { PlayerDetails } from "@/types/player.types";
+import ChoiceCard from "@/components/ChoiceCard";
+import PlayerRow from "@/components/PlayerRow";
+import type { PlayerDetails } from "@/types/game.types";
+import { CompletedQuestStatus } from "@/types/quest.types";
 
 type CardPickerProps = {
   player: PlayerDetails;
   teammates: string[]; // team excluding the human player
   humanIsEvil: boolean;
-  onPick: (card: "success" | "fail") => void;
+  onPick: (card: CompletedQuestStatus) => void;
 };
 
 const CardPicker = ({
@@ -24,45 +27,28 @@ const CardPicker = ({
         you chose.
       </p>
       <div className="flex gap-4">
-        <button
+        <ChoiceCard
           onClick={() => onPick("success")}
-          className="flex-1 py-8 rounded-2xl border-2 border-green-900 bg-green-950/20
-            flex flex-col items-center gap-3 cursor-pointer transition-all
-            hover:border-green-600 hover:bg-green-950/40 group"
-        >
-          <span className="text-5xl group-hover:scale-110 transition-transform duration-200">
-            ⚔
-          </span>
-          <span className="cinzel text-green-400 text-sm tracking-widest">
-            SUCCESS
-          </span>
-          <span className="text-gray-600 text-xs font-serif">
-            Advance the quest
-          </span>
-        </button>
-
-        <button
+          variant="good"
+          icon="⚔"
+          label="SUCCESS"
+          description="Advance the quest"
+        />
+        <ChoiceCard
           onClick={() => onPick("fail")}
-          disabled={!humanIsEvil}
           title={
             !humanIsEvil ? "Loyal knights cannot betray the quest" : undefined
           }
-          className="flex-1 py-8 rounded-2xl border-2 flex flex-col items-center gap-3 transition-all
-                        border-red-900 bg-red-950/20 cursor-pointer hover:border-red-600 hover:bg-red-950/40 group
-                        disabled:border-indigo-950/50 disabled:bg-slate-950/40 disabled:ursor-not-allowed"
-        >
-          <span className="text-5xl group-hover:scale-110 transition-transform duration-200 in-disabled:opacity-30">
-            💀
-          </span>
-          <span className="cinzel text-red-400 text-sm tracking-widest in-disabled:opacity-70">
-            FAIL
-          </span>
-          <span className="text-gray-400 in-disabled:text-white text-xs font-serif in-disabled:opacity-50">
-            {humanIsEvil
+          disabled={!humanIsEvil}
+          variant="evil"
+          icon="💀"
+          label="FAIL"
+          description={
+            humanIsEvil
               ? "Sabotage the quest"
-              : "Not available to loyal knights"}
-          </span>
-        </button>
+              : "Not available to loyal knights"
+          }
+        />
       </div>
     </CardBox>
 
@@ -73,20 +59,7 @@ const CardPicker = ({
         </div>
         <div className="grid gap-2">
           {teammates.map((name) => (
-            <div key={name} className="flex items-center gap-3 px-1 py-1">
-              <div
-                className="w-8 h-8 rounded-full bg-indigo-950 border border-indigo-800
-                flex items-center justify-center text-slate-300 font-serif font-bold text-sm shrink-0"
-              >
-                {name[0]}
-              </div>
-              <span className="text-gray-400 font-serif text-sm flex-1">
-                {name}
-              </span>
-              <span className="text-indigo-700 text-xs font-serif italic animate-pulse [animation-duration:3s]">
-                ready to play...
-              </span>
-            </div>
+            <PlayerRow key={name} name={name} status="ready to play..." />
           ))}
         </div>
       </CardBox>

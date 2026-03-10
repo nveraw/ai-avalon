@@ -1,4 +1,4 @@
-import { startGame } from "@/lib/api";
+import { startGame } from "@/services/api";
 import { InitGameResponse } from "@/types/api.types";
 import { useEffect, useState } from "react";
 import Knowledge from "./Knowledge";

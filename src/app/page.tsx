@@ -17,7 +17,7 @@ import {
   QuestResponse,
   VoteResponse,
 } from "@/types/api.types";
-import type { PlayerDetails, PlayerTeam } from "@/types/player.types";
+import type { PlayerDetails, PlayerTeam } from "@/types/game.types";
 import { CompletedQuestStatus } from "@/types/quest.types";
 import { useState } from "react";
 
@@ -122,7 +122,7 @@ const Game = () => {
           <TeamSelection
             leader={leader}
             onConfirm={handleProposeTeam}
-            humanName={player?.name || playerNames[0]}
+            humanName={player!.name}
             playerNames={playerNames}
             teamSize={QUEST_SIZES[playerNames.length][round - 1]}
           />
@@ -130,7 +130,7 @@ const Game = () => {
         {screen === "vote" && (
           <Voting
             playerNames={playerNames}
-            humanName={player?.name || playerNames[0]}
+            humanName={player!.name}
             team={selectedTeam}
             onResult={handleVotingResult}
           />

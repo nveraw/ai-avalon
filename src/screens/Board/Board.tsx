@@ -1,9 +1,9 @@
 import CardBox from "@/components/CardBox";
 import GoldButton from "@/components/GoldButton";
 import Header from "@/components/Header";
-import PlayerToken from "@/components/PlayerToken";
 import SectionLabel from "@/components/SectionLabel";
 import { QUEST_SIZES } from "@/constants/questConfigs";
+import PlayerToken from "@/screens/Board/PlayerToken";
 import type { QuestStatus } from "@/types/quest.types";
 import QuestShield from "./QuestShield";
 

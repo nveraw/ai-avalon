@@ -1,7 +1,7 @@
 import GoldButton from "@/components/GoldButton";
 import Header from "@/components/Header";
 import { PLAYER_ROLES } from "@/constants/playerRoles";
-import type { PlayerRole } from "@/types/player.types";
+import type { PlayerRole } from "@/types/game.types";
 
 const KnowledgeScreen = ({
   humanRole,

@@ -1,4 +1,4 @@
-import type { PlayerRole } from "@/types/player.types";
+import type { PlayerRole } from "@/types/game.types";
 
 export function randomRoleToAssign(activeRoles: PlayerRole[]): PlayerRole[] {
   const shuffled = [...activeRoles];

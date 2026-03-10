@@ -1,9 +1,8 @@
 // ── Init Game: clean memory, role assign ──────────────────────────────────────────
 
-import { ChatMessage } from "@/store/chat";
-import { PlayerDetails, PlayerRole, PlayerTeam } from "./player.types";
-import { CompletedQuestStatus } from "./quest.types";
-import { VotedStatus } from "./vote.types";
+import { ChatMessage } from "@/types/chat.types";
+import { PlayerDetails, PlayerRole, PlayerTeam } from "./game.types";
+import { CompletedQuestStatus, VotedStatus } from "./quest.types";
 
 export type InitGameRequest = {
   playerNames: string[]; // index 0 is always the human
@@ -79,7 +78,3 @@ export interface AssassinationResponse extends EndGameResponse {
   targetName: string;
   messages: ChatMessage[];
 }
-
-// export type EndGameResponse = {
-//   messages: ChatMessage[];         // good-game messages
-// };

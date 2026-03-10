@@ -1,3 +1,4 @@
+import OutcomeBanner from "@/components/OutcomeBanner";
 import type { CompletedQuestStatus } from "@/types/quest.types";
 
 type QuestRevealProps = {
@@ -55,25 +56,16 @@ const QuestReveal = ({
       </div>
 
       {showResult && (
-        <div
-          className={`p-6 rounded-2xl border-2 ${
+        <OutcomeBanner
+          success={!failed}
+          icon={failed ? "💀" : "⚔"}
+          label={`QUEST ${failed ? "FAILED" : "SUCCEEDED"}`}
+          description={
             failed
-              ? "bg-red-950/40 border-red-600"
-              : "bg-green-950/40 border-green-600"
-          }`}
-        >
-          <div className="text-5xl mb-2">{failed ? "💀" : "⚔"}</div>
-          <div
-            className={`cinzel text-xl tracking-widest ${failed ? "text-red-400" : "text-emerald-400"}`}
-          >
-            QUEST {failed ? "FAILED" : "SUCCEEDED"}
-          </div>
-          <p className="font-serif text-gray-500 text-xs mt-2">
-            {failed
               ? "A traitor's blade found its mark in the dark."
-              : "The knights return victorious. Camelot endures — for now."}
-          </p>
-        </div>
+              : "The knights return victorious. Camelot endures — for now."
+          }
+        />
       )}
     </>
   );

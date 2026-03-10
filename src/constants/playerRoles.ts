@@ -1,4 +1,4 @@
-import type { PlayerRole, PlayerRoleConfig } from "@/types/player.types";
+import type { PlayerRole, PlayerRoleConfig } from "@/types/game.types";
 
 export const roleList: PlayerRole[] = [
   "merlin",

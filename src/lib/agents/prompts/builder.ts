@@ -1,6 +1,6 @@
 import { QUEST_SIZES } from "@/constants/questConfigs";
-import { GameState } from "@/lib/game/gameStore";
-import { PlayerRole } from "@/types/player.types";
+import { GameState } from "@/lib/game/serverState";
+import { PlayerRole } from "@/types/game.types";
 import { roleDescription } from "./role";
 
 // Safe to include in any agent's context — contains only public information.

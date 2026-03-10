@@ -1,10 +1,10 @@
 import CardBox from "@/components/CardBox";
 import GoldDivider from "@/components/GoldDivider";
 import SectionLabel from "@/components/SectionLabel";
-import { assassinate } from "@/lib/api";
+import { assassinate } from "@/services/api";
 import { messagesAtom } from "@/store/chat";
 import { AssassinationResponse } from "@/types/api.types";
-import type { PlayerDetails } from "@/types/player.types";
+import type { PlayerDetails } from "@/types/game.types";
 import { useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 
@@ -95,7 +95,7 @@ const Assassination = ({
           </SectionLabel>
           <div className="grid grid-cols-2 gap-2.5">
             {playerNames
-              .filter((name) => name === assassinName)
+              .filter((name) => name !== assassinName)
               .map((name) => (
                 <div
                   key={name}
@@ -117,7 +117,7 @@ const Assassination = ({
       )}
 
       <button
-        disabled={target === null}
+        disabled={!target}
         onClick={handleClick}
         className="w-full py-4 rounded-xl cinzel text-base tracking-widest transition-all border
           bg-linear-to-br from-red-900 to-red-950 border-red-600 text-red-300 cursor-pointer hover:brightness-110

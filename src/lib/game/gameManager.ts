@@ -1,6 +1,5 @@
 import { roleList } from "@/constants/playerRoles";
-import { getGameState, setGameState } from "@/lib/game/gameStore";
-import { ChatMessage } from "@/store/chat";
+import { getGameState, setGameState } from "@/lib/game/serverState";
 import {
   AssassinationResponse,
   ChatResponse,
@@ -9,21 +8,18 @@ import {
   TeamSelectionResponse,
   VoteResponse,
 } from "@/types/api.types";
-import { CompletedQuestStatus } from "@/types/quest.types";
-import { VotedStatus, VotingStatus } from "@/types/vote.types";
+import { ChatMessage } from "@/types/chat.types";
+import { CompletedQuestStatus, VotedStatus } from "@/types/quest.types";
 import { buildKnowledge } from "@/utils/knowledge";
 import { randomRoleToAssign } from "@/utils/shuffle";
 import { ChatMistralAI } from "@langchain/mistralai";
-import {
-  createLlmModel,
-  runActionResponses,
-  runAssassination,
-  runChatResponses,
-  runQuestCards,
-  runTeamSelection,
-  runVoting,
-  triggerSummarization,
-} from "../agents/agentManager";
+import { createLlmModel } from "../agents/factory";
+import { runAssassination } from "../agents/phases/assassin";
+import { runQuestCards } from "../agents/phases/quest";
+import { runTeamSelection } from "../agents/phases/team";
+import { runVoting } from "../agents/phases/vote";
+import { runActionResponses, runChatResponses } from "../agents/runner";
+import { triggerSummarization } from "../agents/summarizer";
 
 export const initGame = (playerNames: string[]): InitGameResponse => {
   const activeRoles = roleList.slice(0, playerNames.length);
@@ -48,11 +44,10 @@ export const initGame = (playerNames: string[]): InitGameResponse => {
 
   return {
     humanRole,
-    playerRevelation:
-      buildKnowledge(
-        humanRole,
-        [...players].map((agent) => ({ name: agent.name, role: agent.role })),
-      ).map((player) => player.name) || [],
+    playerRevelation: buildKnowledge(
+      humanRole,
+      [...players].map((agent) => ({ name: agent.name, role: agent.role })),
+    ).map((player) => player.name),
     leader: playerNames[leaderIndex],
   };
 };
@@ -80,31 +75,13 @@ export const setTeam = async (
   if (!state) return defaultOutput;
 
   const output: TeamSelectionResponse =
-    (await runTeamSelection(state)) ?? defaultOutput;
+    (await runTeamSelection(names, state)) ?? defaultOutput;
   if (names.length) {
     setGameState({
       ...state,
       selectedTeam: names,
     });
   }
-  const newState = getGameState() ?? state;
-  const teamNames = newState.selectedTeam.join(", ");
-  const leaderName = newState.players[newState.leaderIndex].name;
-
-  const nonLeaderPlayers = newState.players.filter(
-    (player) => names.length > 0 || player.name !== leaderName,
-  );
-  const chats = nonLeaderPlayers.map(async (player) => {
-    return await runActionResponses(
-      player,
-      newState,
-      `The leader ${leaderName} has proposed this team: ${teamNames}}`,
-    );
-  });
-  const messages = await Promise.all(chats);
-  output.messages = messages.filter((msg) => !!msg);
-
-  triggerSummarization(newState, output.messages);
 
   return output;
 };
@@ -129,7 +106,7 @@ export const addVote = async (
     (v) => v === "approve",
   ).length;
 
-  const result: VotingStatus =
+  const result: VotedStatus =
     approves > state.players.length / 2 ? "approve" : "reject";
 
   if (result === "reject") {
@@ -240,14 +217,11 @@ export const assassinate = async (
   const nonAssassinPlayers = state.players.filter(
     (player) => player.role !== "assassin",
   );
-  const chats = nonAssassinPlayers.map(async (player) => {
-    return await runActionResponses(
-      player,
-      state,
-      `The assassin had marked ${target}. The target is ${isCorrect ? "" : "not"} Merlin.`,
-    );
-  });
-  const messages = await Promise.all(chats);
+  const messages = await runActionResponses(
+    nonAssassinPlayers,
+    state,
+    `The assassin had marked ${target}. The target is ${isCorrect ? "" : "not"} Merlin.`,
+  );
   const filtered = messages.filter((msg) => !!msg);
 
   return {

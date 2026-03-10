@@ -1,6 +1,7 @@
 import { PERSONAS } from "@/constants/playerRoles";
-import { sendChat } from "@/lib/api";
-import { ChatMessage, messagesAtom } from "@/store/chat";
+import { sendChat } from "@/services/api";
+import { messagesAtom } from "@/store/chat";
+import { ChatMessage } from "@/types/chat.types";
 import { useAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
 import Header from "./Header";
@@ -69,8 +70,10 @@ const ChatPanel = ({ playerNames, className }: ChatPanelProps) => {
             );
 
           const isHuman = msg.from === playerNames[0];
-          const index =
-            playerNames.findIndex((name) => name === msg?.from) || 0;
+          const index = Math.max(
+            playerNames.findIndex((name) => name === msg?.from),
+            0,
+          );
 
           return (
             <div

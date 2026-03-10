@@ -1,11 +1,17 @@
 import { initGame } from "@/lib/game/gameManager";
-import type { InitGameRequest, InitGameResponse } from "@/types/api.types";
+import type { InitGameRequest } from "@/types/api.types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { playerNames }: InitGameRequest = await req.json();
-
-  const response: InitGameResponse = initGame(playerNames);
-
-  return NextResponse.json(response);
+  try {
+    const { playerNames }: InitGameRequest = await req.json();
+    const response = initGame(playerNames);
+    return NextResponse.json(response);
+  } catch (err) {
+    console.error("/api/game/init", err);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
+  }
 }

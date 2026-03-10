@@ -1,6 +1,7 @@
 import GoldButton from "@/components/GoldButton";
 import Header from "@/components/Header";
-import { selectTeam } from "@/lib/api";
+import LoadingState from "@/components/LoadingState";
+import { submitTeam } from "@/services/api";
 import { messagesAtom } from "@/store/chat";
 import { useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
@@ -23,27 +24,27 @@ const TeamSelection = ({
   const addMessages = useSetAtom(messagesAtom);
 
   const [selected, setSelected] = useState<string[]>([]);
-  const [aiPhase, setAiPhase] = useState<"thinking" | "reveal" | "done">(
+  const [phase, setPhase] = useState<"thinking" | "reveal" | "done">(
     "thinking",
   );
 
   useEffect(() => {
     if (leader === humanName) return;
 
-    setAiPhase("thinking");
-    handleSecletedTeam();
+    setPhase("thinking");
+    handleSubmitTeam();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSecletedTeam = () => {
-    selectTeam({
+  const handleSubmitTeam = () => {
+    submitTeam({
       names: leader === humanName ? selected.map((name) => name) : [],
     }).then((res) => {
       setSelected(
         playerNames.filter((name) => res.proposedTeam.includes(name)),
       );
-      setAiPhase("reveal");
-      setTimeout(() => setAiPhase("done"), res.proposedTeam.length * 420 + 600);
+      setPhase("reveal");
+      setTimeout(() => setPhase("done"), res.proposedTeam.length * 420 + 600);
 
       addMessages(res.messages);
     });
@@ -51,7 +52,7 @@ const TeamSelection = ({
 
   const handleOnClick = () => {
     if (leader === humanName) {
-      handleSecletedTeam();
+      handleSubmitTeam();
     }
     onConfirm(selected);
   };
@@ -66,7 +67,7 @@ const TeamSelection = ({
 
   const buttonLabel =
     leader !== humanName
-      ? aiPhase === "done"
+      ? phase === "done"
         ? "⚔️ Send This Fellowship"
         : "Picking..."
       : selected.length === teamSize
@@ -74,7 +75,7 @@ const TeamSelection = ({
         : `Select ${teamSize - selected.length} more knight${teamSize - selected.length !== 1 ? "s" : ""}`;
 
   const AiSubtitle =
-    aiPhase === "thinking" ? "The Leader Deliberates..." : "Fellowship Chosen";
+    phase === "thinking" ? "The Leader Deliberates..." : "Fellowship Chosen";
 
   return (
     <div className="max-w-lg mx-auto px-5 py-8">
@@ -100,15 +101,11 @@ const TeamSelection = ({
       </div>
 
       {/* Thinking spinner */}
-      {leader !== humanName && aiPhase === "thinking" && (
-        <div className="text-center py-8">
-          <div className="text-5xl mb-5 animate-bounce [animation-duration:3s]">
-            👑
-          </div>
-          <p className="font-serif text-gray-500 text-sm mb-4">
-            {leader} studies the table in silence...
-          </p>
-        </div>
+      {leader !== humanName && phase === "thinking" && (
+        <LoadingState
+          icon="👑"
+          title={`${leader} studies the table in silence...`}
+        />
       )}
 
       {/* Player grid — lights up as AI picks */}

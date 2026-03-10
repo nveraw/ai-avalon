@@ -29,7 +29,7 @@ export const startGame = (body: InitGameRequest) =>
   post<InitGameRequest, InitGameResponse>("/init", body);
 export const sendChat = (body: ChatRequest) =>
   post<ChatRequest, ChatResponse>("/chat", body);
-export const selectTeam = (body: TeamSelectionRequest) =>
+export const submitTeam = (body: TeamSelectionRequest) =>
   post<TeamSelectionRequest, TeamSelectionResponse>("/team", body);
 export const submitVote = (body: VoteRequest) =>
   post<VoteRequest, VoteResponse>("/vote", body);
@@ -37,4 +37,3 @@ export const submitQuest = (body: QuestRequest) =>
   post<QuestRequest, QuestResponse>("/quest", body);
 export const assassinate = (body: AssassinationRequest) =>
   post<AssassinationRequest, AssassinationResponse>("/assassinate", body);
-//   endGame:       (gameId: string)              => post<{ gameId: string }, EndGameResponse>("/end", { gameId }),

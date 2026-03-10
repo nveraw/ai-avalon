@@ -1,15 +1,15 @@
 import CardBox from "@/components/CardBox";
 import GoldButton from "@/components/GoldButton";
 import Header from "@/components/Header";
+import LoadingState from "@/components/LoadingState";
 import { PLAYER_ROLES } from "@/constants/playerRoles";
-import { submitQuest } from "@/lib/api";
+import { submitQuest } from "@/services/api";
 import { messagesAtom } from "@/store/chat";
 import { QuestResponse } from "@/types/api.types";
-import type { PlayerDetails } from "@/types/player.types";
+import type { PlayerDetails } from "@/types/game.types";
 import type { CompletedQuestStatus } from "@/types/quest.types";
 import { useSetAtom } from "jotai";
 import { useState } from "react";
-import BotPlaying from "./BotPlaying";
 import CardReveal from "./CardReveal";
 import CardPicker from "./Cardpicker";
 
@@ -31,7 +31,8 @@ const Quest = ({ team, player, onResult }: QuestProps) => {
 
   const humanOnTeam = team.includes(player.name);
 
-  const submitCard = async (card?: "success" | "fail") => {
+  const submitCard = async (card?: CompletedQuestStatus) => {
+    setPhase("waiting");
     const res = await submitQuest({ humanCard: card ?? null });
     setAllCards(res.cards);
     addMessages(res.messages);
@@ -73,35 +74,38 @@ const Quest = ({ team, player, onResult }: QuestProps) => {
         </div>
       </div>
 
-      {phase === "pick" && (
-        <>
-          {humanOnTeam ? (
-            <CardPicker
-              player={player}
-              teammates={team.filter((name) => name !== player.name)}
-              humanIsEvil={humanIsEvil}
-              onPick={submitCard}
-            />
-          ) : (
-            <CardBox className="mb-5 text-center">
-              <div className="text-4xl mb-4">👁</div>
-              <div className="cinzel text-amber-400 text-base mb-2">
-                You watch from afar
-              </div>
-              <p className="font-serif text-gray-500 text-sm leading-relaxed mb-5">
-                You were not selected for this quest.
-                <br />
-                The chosen knights play their cards in secret.
-              </p>
-              <GoldButton onClick={() => submitCard()}>
-                Watch the quest unfold →
-              </GoldButton>
-            </CardBox>
-          )}
-        </>
-      )}
+      {phase === "pick" &&
+        (humanOnTeam ? (
+          <CardPicker
+            player={player}
+            teammates={team.filter((name) => name !== player.name)}
+            humanIsEvil={humanIsEvil}
+            onPick={submitCard}
+          />
+        ) : (
+          <CardBox className="mb-5 text-center">
+            <div className="text-4xl mb-4">👁</div>
+            <div className="cinzel text-amber-400 text-base mb-2">
+              You watch from afar
+            </div>
+            <p className="font-serif text-gray-500 text-sm leading-relaxed mb-5">
+              You were not selected for this quest.
+              <br />
+              The chosen knights play their cards in secret.
+            </p>
+            <GoldButton onClick={() => submitCard()}>
+              Watch the quest unfold →
+            </GoldButton>
+          </CardBox>
+        ))}
 
-      {phase === "waiting" && <BotPlaying />}
+      {phase === "waiting" && (
+        <LoadingState
+          icon="⚔"
+          title="The knights advance..."
+          subtitle="Cards are being played in secret."
+        />
+      )}
 
       {(phase === "reveal" || phase === "result") && (
         <CardReveal

@@ -1,5 +1,5 @@
 import { PLAYER_ROLES } from "@/constants/playerRoles";
-import { PlayerDetails, PlayerRole } from "@/types/player.types";
+import { PlayerDetails, PlayerRole } from "@/types/game.types";
 import { buildKnowledge } from "@/utils/knowledge";
 
 const EVIL_COORDINATION = `LONG-TERM DECEPTION PLANNING
