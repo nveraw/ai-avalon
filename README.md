@@ -86,4 +86,4 @@ All AI decisions use `model.withStructuredOutput(schema)` via Zod schemas define
 - **In-memory store** does not survive server restarts. Use Redis for persistence.
 - **No authentication** — Do not expose to untrusted networks without adding auth.
 - **AI response latency** — voting and quest phases call all bots in parallel (`Promise.all`) but each call still takes 1–3 seconds depending on Mistral API load.
-- **5-player games only have 2 Evil players** — the AI is tuned for this ratio but may play sub-optimally in 9–10 player games with more Evil agents until further prompt tuning.
+- **Prompt Tuning** — As of now, Morgana is still send full good team when 2 good wins 😭 Deception > Winning (!Info Leak) AND Merlin reveals knowledge too early

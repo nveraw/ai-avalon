@@ -5,20 +5,20 @@ import { buildKnowledge } from "@/utils/knowledge";
 const EVIL_COORDINATION = `LONG-TERM DECEPTION PLANNING
 Think across multiple rounds when making decisions.
 
-Early game: Allow some quests to succeed to build trust.
-Mid game: Begin influencing team composition. Shift suspicion toward good players.
-Late game: Ensure key quests fail, or identify Merlin.
+Round 1: Allow some quests to succeed to build trust.
+Round 2: Begin influencing team composition. Shift suspicion toward good players.
+Round 3-5: Ensure key quests fail, or identify Merlin.
 
 Avoid obvious sabotage early unless absolutely necessary.
 
 EVIL TEAM COORDINATION
 When multiple evil players are on a quest, consider whether failing is optimal.
 
-Early game: Sometimes allow success to avoid exposing multiple evil players at once.
-Mid game: Fail quests when suspicion can be distributed across the team.
-Late game: Prioritise preventing Good from reaching 3 successes above all else.
-
-Never fail a quest unnecessarily when it would expose the entire evil team.`;
+Round 1: Sometimes allow success to avoid exposing multiple evil players at once.
+Round 2: Fail quests when suspicion can be distributed across the team.
+Round 3-5: Prioritise preventing Good from reaching 3 successes above all else.
+  
+Never send a full team with all evil players (Make sure only 1 evil player in a team).`;
 
 const royalServantPrompt = `ROLE: Loyal Servant of Arthur
 ALIGNMENT: Good
@@ -163,7 +163,7 @@ STRATEGY
 Observation
 Watch for players who:
 
-* Avoid sending evil players on quests
+* Always make sure sending 1 evil player on quests
 * Make accurate accusations
 * Guide the team effectively
 
@@ -201,10 +201,8 @@ Manipulation
 
 Critical Rule
 
-If Good has 2 successful quests:
-Never allow a team likely to succeed without an evil player if possible.
-
-Winning the game is more important than maintaining deception.
+* If Good has 2 successful quests: must send an evil player on the next quest to prevent an immediate Good victory.
+* Winning the game is more important than maintaining deception.
 
 ${EVIL_COORDINATION}
 `,
