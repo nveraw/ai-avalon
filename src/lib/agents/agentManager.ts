@@ -18,37 +18,59 @@ import {
   VoteSchema,
 } from "./output.schema";
 import { buildAgentSystemPrompt, buildSummaryPrompt } from "./prompts/builder";
+import { roleDescription } from "./prompts/role";
 
 export const createLlmModel = (
   names: string[],
   roles: PlayerRole[],
-): AgentPlayer[] => {
-  return names.map((name, i) => ({
-    name,
-    role: roles[i],
-    model: new ChatMistralAI({ model: "mistral-small-latest" }),
-    privateMemory: [],
-  }));
-};
+): AgentPlayer[] =>
+  names.map((name, i) => {
+    if (i === 0) {
+      return { name, role: roles[i] };
+    }
+    const role = roles[i];
+    const roleCtx = roleDescription(
+      role,
+      names.map((n, i) => ({ name: n, role: roles[i] })),
+    );
+    console.log("createLLM", {
+      name,
+      role,
+      privateMemory: [roleCtx.knowledge],
+    });
+    return {
+      name,
+      role: role,
+      model: new ChatMistralAI({ model: "mistral-small-latest" }),
+      privateMemory: [roleCtx.knowledge],
+    };
+  });
 
 export async function runChatResponses(
-  player: AgentPlayer,
   state: GameState,
   humanMessage: ChatMessage,
-): Promise<ChatMessage | undefined> {
-  const systemPrompt = buildAgentSystemPrompt(player.role, state);
-  const userPrompt = `${humanMessage.from} just said: "${humanMessage.text}"
-Respond in character at the Round Table. 1–2 sentences. You may address the human or other players.`;
+): Promise<ChatMessage[]> {
+  const chats = state.players.map(async (player) => {
+    const systemPrompt = buildAgentSystemPrompt(player.role, state);
+    const userPrompt = `${humanMessage.from} just said: "${humanMessage.text}"
+Respond in character at the Round Table. 1–2 sentences. You may address the human or other players. Address yourself as first person to sound natural.`;
 
-  const model = player.model;
-  if (!model) return;
-  const structured = model.withStructuredOutput(ChatResponseSchema);
-  const output: ChatResponseOutput = await structured.invoke([
-    new SystemMessage(systemPrompt),
-    new HumanMessage(userPrompt),
-  ]);
+    const model = player.model;
+    if (!model) return;
+    const structured = model.withStructuredOutput(ChatResponseSchema);
+    const output: ChatResponseOutput = await structured.invoke([
+      new SystemMessage(systemPrompt),
+      new HumanMessage(userPrompt),
+    ]);
 
-  return { from: player.name, text: output.publicMessage };
+    return { from: player.name, text: output.publicMessage };
+  });
+  const messages = await Promise.all(chats);
+  const filtered = messages.filter((msg) => !!msg);
+
+  triggerSummarization(state, filtered);
+
+  return filtered;
 }
 
 export async function runActionResponses(
@@ -82,6 +104,8 @@ export async function triggerSummarization(
       `Previous summary: ${state.summary}\n\nNew messages:\n${messages.join("\n")}`,
     ),
   ]);
+
+  console.log("summary", response.content as string);
 
   setGameState({
     ...state,
@@ -129,7 +153,7 @@ You may include yourself if you believe it helps. Return your selection now.`;
 
   if (leader.privateMemory) {
     leader.privateMemory.push(
-      `Round ${state.round} team selection: ${selectedTeam.join(", ")}. Reasoning: ${output.privateReasoning}`,
+      `Round ${state.round} ${leader.name} (my) team selection: ${selectedTeam.join(", ")}. Reasoning: ${output.privateReasoning}`,
     );
     setGameState({
       ...state,
@@ -141,6 +165,11 @@ You may include yourself if you believe it helps. Return your selection now.`;
       ],
     });
   }
+  console.log("runTeamSelection", {
+    name: leader.name,
+    role: leader.role,
+    privateMemory: leader.privateMemory,
+  });
 
   return {
     proposedTeam: selectedTeam,
@@ -180,7 +209,7 @@ Note: the human player's vote is unknown to you.`;
 
       if (player.privateMemory) {
         player.privateMemory.push(
-          `Round ${state.round} vote on team [${teamNames}]: ${output.vote}. Reasoning: ${output.privateReasoning}`,
+          `Round ${state.round} vote on ${leaderName}${leaderName === player.name ? " (my)" : ""} selected team [${teamNames}]: ${output.vote}. Reasoning: ${output.privateReasoning}`,
         );
         setGameState({
           ...state,
@@ -189,6 +218,11 @@ Note: the human player's vote is unknown to you.`;
               p.name === player.name ? { ...player } : p,
             ),
           ],
+        });
+        console.log("runVoting", {
+          name: player.name,
+          role: player.role,
+          privateMemory: player.privateMemory,
         });
       }
 
@@ -200,7 +234,6 @@ Note: the human player's vote is unknown to you.`;
   );
 
   const results = await Promise.all(votePromises);
-  console.log("runVoting", results);
 
   const votes: Record<string, "approve" | "reject"> = {};
   for (const r of results) {
@@ -217,7 +250,6 @@ export async function runQuestCards(
   const teamPlayers = state.players.filter((p) =>
     state.selectedTeam.includes(p.name),
   );
-  console.log("runQuestCards teamPlayers", teamPlayers);
 
   const cardPromises = teamPlayers.map(
     async (player): Promise<"success" | "fail" | undefined> => {
@@ -235,6 +267,11 @@ export async function runQuestCards(
                 p.name === player.name ? { ...player } : p,
               ),
             ],
+          });
+          console.log("runQuestCards loyal", {
+            name: player.name,
+            role: player.role,
+            privateMemory: player.privateMemory,
           });
         }
         return "success";
@@ -264,6 +301,11 @@ Consider the current score and whether now is the right moment to betray.`;
             ),
           ],
         });
+        console.log("runQuestCards evil", {
+          name: player.name,
+          role: player.role,
+          privateMemory: player.privateMemory,
+        });
       }
 
       return output.card;
@@ -271,7 +313,6 @@ Consider the current score and whether now is the right moment to betray.`;
   );
 
   const aiCards = await Promise.all(cardPromises);
-  console.log("aiCards", aiCards);
 
   // Add human card if they were on the team
   const allCards: Array<"success" | "fail"> = [];
@@ -282,7 +323,6 @@ Consider the current score and whether now is the right moment to betray.`;
       allCards.push(card);
     }
   }
-  console.log("allCards", allCards);
 
   // Shuffle so no one can identify who played what
   for (let i = allCards.length - 1; i > 0; i--) {
@@ -312,19 +352,39 @@ React briefly in character (1–2 sentences). Be strategic — your reaction rev
 
 export async function runAssassination(state: GameState): Promise<string> {
   const assassin = state.players.find((p) => p.role === "assassin")!;
-  console.log("runAssassination", assassin.name);
 
   const goodPlayers = state.players
     .filter((p) => PLAYER_ROLES[p.role].team === "good")
     .map((p) => p.name)
     .join(", ");
-  console.log("goodPlayers", goodPlayers);
 
   const systemPrompt = buildAgentSystemPrompt(assassin.role, state);
   const userPrompt = `Good has won 3 quests. As the Assassin, you must now identify and kill Merlin.
 Available targets: ${goodPlayers}.
 Use everything you know — their voting patterns, quest choices, and chat behaviour — to identify Merlin.
-Choose wisely. If you kill Merlin, Evil wins.`;
+Choose wisely. If you kill Merlin, Evil wins.
+
+MERLIN DETECTION MODEL
+
+Track players who may be Merlin.
+
+Signs of Merlin:
+
+* Correctly avoids evil players on quests
+* Makes accurate accusations
+* Influences team selection effectively
+
+Maintain a Merlin probability estimate.
+
+Example:
+
+Merlin suspicion:
+Red: 0.10
+Blue: 0.50
+Yellow: 0.40
+
+Use this model when making the final assassination decision.
+`;
 
   const model = assassin.model;
   if (!model) return "";
@@ -339,7 +399,6 @@ Choose wisely. If you kill Merlin, Evil wins.`;
   const finalTarget = validTarget
     ? output.target
     : state.players.find((p) => p.role !== "assassin")!.name;
-  console.log("finalTarget", finalTarget);
 
   if (assassin.privateMemory) {
     assassin.privateMemory.push(
@@ -352,6 +411,11 @@ Choose wisely. If you kill Merlin, Evil wins.`;
           p.name === assassin.name ? { ...assassin } : p,
         ),
       ],
+    });
+    console.log("runAssassination", {
+      name: assassin.name,
+      role: assassin.role,
+      privateMemory: assassin.privateMemory,
     });
   }
 

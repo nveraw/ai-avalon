@@ -28,5 +28,6 @@ export type PlayerRoleConfig = {
     desc: string;
     type: "evil" | "none" | "ambiguous";
     seenPlayer?: string;
+    instruction?: string;
   };
 };

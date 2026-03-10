@@ -40,6 +40,7 @@ export const PLAYER_ROLES: Record<PlayerRole, PlayerRoleConfig> = {
       desc: "These servants of evil are known to you. Remember their names — but guard your knowledge carefully.",
       type: "evil",
       seenPlayer: "Servant of Evil",
+      instruction: "KNOWN EVIL PLAYERS",
     },
   },
   percival: {
@@ -54,6 +55,7 @@ export const PLAYER_ROLES: Record<PlayerRole, PlayerRoleConfig> = {
       desc: "One wields the light of Merlin. The other wears a mask. You cannot tell them apart.",
       type: "ambiguous",
       seenPlayer: "Merlin?",
+      instruction: "MERLIN CANDIDATES",
     },
   },
   loyal1: loyalServant,
@@ -71,6 +73,7 @@ export const PLAYER_ROLES: Record<PlayerRole, PlayerRoleConfig> = {
       desc: "These players stand with you in darkness. Their exact roles are hidden — even from each other.",
       type: "evil",
       seenPlayer: "Evil Ally",
+      instruction: "EVIL TEAM",
     },
   },
   morgana: {
@@ -85,6 +88,7 @@ export const PLAYER_ROLES: Record<PlayerRole, PlayerRoleConfig> = {
       desc: "These players stand with you in darkness. Their exact roles are hidden — even from each other.",
       type: "evil",
       seenPlayer: "Evil Ally",
+      instruction: "EVIL TEAM",
     },
   },
   oberon: {
@@ -112,6 +116,7 @@ export const PLAYER_ROLES: Record<PlayerRole, PlayerRoleConfig> = {
       desc: "These players stand with you in darkness. Their exact roles are hidden — even from each other.",
       type: "evil",
       seenPlayer: "Evil Ally",
+      instruction: "EVIL TEAM",
     },
   },
   mordred: {
@@ -126,6 +131,7 @@ export const PLAYER_ROLES: Record<PlayerRole, PlayerRoleConfig> = {
       desc: "These players stand with you in darkness. Their exact roles are hidden — even from each other.",
       type: "evil",
       seenPlayer: "Evil Ally",
+      instruction: "EVIL TEAM",
     },
   },
 };

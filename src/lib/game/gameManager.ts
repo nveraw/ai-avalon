@@ -30,11 +30,11 @@ export const initGame = (playerNames: string[]): InitGameResponse => {
   const shuffled = randomRoleToAssign(activeRoles);
   const humanRole = shuffled[0];
 
-  const players = createLlmModel(playerNames.slice(1), shuffled.slice(1));
+  const players = createLlmModel(playerNames, shuffled);
   const leaderIndex = Math.floor(Math.random() * playerNames.length);
 
   setGameState({
-    players: [{ name: playerNames[0], role: humanRole }, ...players],
+    players,
     leaderIndex,
     round: 1,
     rejectCount: 0,
@@ -59,26 +59,20 @@ export const initGame = (playerNames: string[]): InitGameResponse => {
 
 export const addChat = async (message: ChatMessage): Promise<ChatResponse> => {
   const state = getGameState();
-  console.log("state", state);
   const defaultOutput = {
     messages: [],
   };
   if (!state) return defaultOutput;
 
-  const chats = state.players.map(async (player) => {
-    return await runChatResponses(player, state, message);
-  });
-  const messages = await Promise.all(chats);
-  const filtered = messages.filter((msg) => !!msg);
+  const messages = await runChatResponses(state, message);
 
-  return { messages: filtered };
+  return { messages };
 };
 
 export const setTeam = async (
   names: string[],
 ): Promise<TeamSelectionResponse> => {
   const state = getGameState();
-  console.log("state", state);
   const defaultOutput = {
     proposedTeam: names,
     messages: [],
@@ -87,6 +81,12 @@ export const setTeam = async (
 
   const output: TeamSelectionResponse =
     (await runTeamSelection(state)) ?? defaultOutput;
+  if (names.length) {
+    setGameState({
+      ...state,
+      selectedTeam: names,
+    });
+  }
   const newState = getGameState() ?? state;
   const teamNames = newState.selectedTeam.join(", ");
   const leaderName = newState.players[newState.leaderIndex].name;
@@ -94,7 +94,6 @@ export const setTeam = async (
   const nonLeaderPlayers = newState.players.filter(
     (player) => names.length > 0 || player.name !== leaderName,
   );
-  console.log("nonLeaderPlayers", nonLeaderPlayers);
   const chats = nonLeaderPlayers.map(async (player) => {
     return await runActionResponses(
       player,
@@ -103,9 +102,7 @@ export const setTeam = async (
     );
   });
   const messages = await Promise.all(chats);
-  console.log("messages", messages);
   output.messages = messages.filter((msg) => !!msg);
-  console.log("output.messages", output.messages);
 
   triggerSummarization(newState, output.messages);
 
@@ -116,7 +113,6 @@ export const addVote = async (
   humanVote: VotedStatus,
 ): Promise<VoteResponse> => {
   const state = getGameState();
-  console.log("state", state);
   const defaultOutput: VoteResponse = {
     nextLeader: "",
     rejectCount: 0,
@@ -126,19 +122,15 @@ export const addVote = async (
   if (!state) return defaultOutput;
 
   const votes = await runVoting(state);
-  console.log("votes", votes);
 
   const allVotes = { [state.players[0].name]: humanVote, ...votes };
-  console.log("allVotes", allVotes);
 
   const approves = Object.values(allVotes).filter(
     (v) => v === "approve",
   ).length;
-  console.log("approves", approves);
 
   const result: VotingStatus =
     approves > state.players.length / 2 ? "approve" : "reject";
-  console.log("result", result);
 
   if (result === "reject") {
     const newState = {
@@ -172,7 +164,6 @@ export const addVote = async (
       team: "evil",
     };
   }
-  console.log("output", output);
   return output;
 };
 
@@ -180,7 +171,6 @@ export const setQuest = async (
   humanCard: CompletedQuestStatus | null,
 ): Promise<QuestResponse> => {
   const state = getGameState();
-  console.log("state", state);
   const defaultOutput: QuestResponse = {
     cards: [],
     nextLeader: "",
@@ -194,9 +184,7 @@ export const setQuest = async (
   if (!state) return defaultOutput;
 
   const { cards, messages } = await runQuestCards(state, humanCard);
-  console.log("cards", cards);
   const result = cards.includes("fail") ? "fail" : "success";
-  console.log("result", result);
   setGameState({
     ...state,
     leaderIndex: (state.leaderIndex + 1) % state.players.length,
@@ -230,7 +218,6 @@ export const setQuest = async (
       team: "evil",
     };
   }
-  console.log("output", output);
   return output;
 };
 
@@ -238,7 +225,6 @@ export const assassinate = async (
   name: string,
 ): Promise<AssassinationResponse> => {
   const state = getGameState();
-  console.log("state", state);
   const defaultOutput: AssassinationResponse = {
     targetName: "",
     messages: [],
@@ -248,10 +234,8 @@ export const assassinate = async (
   if (!state) return defaultOutput;
 
   const target = (await runAssassination(state)) ?? name;
-  console.log("target", target);
   const isCorrect =
     state.players.find((p) => p.name === name)?.role === "merlin";
-  console.log("isCorrect", isCorrect);
 
   const nonAssassinPlayers = state.players.filter(
     (player) => player.role !== "assassin",

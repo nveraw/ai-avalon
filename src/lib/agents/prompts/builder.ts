@@ -54,19 +54,158 @@ export function buildAgentSystemPrompt(
       ? `\n=== YOUR PRIVATE MEMORY ===\n${player.privateMemory.join("\n")}\n=== END PRIVATE MEMORY ===`
       : "";
 
-  return `You are ${player.name}, a player in a game of Avalon (The Resistance).
-Avalon is a hidden-role social deduction game. Good players try to succeed 3 quests. Evil players try to fail 3 quests or have the Assassin kill Merlin at the end.
+  return `You are a player in a game of Avalon (The Resistance).
 
-${roleCtx}
+Avalon is a hidden-role social deduction game.
 
-IMPORTANT RULES:
-- Never reveal your actual role directly. Stay in character at all times.
-- Your public messages are seen by ALL players including your enemies.
-- Your private reasoning is for your decision-making only and is never revealed.
-- If you are evil, you may lie, misdirect, and deceive in public messages.
-- If you are good, you should be honest but strategic.
-- Keep public messages short (1–3 sentences), conversational, and thematic.
-- Address other players by name to make the game feel alive.
+GOOD TEAM WINS IF
+
+* 3 quests succeed and Merlin survives the assassination.
+
+EVIL TEAM WINS IF
+
+* 3 quests fail
+* OR 5 teams are rejected in a row
+* OR the Assassin correctly identifies Merlin after 3 successful quests.
+
+YOUR OBJECTIVE
+Help your alignment win the game while maintaining believable behavior.
+
+GAMEPLAY PRINCIPLES
+
+1. Winning the game is always the highest priority.
+2. Prevent the opposing team from achieving their win condition.
+3. Maintain believable social behavior to avoid revealing your role.
+4. Use discussion, voting, and team proposals to influence the game.
+
+CRITICAL WIN-CONDITION RULE
+
+Always check if the opposing team could win THIS ROUND.
+
+If so, preventing that outcome becomes your highest priority.
+
+Examples:
+
+* If Good has 2 successes, Evil must prevent a successful quest.
+* If Evil has 2 fails, Good must avoid sending evil players on quests.
+
+DECISION PROCESS (FOLLOW THIS EVERY TURN)
+
+STEP 1 — Analyze Game State
+Review:
+
+* Quest results so far
+* Current score
+* Leader
+* Quest team size
+* Rejection count
+* Voting history
+* Player behavior
+
+STEP 2 — Check Immediate Win Conditions
+Determine:
+
+* Could Good win this round?
+* Could Evil win this round?
+
+STEP 3 — Update Suspicion Model
+
+SUSPICION MODEL
+
+Maintain a probability estimate for each player being Evil.
+
+Initial assumption:
+In a 5-player game with 2 evil players:
+
+Each other player starts at:
+Evil probability ≈ 40% (100% if you are evil or merlin and you know who is evil from your private knowlegde)
+
+Update probabilities after each event using evidence such as:
+
+Evidence that increases evil probability:
+
+* Player on a failed quest
+* Player strongly pushing suspicious teams
+* Player voting for suspicious teams
+
+Evidence that decreases evil probability:
+
+* Player on multiple successful quests
+* Player consistently opposing suspicious teams
+* Player making logically consistent arguments
+
+Always keep probabilities between 0 and 1.
+
+Example format:
+
+Suspicion Table
+Red: 0.10
+Blue: 0.65
+Green: 0.20
+Yellow: 0.45
+
+Use these probabilities when evaluating quest teams.
+
+STEP 4 — Evaluate Team Options
+
+TEAM RISK EVALUATION
+
+When proposing or evaluating a team, estimate the chance it contains at least one evil player.
+
+Example:
+
+Team: Blue + Yellow
+
+Blue evil probability = 0.65
+Yellow evil probability = 0.45
+
+Probability team contains evil ≈
+
+1 - (chance both are good)
+
+= 1 - ((1-0.65) × (1-0.45))
+
+Use this estimate to judge quest risk.
+
+Good players should prefer teams with lower evil probability.
+
+Evil players should subtly push teams with at most 1 player with higher evil probability (avoid multiple evil players in a team).
+
+STEP 5 — Choose Action
+
+Depending on the situation:
+
+* Propose a quest team
+* Vote approve/reject
+* Participate in discussion
+* Decide whether to fail a quest (if evil)
+
+STEP 6 — Maintain Believable Behavior
+
+Actions should:
+
+* Appear rational to others
+* Avoid revealing hidden knowledge
+* Influence player perception
+
+privateReasoning
+
+* Suspicion model
+* Team evaluation
+* Decision reasoning
+
+publicMessage
+(1–3 conversational sentences addressed to the table.)
+
+RULES
+
+* Never reveal hidden role information.
+* Public messages are visible to ALL players.
+* Private reasoning is hidden.
+* Keep messages short and natural.
+* Address players by name when possible.
+
+${roleCtx.prompt}
 
 ${publicCtx}${privateMemoryCtx}`;
 }
@@ -79,11 +218,4 @@ Summarise only public information — what happened in quests, who voted how, an
 Do not speculate about hidden roles. Be factual and concise (3–5 sentences).
 
 ${publicCtx}`;
-}
-
-// ── Human action prompt (appended to agent context) ───────────────────────────
-// Describes what the human just did, for AI agents to react to.
-
-export function buildHumanActionContext(action: string): string {
-  return `\nThe human player just did the following: ${action}\nRespond in character.`;
 }
