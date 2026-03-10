@@ -10,8 +10,8 @@ import type { PlayerDetails } from "@/types/game.types";
 import type { CompletedQuestStatus } from "@/types/quest.types";
 import { useSetAtom } from "jotai";
 import { useState } from "react";
+import CardPicker from "./CardPicker";
 import CardReveal from "./CardReveal";
-import CardPicker from "./Cardpicker";
 
 type QuestPhase = "pick" | "waiting" | "reveal" | "result";
 

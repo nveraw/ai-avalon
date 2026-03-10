@@ -117,7 +117,7 @@ const Assassination = ({
       )}
 
       <button
-        disabled={!target}
+        disabled={player.role === "assassin" ? !target : !data}
         onClick={handleClick}
         className="w-full py-4 rounded-xl cinzel text-base tracking-widest transition-all border
           bg-linear-to-br from-red-900 to-red-950 border-red-600 text-red-300 cursor-pointer hover:brightness-110

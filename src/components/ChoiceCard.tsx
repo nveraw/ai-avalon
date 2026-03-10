@@ -28,23 +28,27 @@ const ChoiceCard = ({
   onClick,
   disabled,
 }: ChoiceCardProps) => {
-  const s = variantStyles[variant];
+  const variantClass = variantStyles[variant];
   return (
     <button
       onClick={onClick}
       disabled={disabled}
       className={`flex-1 py-8 rounded-2xl border-2 flex flex-col items-center gap-3
-        cursor-pointer transition-all group ${s.border} ${s.bg}
+        cursor-pointer transition-all group ${variantClass.border} ${variantClass.bg}
         disabled:border-indigo-950/50 disabled:bg-slate-950/40 disabled:cursor-not-allowed`}
     >
-      <span className="text-5xl group-hover:scale-110 transition-transform duration-200">
+      <span className="text-5xl group-hover:scale-110 transition-transform duration-200 in-disabled:opacity-30">
         {icon}
       </span>
-      <span className={`cinzel text-sm tracking-widest ${s.label}`}>
+      <span
+        className={`cinzel text-sm tracking-widest ${variantClass.label} in-disabled:opacity-70`}
+      >
         {label}
       </span>
       {description && (
-        <span className="text-gray-400 text-xs font-serif">{description}</span>
+        <span className="text-gray-400 text-xs font-serif in-disabled:opacity-50">
+          {description}
+        </span>
       )}
     </button>
   );

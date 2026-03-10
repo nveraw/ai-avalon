@@ -11,6 +11,7 @@ import Quest from "@/screens/Quest/Quest";
 import Results from "@/screens/Result/Results";
 import TeamSelection from "@/screens/TeamSelection/TeamSelection";
 import Voting from "@/screens/Voting/Voting";
+import { startGame } from "@/services/api";
 import {
   AssassinationResponse,
   InitGameResponse,
@@ -34,6 +35,7 @@ type Stage =
 const Game = () => {
   const [playerNames, setPlayerNames] = useState<string[]>([]);
   const [player, setPlayer] = useState<PlayerDetails | null>(null);
+  const [knowledge, setKnowledge] = useState<InitGameResponse | null>(null);
   const [screen, setScreen] = useState<Stage>("lobby");
   const [round, setRound] = useState(1);
   const [leader, setLeader] = useState<string>("");
@@ -44,14 +46,16 @@ const Game = () => {
   const [winner, setWinner] = useState<PlayerTeam | null>(null);
   const [allPlayers, setAllPlayers] = useState<PlayerDetails[]>([]); // result: reveal all roles
 
-  const handleReady = (playerNames: string[]) => {
+  const handleReady = async (playerNames: string[]) => {
     setPlayerNames(playerNames);
+    const res = await startGame({ playerNames });
+    setKnowledge(res);
+    setPlayer({ name: playerNames[0], role: res.humanRole });
+    setLeader(res.leader);
     setScreen("night");
   };
 
-  const handleStart = (res: InitGameResponse) => {
-    setPlayer({ name: playerNames[0], role: res.humanRole });
-    setLeader(res.leader);
+  const handleStart = () => {
     setScreen("game");
   };
 
@@ -105,8 +109,12 @@ const Game = () => {
       <StarField />
       <div className="relative h-screen overflow-auto z-10 transition-all duration-300 flex-1">
         {screen === "lobby" && <Lobby onStart={handleReady} />}
-        {screen === "night" && playerNames.length > 1 && (
-          <Night playerNames={playerNames} onDone={handleStart} />
+        {screen === "night" && playerNames.length > 1 && knowledge && (
+          <Night
+            playerNames={playerNames}
+            knowledge={knowledge}
+            onDone={handleStart}
+          />
         )}
         {screen === "game" && (
           <Board
