@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   const { names }: TeamSelectionRequest = await req.json();
 
-  const response = setTeam(names);
+  const response = await setTeam(names);
 
   return NextResponse.json(response);
 }

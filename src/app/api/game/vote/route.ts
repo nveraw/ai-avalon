@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   const { humanVote }: VoteRequest = await req.json();
 
-  const response = addVote(humanVote);
+  const response = await addVote(humanVote);
 
   return NextResponse.json(response);
 }

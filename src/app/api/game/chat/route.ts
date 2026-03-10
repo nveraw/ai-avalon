@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   const { message }: ChatRequest = await req.json();
 
-  const response = addChat(message);
+  const response = await addChat(message);
 
   return NextResponse.json(response);
 }

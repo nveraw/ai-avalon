@@ -1,6 +1,6 @@
 import SectionLabel from "@/components/SectionLabel";
 import { assassinate } from "@/lib/api";
-import { addMessagesAtom } from "@/store/chat";
+import { messagesAtom } from "@/store/chat";
 import { AssassinationResponse } from "@/types/api.types";
 import type { PlayerDetails } from "@/types/player.types";
 import { useSetAtom } from "jotai";
@@ -21,7 +21,7 @@ const Assassination = ({
   const [target, setTarget] = useState<string>("");
   const [assassinName, setAssassinName] = useState<string>("");
   const [data, setData] = useState<AssassinationResponse>();
-  const addMessages = useSetAtom(addMessagesAtom);
+  const addMessages = useSetAtom(messagesAtom);
 
   useEffect(() => {
     if (player.role !== "assassin") {

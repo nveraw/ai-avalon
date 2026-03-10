@@ -5,16 +5,4 @@ export type ChatMessage = {
   text: string;
 };
 
-export const messagesAtom = atom<ChatMessage[]>([
-  {
-    from: "system",
-    text: "The Round Table convenes. Speak freely — but trust no one.",
-  },
-]);
-
-export const addMessagesAtom = atom(
-  null,
-  (get, set, messages: ChatMessage[]) => {
-    set(messagesAtom, [...get(messagesAtom), ...messages]);
-  },
-);
+export const messagesAtom = atom<ChatMessage[]>([]);

@@ -37,7 +37,7 @@ export const PLAYER_ROLES: Record<PlayerRole, PlayerRoleConfig> = {
       "You know the forces of evil — but if you reveal yourself, the Assassin will end your kingdom. Guide the good knights subtly.",
     knowledge: {
       flavour: "Your eyes open to the darkness...",
-      desc: "These servants of evil are known to you. Remember their faces — but guard your knowledge carefully.",
+      desc: "These servants of evil are known to you. Remember their names — but guard your knowledge carefully.",
       type: "evil",
       seenPlayer: "Servant of Evil",
     },
@@ -145,7 +145,7 @@ export const DEFAULT_PLAYER_NAMES = [
 
 export const PERSONAS = [
   {
-    colour: "text-violet-400",
+    colour: "text-violet-500",
     border: "border-violet-800",
     bg: "bg-violet-950/20",
   },
@@ -156,16 +156,16 @@ export const PERSONAS = [
     bg: "bg-emerald-950/20",
   },
   {
-    colour: "text-emerald-400",
-    border: "border-emerald-900",
-    bg: "bg-emerald-950/20",
+    colour: "text-fuchsia-400",
+    border: "border-fuchsia-900",
+    bg: "bg-fuchsia-950/20",
   },
   {
-    colour: "text-emerald-400",
-    border: "border-emerald-900",
-    bg: "bg-emerald-950/20",
+    colour: "text-lime-400",
+    border: "border-lime-900",
+    bg: "bg-lime-950/20",
   },
-  { colour: "text-red-400", border: "border-red-900", bg: "bg-red-950/20" },
+  { colour: "text-sky-400", border: "border-sky-900", bg: "bg-sky-950/20" },
   {
     colour: "text-purple-400",
     border: "border-purple-900",

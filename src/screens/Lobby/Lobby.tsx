@@ -89,7 +89,7 @@ const Lobby = ({ onStart }: { onStart: (names: string[]) => void }) => {
         <div className="roles mb-7">
           <SectionLabel className="text-violet-400">Playing Roles</SectionLabel>
           <div className="grid grid-cols-2 gap-2.5 mt-3">
-            {roleList.splice(0, playerCount).map((role) => (
+            {roleList.slice(0, playerCount).map((role) => (
               <div
                 key={role}
                 className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl transition-all bg-violet-950/30 border border-violet-700"

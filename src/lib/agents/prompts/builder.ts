@@ -1,11 +1,10 @@
 import { QUEST_SIZES } from "@/constants/questConfigs";
 import { GameState } from "@/lib/game/gameStore";
-import { ChatMessage } from "@/types/api.types";
 import { PlayerRole } from "@/types/player.types";
 import { roleDescription } from "./role";
 
 // Safe to include in any agent's context — contains only public information.
-export function buildPublicContext(state: GameState): string {
+function buildPublicContext(state: GameState): string {
   const questSizes = QUEST_SIZES[state.players.length] ?? QUEST_SIZES[7];
   const questTrack =
     state.questResults.length > 0
@@ -51,7 +50,7 @@ export function buildAgentSystemPrompt(
 
   // Agent's own memory of previous decisions
   const privateMemoryCtx =
-    player.privateMemory.length > 0
+    player.privateMemory && player.privateMemory.length > 0
       ? `\n=== YOUR PRIVATE MEMORY ===\n${player.privateMemory.join("\n")}\n=== END PRIVATE MEMORY ===`
       : "";
 
@@ -72,24 +71,14 @@ IMPORTANT RULES:
 ${publicCtx}${privateMemoryCtx}`;
 }
 
-// ── Summariser system prompt ──────────────────────────────────────────────────
-// Used by the neutral summariser agent — it has no role and knows nothing secret.
-
-export function buildSummaryPrompt(
-  state: GameState,
-  fullChat: ChatMessage[],
-): string {
+export function buildSummaryPrompt(state: GameState): string {
   const publicCtx = buildPublicContext(state);
 
   return `You are a neutral game narrator summarising an ongoing Avalon game.
 Summarise only public information — what happened in quests, who voted how, and what players said.
 Do not speculate about hidden roles. Be factual and concise (3–5 sentences).
 
-${publicCtx}
-
-=== FULL CHAT LOG ===
-${fullChat}
-=== END CHAT LOG ===`;
+${publicCtx}`;
 }
 
 // ── Human action prompt (appended to agent context) ───────────────────────────

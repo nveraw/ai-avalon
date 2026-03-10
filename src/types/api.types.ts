@@ -1,5 +1,6 @@
 // ── Init Game: clean memory, role assign ──────────────────────────────────────────
 
+import { ChatMessage } from "@/store/chat";
 import { PlayerDetails, PlayerRole, PlayerTeam } from "./player.types";
 import { CompletedQuestStatus } from "./quest.types";
 import { VotedStatus } from "./vote.types";
@@ -17,7 +18,7 @@ export type InitGameResponse = {
 // ── Chat ─────────────────────────────────────────
 
 export type ChatRequest = {
-  message: string; // human's message
+  message: ChatMessage; // human's message
 };
 
 export type ChatResponse = {
@@ -46,7 +47,7 @@ export type VoteResponse = {
   result: VotedStatus; // majority
   nextLeader: string | null; // null if vote passed
   rejectCount: number; // +1 if vote failed
-  messages: ChatMessage[];
+  winner?: EndGameResponse;
 };
 
 // ── Quest ─────────────────────────────────────────
@@ -64,7 +65,6 @@ export type QuestResponse = {
   cards: Array<CompletedQuestStatus>; // shuffled, anonymous
   result: CompletedQuestStatus;
   nextLeader: string; // player name
-  questResults: Array<CompletedQuestStatus>; // full history
   messages: ChatMessage[];
   winner?: EndGameResponse;
 };
@@ -83,9 +83,3 @@ export interface AssassinationResponse extends EndGameResponse {
 // export type EndGameResponse = {
 //   messages: ChatMessage[];         // good-game messages
 // };
-
-export type ChatMessage = {
-  from: string; // player name
-  text: string;
-  isPublicReasoning?: boolean; // true = visible in chat
-};

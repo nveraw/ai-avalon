@@ -1,10 +1,8 @@
 import CardBox from "@/components/CardBox";
 import Header from "@/components/Header";
 import { submitVote } from "@/lib/api";
-import { addMessagesAtom } from "@/store/chat";
 import { VoteResponse } from "@/types/api.types";
 import { VotedStatus, VotingStatus } from "@/types/vote.types";
-import { useSetAtom } from "jotai";
 import { useState } from "react";
 
 type VotingProps = {
@@ -17,8 +15,6 @@ type VotingProps = {
 type VotingPhase = "vote" | "waiting" | "reveal" | "outcome";
 
 const Voting = ({ playerNames, humanName, team, onResult }: VotingProps) => {
-  const addMessages = useSetAtom(addMessagesAtom);
-
   const [playerVote, setPlayerVote] = useState<VotingStatus>(null);
   const [phase, setPhase] = useState<VotingPhase>("vote");
   const [botVotes, setBotVotes] = useState<Record<string, VotedStatus>>({});
@@ -31,7 +27,6 @@ const Voting = ({ playerNames, humanName, team, onResult }: VotingProps) => {
 
     const res = await submitVote({ humanVote: vote });
     setBotVotes(res.votes);
-    addMessages(res.messages);
 
     setTimeout(() => setPhase("reveal"), 400);
     // stagger reveal as before

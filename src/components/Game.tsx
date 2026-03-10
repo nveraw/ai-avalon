@@ -64,19 +64,25 @@ const Game = () => {
     setRejectCount(res.rejectCount);
     if (res.result === "reject") {
       setLeader(res.nextLeader || "");
-      if (res.rejectCount >= 5) setScreen("results");
-      else setScreen("game");
+      if (res.rejectCount >= 5 || res.winner?.team === "evil") {
+        setWinner(res.winner?.team || "evil");
+        setAllPlayers(res.winner?.players || []);
+        setScreen("results");
+        return;
+      }
+      setScreen("game");
     } else {
       setScreen("quest");
     }
   };
 
   const handleQuestResult = (res: QuestResponse) => {
-    setQuestResults(res.questResults);
+    setQuestResults((prev) => [...prev, res.result]);
     setLeader(res.nextLeader);
     if (res.winner?.team === "good") {
       setScreen("assassin");
     } else if (res.winner?.team === "evil") {
+      setWinner(res.winner?.team || "evil");
       setAllPlayers(res.winner?.players || []);
       setScreen("results");
     } else {
@@ -154,9 +160,9 @@ const Game = () => {
       </div>
       {showChat && (
         <ChatPanel
-          className="top-14 right-0 bottom-0 z-30 w-72 min-h-screen flex flex-col
+          className="top-14 right-0 bottom-0 z-30 w-72 h-screen flex flex-col
       border-l border-indigo-950 bg-black/95 backdrop-blur-xl"
-          allPlayers={allPlayers}
+          playerNames={playerNames}
         />
       )}
     </div>

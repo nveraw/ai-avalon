@@ -1,20 +1,23 @@
 import { PERSONAS } from "@/constants/playerRoles";
 import { sendChat } from "@/lib/api";
-import { addMessagesAtom, ChatMessage, messagesAtom } from "@/store/chat";
-import type { PlayerDetails } from "@/types/player.types";
-import { useAtomValue, useSetAtom } from "jotai";
+import { ChatMessage, messagesAtom } from "@/store/chat";
+import { useAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
 import Header from "./Header";
 
 type ChatPanelProps = {
-  allPlayers: PlayerDetails[];
+  playerNames: string[];
   className: string;
 };
 
-const ChatPanel = ({ allPlayers, className }: ChatPanelProps) => {
-  const messages = useAtomValue(messagesAtom);
-  const addMessage = useSetAtom(addMessagesAtom);
-  const [displayMessages, setDisplayMessages] = useState<ChatMessage[]>([]);
+const ChatPanel = ({ playerNames, className }: ChatPanelProps) => {
+  const [messages, addMessage] = useAtom(messagesAtom);
+  const [displayMessages, setDisplayMessages] = useState<ChatMessage[]>([
+    {
+      from: "system",
+      text: "The Round Table convenes. Speak freely — but trust no one.",
+    },
+  ]);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -22,7 +25,7 @@ const ChatPanel = ({ allPlayers, className }: ChatPanelProps) => {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
 
-    messages.forEach((msg, i) => {
+    messages?.forEach((msg, i) => {
       setTimeout(() => {
         setTyping(msg.from);
 
@@ -35,9 +38,10 @@ const ChatPanel = ({ allPlayers, className }: ChatPanelProps) => {
   }, [messages]);
 
   const send = async () => {
-    const message = input.trim();
-    if (!message) return;
-    addMessage([{ from: allPlayers[0].name, text: message }]);
+    const text = input.trim();
+    if (!text) return;
+    const message = { from: playerNames[0], text };
+    addMessage([message]);
     setInput("");
 
     const res = await sendChat({ message });
@@ -49,7 +53,7 @@ const ChatPanel = ({ allPlayers, className }: ChatPanelProps) => {
       <div className="flex items-center justify-between px-4 py-3 border-b border-indigo-950 shrink-0">
         <Header
           title="Round Table"
-          description={`${allPlayers.length} knights`}
+          description={`${playerNames.length} knights`}
         />
       </div>
 
@@ -64,7 +68,9 @@ const ChatPanel = ({ allPlayers, className }: ChatPanelProps) => {
               </div>
             );
 
-          const isHuman = msg.from === allPlayers[0].name;
+          const isHuman = msg.from === playerNames[0];
+          const index =
+            playerNames.findIndex((name) => name === msg?.from) || 0;
 
           return (
             <div
@@ -75,14 +81,14 @@ const ChatPanel = ({ allPlayers, className }: ChatPanelProps) => {
                 {!isHuman && (
                   <div
                     className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${
-                      PERSONAS[i].border
+                      PERSONAS[index].border
                     } font-serif font-bold border shrink-0 token-base text-slate-300`}
                   >
                     {msg.from[0]}
                   </div>
                 )}
                 <span
-                  className={`text-xs font-serif ${isHuman ? "text-amber-400" : PERSONAS[i].colour}`}
+                  className={`text-xs font-serif ${isHuman ? "text-amber-400" : PERSONAS[index].colour}`}
                 >
                   {isHuman ? "You" : msg.from}
                 </span>
@@ -91,7 +97,7 @@ const ChatPanel = ({ allPlayers, className }: ChatPanelProps) => {
                 className={`max-w-[85%] px-3 py-2 rounded-xl text-xs font-serif leading-relaxed ${
                   isHuman
                     ? "bg-amber-950/30 border border-amber-900/50 text-amber-100 rounded-br-sm"
-                    : `${PERSONAS[i].bg} border ${PERSONAS[i].border} text-slate-300 rounded-bl-sm`
+                    : `${PERSONAS[index].bg} border ${PERSONAS[index].border} text-slate-300 rounded-bl-sm`
                 }`}
               >
                 {msg.text}

@@ -3,7 +3,7 @@ import GoldButton from "@/components/GoldButton";
 import Header from "@/components/Header";
 import { PLAYER_ROLES } from "@/constants/playerRoles";
 import { submitQuest } from "@/lib/api";
-import { addMessagesAtom } from "@/store/chat";
+import { messagesAtom } from "@/store/chat";
 import { QuestResponse } from "@/types/api.types";
 import type { PlayerDetails } from "@/types/player.types";
 import type { CompletedQuestStatus } from "@/types/quest.types";
@@ -22,7 +22,7 @@ type QuestProps = {
 };
 
 const Quest = ({ team, player, onResult }: QuestProps) => {
-  const addMessages = useSetAtom(addMessagesAtom);
+  const addMessages = useSetAtom(messagesAtom);
 
   const [phase, setPhase] = useState<QuestPhase>("pick");
   const [allCards, setAllCards] = useState<CompletedQuestStatus[]>([]);

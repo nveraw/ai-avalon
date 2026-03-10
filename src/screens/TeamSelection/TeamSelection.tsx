@@ -1,7 +1,7 @@
 import GoldButton from "@/components/GoldButton";
 import Header from "@/components/Header";
 import { selectTeam } from "@/lib/api";
-import { addMessagesAtom } from "@/store/chat";
+import { messagesAtom } from "@/store/chat";
 import { useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 
@@ -20,7 +20,7 @@ const TeamSelection = ({
   leader,
   onConfirm,
 }: TeamSelectionProps) => {
-  const addMessages = useSetAtom(addMessagesAtom);
+  const addMessages = useSetAtom(messagesAtom);
 
   const [selected, setSelected] = useState<string[]>([]);
   const [aiPhase, setAiPhase] = useState<"thinking" | "reveal" | "done">(
@@ -46,11 +46,14 @@ const TeamSelection = ({
       setTimeout(() => setAiPhase("done"), res.proposedTeam.length * 420 + 600);
 
       addMessages(res.messages);
-
-      if (leader === humanName) {
-        onConfirm(selected);
-      }
     });
+  };
+
+  const handleOnClick = () => {
+    if (leader === humanName) {
+      handleSecletedTeam();
+    }
+    onConfirm(selected);
   };
 
   const handleToggleSelection = (name: string) => {
@@ -178,7 +181,7 @@ const TeamSelection = ({
         </div>
 
         <GoldButton
-          onClick={handleSecletedTeam}
+          onClick={handleOnClick}
           disabled={selected.length !== teamSize}
         >
           {buttonLabel}

@@ -26,11 +26,6 @@ export const VoteSchema = z.object({
     .describe(
       "Your private strategic reasoning. Never shown to other players.",
     ),
-  publicMessage: z
-    .string()
-    .describe(
-      "A short statement about your vote to share at the Round Table. Can be deceptive if you are evil.",
-    ),
 });
 export type VoteOutput = z.infer<typeof VoteSchema>;
 
@@ -40,6 +35,11 @@ export const QuestCardSchema = z.object({
     .string()
     .describe(
       "Your private reasoning for this choice. Never shown to other players.",
+    ),
+  publicMessage: z
+    .string()
+    .describe(
+      "A short statement about your vote to share at the Round Table. Can be deceptive if you are evil.",
     ),
 });
 export type QuestCardOutput = z.infer<typeof QuestCardSchema>;
