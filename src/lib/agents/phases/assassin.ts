@@ -17,27 +17,6 @@ export async function runAssassination(state: GameState): Promise<string> {
 Available targets: ${goodPlayers}.
 Use everything you know — their voting patterns, quest choices, and chat behaviour — to identify Merlin.
 Choose wisely. If you kill Merlin, Evil wins.
-
-MERLIN DETECTION MODEL
-
-Track players who may be Merlin.
-
-Signs of Merlin:
-
-* Correctly avoids evil players on quests
-* Makes accurate accusations
-* Influences team selection effectively
-
-Maintain a Merlin probability estimate.
-
-Example:
-
-Merlin suspicion:
-Red: 0.10
-Blue: 0.50
-Yellow: 0.40
-
-Use this model when making the final assassination decision.
 `;
 
   const model = assassin.model;
@@ -58,14 +37,12 @@ Use this model when making the final assassination decision.
     assassin.privateMemory.push(
       `Assassination target: ${finalTarget}. Reasoning: ${output.privateReasoning}`,
     );
-    setGameState({
-      ...state,
-      players: [
-        ...state.players.map((p) =>
-          p.name === assassin.name ? { ...assassin } : p,
-        ),
-      ],
-    });
+    state.players = [
+      ...state.players.map((player) =>
+        player.name === assassin.name ? { ...assassin } : player,
+      ),
+    ];
+    setGameState(state);
     console.log("runAssassination", {
       name: assassin.name,
       role: assassin.role,

@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const { playerNames }: InitGameRequest = await req.json();
-    const response = initGame(playerNames);
+    const response = await initGame(playerNames);
     return NextResponse.json(response);
   } catch (err) {
     console.error("/api/game/init", err);

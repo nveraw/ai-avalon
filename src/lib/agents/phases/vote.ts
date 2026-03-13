@@ -38,20 +38,17 @@ Note: the human player's vote is unknown to you.`;
         player.privateMemory.push(
           `Round ${state.round} vote on ${leaderName}${leaderName === player.name ? " (my)" : ""} selected team [${teamNames}]: ${output.vote}. Reasoning: ${output.privateReasoning}`,
         );
-        setGameState({
-          ...state,
-          players: [
-            ...state.players.map((p) =>
-              p.name === player.name ? { ...player } : p,
-            ),
-          ],
-        });
-        console.log("runVoting", {
-          name: player.name,
-          role: player.role,
-          privateMemory: player.privateMemory,
-        });
+        state.players = [
+          ...state.players.map((p) =>
+            p.name === player.name ? { ...player } : p,
+          ),
+        ];
       }
+      console.log("runVoting", {
+        name: player.name,
+        role: player.role,
+        privateMemory: player.privateMemory,
+      });
 
       return {
         name: player.name,
@@ -61,6 +58,7 @@ Note: the human player's vote is unknown to you.`;
   );
 
   const results = await Promise.all(votePromises);
+  setGameState(state);
 
   const votes: Record<string, VotedStatus> = {};
   for (const r of results) {

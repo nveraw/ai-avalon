@@ -11,21 +11,28 @@ import {
 import { ChatMessage } from "@/types/chat.types";
 import { CompletedQuestStatus, VotedStatus } from "@/types/quest.types";
 import { buildKnowledge } from "@/utils/knowledge";
-import { randomRoleToAssign } from "@/utils/shuffle";
+import { randomised } from "@/utils/shuffle";
 import { ChatMistralAI } from "@langchain/mistralai";
+import { runActionResponses, runChatResponses } from "../agents/chatResponse";
 import { createLlmModel } from "../agents/factory";
 import { runAssassination } from "../agents/phases/assassin";
 import { runQuestCards } from "../agents/phases/quest";
 import { runTeamSelection } from "../agents/phases/team";
 import { runVoting } from "../agents/phases/vote";
-import { runActionResponses, runChatResponses } from "../agents/runner";
 import { triggerSummarization } from "../agents/summarizer";
 
-export const initGame = (playerNames: string[]): InitGameResponse => {
+export const initGame = async (
+  playerNames: string[],
+): Promise<InitGameResponse> => {
   const activeRoles = roleList.slice(0, playerNames.length);
-  const shuffled = randomRoleToAssign(activeRoles);
-  const humanRole = shuffled[0];
+  // const shuffled = randomised(activeRoles);
+  // comment above and uncomment below to set human as assassin for testing
+  const shuffled = [
+    roleList[2],
+    ...randomised(activeRoles.filter((role) => role !== "assassin")),
+  ];
 
+  const humanRole = shuffled[0];
   const players = createLlmModel(playerNames, shuffled);
   const leaderIndex = Math.floor(Math.random() * playerNames.length);
 
@@ -74,14 +81,8 @@ export const setTeam = async (
   };
   if (!state) return defaultOutput;
 
-  const output: TeamSelectionResponse =
-    (await runTeamSelection(names, state)) ?? defaultOutput;
-  if (names.length) {
-    setGameState({
-      ...state,
-      selectedTeam: names,
-    });
-  }
+  const teamSelectionOutput = await runTeamSelection(names, state);
+  const output: TeamSelectionResponse = teamSelectionOutput ?? defaultOutput;
 
   return output;
 };
@@ -111,19 +112,15 @@ export const addVote = async (
 
   if (result === "reject") {
     const newState = {
+      ...state,
       rejectCount: state.rejectCount + 1, // 5 -> evil wins
       leaderIndex: (state.leaderIndex + 1) % state.players.length,
       selectedTeam: [],
     };
-    setGameState({
-      ...state,
-      ...newState,
-    });
+    setGameState(newState);
   } else {
-    setGameState({
-      ...state,
-      rejectCount: 0, // reset after approve
-    });
+    state.rejectCount = 0; // reset after approve
+    setGameState(state);
   }
   const newState = getGameState() ?? state;
   const output: VoteResponse = {
@@ -162,14 +159,13 @@ export const setQuest = async (
 
   const { cards, messages } = await runQuestCards(state, humanCard);
   const result = cards.includes("fail") ? "fail" : "success";
-  setGameState({
-    ...state,
-    leaderIndex: (state.leaderIndex + 1) % state.players.length,
-    questResults: [...state.questResults, result],
-    round: state.round + 1,
-  });
+  state.leaderIndex = (state.leaderIndex + 1) % state.players.length;
+  state.questResults = [...state.questResults, result];
+  state.round = state.round + 1;
+  setGameState(state);
+
   const newState = getGameState() ?? state;
-  triggerSummarization(newState, messages);
+  await triggerSummarization(newState, messages);
 
   const output: QuestResponse = {
     cards,
@@ -210,7 +206,7 @@ export const assassinate = async (
   };
   if (!state) return defaultOutput;
 
-  const target = (await runAssassination(state)) ?? name;
+  const target = name ?? (await runAssassination(state));
   const isCorrect =
     state.players.find((p) => p.name === target)?.role === "merlin";
 

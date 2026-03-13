@@ -27,3 +27,13 @@ export const getGameState = () => gameState;
 export const setGameState = (state: GameState) => {
   gameState = state;
 };
+
+// nextjs hot reload fix
+// const globalForGame = globalThis as typeof globalThis & {
+//   gameState?: GameState;
+// };
+
+// export const getGameState = () => globalForGame.gameState ?? null;
+// export const setGameState = (s: GameState) => {
+//   globalForGame.gameState = s;
+// };

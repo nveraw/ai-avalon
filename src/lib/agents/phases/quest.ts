@@ -2,10 +2,11 @@ import { PLAYER_ROLES } from "@/constants/playerRoles";
 import { GameState, setGameState } from "@/lib/game/serverState";
 import { ChatMessage } from "@/types/chat.types";
 import { CompletedQuestStatus } from "@/types/quest.types";
+import { randomised } from "@/utils/shuffle";
 import { HumanMessage, SystemMessage } from "langchain";
+import { runActionResponses } from "../chatResponse";
 import { QuestCardOutput, QuestCardSchema } from "../output.schema";
 import { buildAgentSystemPrompt } from "../prompts/builder";
-import { runActionResponses } from "../runner";
 
 export async function runQuestCards(
   state: GameState,
@@ -44,6 +45,11 @@ Consider the current score and whether now is the right moment to betray.`;
         player.privateMemory.push(
           `Round ${state.round} quest card: ${output.card}. Reasoning: ${output.privateReasoning}`,
         );
+        state.players = [
+          ...state.players.map((p) =>
+            p.name === player.name ? { ...player } : p,
+          ),
+        ];
       }
 
       console.log("runQuestCards loyal", {
@@ -56,30 +62,18 @@ Consider the current score and whether now is the right moment to betray.`;
     },
   );
 
-  const aiCards = await Promise.all(cardPromises);
-  setGameState({
-    ...state,
-    players: [...state.players],
-  });
+  const cards = await Promise.all(cardPromises);
+  setGameState(state);
 
   // Add human card if they were on the team
-  const allCards: Array<CompletedQuestStatus> = [];
-  for (const card of aiCards) {
-    if (!card && humanCard) {
-      allCards.push(humanCard);
-    } else if (card) {
-      allCards.push(card);
-    }
+  const allCards: Array<CompletedQuestStatus> = cards.filter((c) => !!c);
+  if (!!humanCard) {
+    allCards.push(humanCard);
   }
-
-  // Shuffle so no one can identify who played what
-  for (let i = allCards.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [allCards[i], allCards[j]] = [allCards[j], allCards[i]];
-  }
+  const shuffled = randomised(allCards);
 
   // Post-quest chat from non-participating AI players reacting to result
-  const questResult = allCards.includes("fail") ? "fail" : "success";
+  const questResult = shuffled.includes("fail") ? "fail" : "success";
   const observers = state.players.filter(
     (p) => !state.selectedTeam.includes(p.name),
   );
@@ -92,5 +86,5 @@ React briefly in character (1–2 sentences). Be strategic — your reaction rev
   );
   const filtered = messages.filter((msg) => !!msg);
 
-  return { cards: allCards, messages: filtered };
+  return { cards: shuffled, messages: filtered };
 }

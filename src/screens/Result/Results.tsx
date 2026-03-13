@@ -18,37 +18,66 @@ const Results = ({
   assassinated,
   onRestart,
 }: ResultsProps) => {
-  const good = winner === "good";
+  const isGoodWin = winner === "good";
+
+  const endings = {
+    assassination: {
+      icon: "🗡",
+      label: "MERLIN FALLS",
+      headline: "EVIL WINS",
+      desc: "The quests were won, but Merlin could not stay hidden. The Assassin's blade ends it all.",
+    },
+    failed: {
+      icon: "💀",
+      label: "DARKNESS DESCENDS",
+      headline: "EVIL WINS",
+      desc: "The forces of evil sabotaged enough quests to doom the kingdom. Camelot falls.",
+    },
+    succeed: {
+      icon: "🏆",
+      label: "ARTHUR'S KINGDOM PREVAILS",
+      headline: "GOOD WINS",
+      desc: "Three quests complete. Merlin's identity never uncovered. The kingdom endures.",
+    },
+  };
+
+  let key: keyof typeof endings = "failed";
+  if (
+    assassinated &&
+    allPlayers.some((p) => p.role === "merlin" && p.name === assassinated)
+  ) {
+    key = "assassination";
+  } else if (isGoodWin) {
+    key = "succeed";
+  }
 
   return (
     <div className="max-w-lg mx-auto px-5 py-10 text-center">
       <div
         className={`px-6 py-12 rounded-3xl mb-6 border-2 ${
-          good
+          isGoodWin
             ? "bg-[radial-gradient(ellipse_at_top,rgba(5,46,22,0.8), rgba(10,12,25,0.95))] border-green-700"
             : "bg-[radial-gradient(ellipse_at_top,rgba(127,29,29,0.8), rgba(10,12,25,0.95))] border-red-700"
         }`}
       >
-        <div className="text-7xl mb-4 animate-bounce">{good ? "🏆" : "💀"}</div>
+        <div className="text-7xl mb-4 animate-bounce">{endings[key].icon}</div>
         <div
-          className={`text-xs tracking-hero font-serif mb-2 ${good ? "text-green-300" : "text-red-300"}`}
+          className={`text-xs tracking-hero font-serif mb-2 ${isGoodWin ? "text-green-300" : "text-red-300"}`}
         >
-          {good ? "ARTHUR'S KINGDOM PREVAILS" : "DARKNESS DESCENDS"}
+          {endings[key].label}
         </div>
         <h1
           className={`cinzel-deco text-4xl tracking-widest mb-0 ${
-            good
+            isGoodWin
               ? "text-emerald-400 [text-shadow:0_0_30px_#34d39977]"
               : "text-red-400 [text-shadow:0_0_30px_#f8717177]"
           }`}
         >
-          {good ? "GOOD WINS" : "EVIL WINS"}
+          {endings[key].headline}
         </h1>
         <GoldDivider />
         <p className="text-gray-400 font-serif text-sm leading-relaxed m-0">
-          {good
-            ? "The knights of the Round Table have completed their quests. Camelot endures."
-            : "The shadows have consumed the realm. Mordred's treachery has triumphed."}
+          {endings[key].desc}
         </p>
       </div>
 

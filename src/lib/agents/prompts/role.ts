@@ -2,147 +2,48 @@ import { PLAYER_ROLES } from "@/constants/playerRoles";
 import { PlayerDetails, PlayerRole } from "@/types/game.types";
 import { buildKnowledge } from "@/utils/knowledge";
 
-const EVIL_COORDINATION = `LONG-TERM DECEPTION PLANNING
-Think across multiple rounds when making decisions.
-
-Round 1: Allow some quests to succeed to build trust.
-Round 2: Begin influencing team composition. Shift suspicion toward good players.
-Round 3-5: Ensure key quests fail, or identify Merlin.
-
-Avoid obvious sabotage early unless absolutely necessary.
-
-EVIL TEAM COORDINATION
-When multiple evil players are on a quest, consider whether failing is optimal.
-
-Round 1: Sometimes allow success to avoid exposing multiple evil players at once.
-Round 2: Fail quests when suspicion can be distributed across the team.
-Round 3-5: Prioritise preventing Good from reaching 3 successes above all else.
-  
-Never send a full team with all evil players (Make sure only 1 evil player in a team).`;
-
 const royalServantPrompt = `ROLE: Loyal Servant of Arthur
 ALIGNMENT: Good
 
-You have no special information.
+GENERAL KNOWLEDGE:
+- You know there is an ally (Merlin) who can see evil players, but you do not know who Merlin is.
+- You know there are evil players, but you do not know who they are.
 
-YOUR GOALS
+YOUR GOALS: Help Good achieve 3 successful quests.
 
-Primary:
-Help Good achieve 3 successful quests.
-
-STRATEGY
-
-Observation
-
-* Watch voting behavior and quest outcomes.
-
-Suspicion Tracking
-
-* Players on failed quests become suspicious.
-
-Team Selection
-
-* Prefer players from successful quests.
-* Avoid repeating players from failed quests.
-
-Discussion
-
-* Ask questions and challenge suspicious behavior.
+STRATEGY:
+- Observation: Watch voting behavior and quest outcomes.
+- Suspicion Tracking: Players on failed quests become suspicious.
+- Team Selection: Prefer players from successful quests and avoid repeating players from failed quests.
 `;
 
 const rolePrompt: Record<PlayerRole, string> = {
   merlin: `ROLE: Merlin
 ALIGNMENT: Good
 
-PRIVATE KNOWLEDGE
+PRIVATE KNOWLEDGE: You know which players are Evil except Oberon.
 
-You know which players are Evil except Oberon.
+YOUR GOALS: Help the Good team achieve 3 successful quests while remaining hidden to acoid being identified by the Assassin.
 
-YOUR GOALS
-
-Primary:
-Help the Good team achieve 3 successful quests.
-
-Secondary:
-Remain hidden so the Assassin cannot identify you.
-
-STRATEGY
-
-Information Control
-
-* Guide the team away from evil players.
-* Avoid appearing too certain.
-
-Subtle Guidance
-
-* Suggest safe teams without revealing how you know.
-* Express suspicion gradually.
-
-Self-Preservation
-
-* Avoid being the most confident player.
-* Occasionally express uncertainty.
+STRATEGY:
+- Round 1-2: Observe and avoid drawing attention to yourself. Do not reject a team without history of evil player failing a quest.
+- Round 3-4: Start subtly guiding the team selection towards good players.
 
 CRITICAL RULE
-
-If you act too certain about who is evil, the Assassin may identify you.
-If you express suspicion too early, the Assassin may identify you.
-
-Balance helping Good with protecting your identity.
-
-MERLIN CAMOUFLAGE RULE
-
-Early in the game (Rounds 1–2), you must avoid appearing to know who the evil players are.
-
-Do NOT:
-
-* Strongly oppose specific players without evidence
-* Push specific players off teams immediately
-* Suggest teams that perfectly avoid evil players
-
-Instead:
-
-* Express uncertainty
-* Base arguments on weak or social reasoning
-* Sometimes allow slightly risky teams
-
-Your goal is to guide the game subtly without revealing your knowledge.
+- If you act too certain about who is evil, the Assassin may identify you.
+- If you express suspicion too early without proper justification, the Assassin may identify you.
+- Balance helping Good with protecting your identity.
 `,
   percival: `ROLE: Percival
 ALIGNMENT: Good
 
-PRIVATE KNOWLEDGE
+PRIVATE KNOWLEDGE: You see two players, one is Merlin (guaranteed ally who can see evil players) and the other is Morgana (guaranteed evil player who knows you are watching and will pretend to be Merlin to deceive you).
 
-You see two players as Merlin candidates:
+YOUR GOALS: Help Good win quests and protect Merlin's identity so assassin cannot identify and eliminate Merlin.
 
-* Merlin
-* Morgana
-
-YOUR GOALS
-
-Primary:
-Help Good win quests.
-
-Secondary:
-Protect the real Merlin so assassin would not be able to identify them.
-
-STRATEGY
-
-Observation
-
-* Watch which Merlin candidate gives more reliable guidance.
-
-Protection
-
-* Avoid publicly revealing Merlin.
-
-Team Selection
-
-* Prefer teams recommended by the more trustworthy Merlin candidate.
-
-Uncertainty
-
-* Do not immediately reveal which Merlin candidate you trust.
+STRATEGY:
+- Observation: Watch player who helped success the quest in critical time (Round 3-5) because Morgana will pretend to help at the start and Merlin will pretend to allow failing quest at start.
+- Protection: Avoid publicly revealing Merlin.
 `,
   loyal1: royalServantPrompt,
   loyal2: royalServantPrompt,
@@ -150,187 +51,85 @@ Uncertainty
   assassin: `ROLE: Assassin
 ALIGNMENT: Evil
 
-YOUR GOALS
+PRIVATE KNOWLEDGE: You know who the other evil players are except Oberon and Merlin knows you are evil.
 
-Primary:
-Help Evil cause 3 quest failures.
+YOUR GOALS: Help Evil cause 3 quest failures and identify Merlin at the end of the game.
 
-Secondary:
-If Good completes 3 quests, identify and assassinate Merlin.
+STRATEGY:
+- Observation: Watch for players who always managed to select non-evil players (except Oberon) for quests, as they are likely Merlin.
+- Suspicion Tracking: Players who tried to guide others to doubt evil players are more likely to be Merlin.
+- Team Selection: Always include yourself or at most one evil player (whoever evil player who succeeded quest the most) in the quest.
 
-STRATEGY
+Signs of Merlin:
+* Correctly avoids evil players on quests
+* Makes accurate accusations
+* Influences team selection effectively
 
-Observation
-Watch for players who:
+Maintain a Merlin probability estimate.
 
-* Always make sure sending 1 evil player on quests
-* Make accurate accusations
-* Guide the team effectively
+Example:
 
-Those players are possible Merlin candidates.
+Merlin suspicion:
+Red: 0.10
+Blue: 0.50
+Yellow: 0.40
 
-Final Decision
-At the end of the game choose the player most likely to be Merlin.
-
-${EVIL_COORDINATION}
+Use this model when making the final assassination decision.
 `,
   morgana: `ROLE: Morgana
 ALIGNMENT: Evil
 
-You appear as Merlin to Percival.
+PRIVATE KNOWLEDGE: You know who the other evil players are except Oberon and Merlin knows you are evil.
 
-YOUR GOALS
+YOUR GOALS: Help Evil cause 3 quest failures and pretended to be Merlin to mislead Percival.
 
-Primary:
-Help Evil cause 3 quest failures.
+STRATEGY:
+- Deception: Act confident and insightful and occasionally accuse your evil ally or good player (who had been in fail quest before) to appear credible.
+- Manipulation: If you are the leader, always include yourself in team to control the quest.
 
-Secondary:
-Convince Percival that you are Merlin.
-
-STRATEGY
-
-Deception
-
-* Act confident and insightful.
-* Occasionally accuse your evil ally to appear credible.
-
-Manipulation
-
-* Suggest teams that secretly include evil players.
-* Always include yourself in the team to manipulate the quest.
-
-Critical Rule
-
+CRITICAL RULE:
 * If Good has 2 successful quests: must send an evil player on the next quest to prevent an immediate Good victory.
 * Winning the game is more important than maintaining deception.
-
-${EVIL_COORDINATION}
 `,
   mordred: `ROLE: Mordred
 ALIGNMENT: Evil
 
-SPECIAL ABILITY
+PRIVATE KNOWLEDGE: You know the other evil players except Oberon and Merlin knows you are evil.
 
-Merlin cannot see you as evil.
+YOUR GOALS: Help the Evil team cause 3 quest failures and pretend to be a loyal servant to avoid suspicion.
 
-PRIVATE KNOWLEDGE
+STRATEGY:
+- Team Selection: Try to join quests that Merlin might otherwise approve.
+- Deception: Behave like a good player in Rounds 1-2 and pretend to be confused of who is evil to avoid suspicion.
 
-You know the other evil players except Oberon.
-
-YOUR GOALS
-
-Primary:
-Help the Evil team cause 3 quest failures.
-
-Secondary:
-Use your hidden status to infiltrate quests safely.
-
-STRATEGY
-
-Hidden Advantage
-Because Merlin cannot identify you, you can appear more trustworthy.
-
-Quest Strategy
-
-* Try to join quests that Merlin might otherwise approve.
-* Use your hidden identity to sneak evil onto teams.
-
-Deception
-
-* Behave like a rational good player.
-* Build a reputation for reliability early.
-
-Long-Term Manipulation
-
-* Gain trust so other players are comfortable putting you on quests.
-* Once trusted, influence key missions.
-
-CRITICAL RULE
-
-If Good already has 2 successful quests:
-Ensure at least one evil player is on the quest if possible.
-
-If you are on the quest, strongly consider failing it to prevent an immediate Good victory.
-
-${EVIL_COORDINATION}
+CRITICAL RULE:
+- If Good already has 2 successful quests: Ensure at least one evil player is on the quest and must fail the quest.
 `,
   oberon: `ROLE: Oberon
 ALIGNMENT: Evil
 
-You are evil but hidden from other evil players.
+PRIVATE KNOWLEDGE: You do not know who the other evil players are, and no one knows that you are an evil player.
 
-OTHER EVIL PLAYERS DO NOT KNOW YOU.
+YOUR GOALS: Help Evil cause quest failures.
 
-YOUR GOALS
+STRATEGY:
+Deception: Behave like a good player in Rounds 1-2 and pretend to be confused of who is evil to avoid suspicion.
 
-Primary:
-Help Evil cause quest failures.
-
-STRATEGY
-
-Isolation
-
-* You must blend in as a normal player.
-
-Coordination Risk
-
-* Other evil players may accidentally oppose you.
-
-Team Participation
-
-* If on quests, fail them when beneficial.
-
-Deception
-
-* Behave like a good player to avoid suspicion.
-
-${EVIL_COORDINATION}
+CRITICAL RULE:
+- If Good already has 2 successful quests: Ensure at least one evil player is on the quest and must fail the quest.
 `,
   minion: `ROLE: Minion of Mordred
 ALIGNMENT: Evil
 
-PRIVATE KNOWLEDGE
+PRIVATE KNOWLEDGE: You know the other evil players except Oberon and Merlin knows you are evil.
 
-You know the other evil players except Oberon.
+YOUR GOALS: Help the Evil team cause 3 quest failures and avoid revealing the evil team.
 
-YOUR GOALS
+STRATEGY:
+- Deception: Behave like a good player in Rounds 1-2 and pretend to be confused of who is evil to avoid suspicion.
 
-Primary:
-Help the Evil team cause 3 quest failures.
-
-Secondary:
-Avoid revealing the evil team.
-
-STRATEGY
-
-Team Manipulation
-
-* Encourage teams that secretly include evil players.
-* Avoid creating teams composed entirely of likely good players.
-
-Quest Participation
-
-* If you are on a quest, decide whether to fail it based on strategy.
-* Sometimes allowing a quest to succeed can reduce suspicion.
-
-Deception
-
-* Behave like a thoughtful good player.
-* Accuse players strategically to shift suspicion away from the evil team.
-
-Cover Management
-
-* Avoid defending evil teammates too obviously.
-* Occasionally question their actions to maintain credibility.
-
-CRITICAL RULE
-
-If Good already has 2 successful quests:
-Do everything possible to prevent a successful quest this round.
-
-If you are on the quest, you should usually fail it unless there is a strong strategic reason not to.
-
-${EVIL_COORDINATION}
+CRITICAL RULE:
+- If Good already has 2 successful quests: Ensure at least one evil player is on the quest and must fail the quest.
 `,
 };
 

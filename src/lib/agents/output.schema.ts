@@ -63,7 +63,8 @@ export const ChatResponseSchema = z.object({
 export type ChatResponseOutput = z.infer<typeof ChatResponseSchema>;
 
 export const SummarySchema = z.object({
-  summary: z
+  previousSummary: z.string().describe("Previous summary untouched"),
+  newSummary: z
     .string()
     .describe("A concise factual summary of key chat moments. 3–5 sentences."),
 });
