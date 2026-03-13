@@ -17,9 +17,9 @@ export async function triggerSummarization(
       `Previous summary: ${state.summary}\n\nNew messages:\n${messages.join("\n")}`,
     ),
   ]);
-  state.summary = `${state.summary}\n${response.newSummary}`;
+  state.summary = `${response.public}\n${response.content}`;
 
-  console.log("summary", response.previousSummary, response.newSummary);
+  console.log("summary", state.summary);
 
   setGameState(state);
 }

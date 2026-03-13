@@ -27,13 +27,16 @@ function buildPublicContext(state: GameState): string {
     ? `\n=== CONVERSATION SUMMARY ===\n${state.summary}\n=== END SUMMARY ===`
     : "";
 
-  return `=== GAME STATE ===
+  return `=== CURRENT GAME STATE ===
   Players (${state.players.length}): ${state.players.map((p) => p.name).join(", ")}
 Round: ${state.round} of 5  |  Leader: ${state.players[state.leaderIndex].name}  |  Team size this round: ${questSizes[state.round - 1]}
 Rejections: ${state.rejectCount}/5 (reaching 5 = automatic evil win)
 Score - Good: ${successes}  Evil: ${fails}  (first to 3 wins)
 Quest results: ${questTrack}${urgency}
 === END OF GAME STATE ===
+=== PREVIOUS EVENTS ===
+${JSON.stringify(state.stateHistory)}
+=== END OF PREVIOUS EVENTS ===
 ${summary}`;
 }
 
@@ -49,6 +52,8 @@ export function buildAgentSystemPrompt(
   if (!player) return "";
 
   const publicCtx = buildPublicContext(state);
+
+  console.log("publicCtx", publicCtx);
   const roleCtx = roleDescription(
     role,
     [...state.players].map((agent) => ({ name: agent.name, role: agent.role })),
@@ -93,14 +98,15 @@ Evil probability ≈ 40% (100% if you are evil or merlin and you know who is evi
 Update probabilities after each event using evidence (Round 3-4 is especially telling).
 
 Evidence that increases evil probability:
-* Player on a failed quest
-* Leader proposing suspicious teams
-* Player voting for suspicious teams
+* Player on a failed quest from PREVIOUS EVENTS
+* Leader proposing a team that later failed the quest from PREVIOUS EVENTS
+* Player consistently supporting a player that had failed a quest from CONVERSATION SUMMARY
+* Player voting for suspicious teams FROM PREVIOUS EVENTS
 
 Evidence that decreases evil probability:
-* Player on multiple successful quests
-* Player consistently opposing suspicious teams
-* Player voting against failed quests
+* Player on multiple successful quests from PREVIOUS EVENTS
+* Player consistently opposing a player with proper justification in CONVERSATION SUMMARY
+* Player voting rejected on a team that later failed the quest from PREVIOUS EVENTS
 
 Always keep probabilities between 0 and 1.
 === END OF SUSPICION MODEL ===
@@ -129,10 +135,11 @@ STEP 1 — Analyze Game State
 STEP 2 — Check Immediate Win Conditions
 * If Good has 2 successful quests: Evil must ensure the next quest fails.
 * If Evil has 2 failed quests: Good must ensure the next quest succeeds by: including only good players or rejecting teams with evil player (one evil player will fail the quest).
-STEP 3 — Update Suspicion Model
-STEP 4 — Evaluate Team Risk (if proposing or voting on a team)
-STEP 5 — Choose Action
-STEP 6 — Maintain Believable Behavior by Appear rational to others and Avoid revealing hidden knowledge
+STEP 3 - From CONVERSATION SUMMARY, analyze what other players are saying, how they are voting, the history of proposed teams and quest outcomes. Remember, if you are good player, Merlin who knows who are the evil players can only guide you through the conversation.
+STEP 4 — Update SUSPICION MODEL
+STEP 5 — Use the new suspicion table to Evaluate Team Risk (if proposing or voting on a team)
+STEP 6 — Choose Action
+STEP 7 — Maintain Believable Behavior by Appear rational to others and Avoid revealing hidden knowledge
 
 PRIVATE REASONING
 * Suspicion model
@@ -157,15 +164,19 @@ ${publicCtx}${privateMemoryCtx}`;
 export function buildSummaryPrompt(state: GameState): string {
   const publicCtx = buildPublicContext(state);
 
+  // 1-2 sentence per player and 1-2 sentence per round.
+  const limit = state.players.length + state.round;
+
   return `You are a neutral game narrator summarising an ongoing Avalon game.
 Summarise only public information — what happened in quests, who voted how, and what players said.
-Do not speculate about hidden roles. Be factual and concise (3–5 sentences).
+Do not speculate about hidden roles. Be factual and concise (${limit}-${2*limit} sentences).
 
 ${publicCtx}`;
 }
 
 export function buildChatPrompt() {
   return `Respond in character at the Round Table. 1–2 sentences.
+  Be strategic — your reaction reveals information.
   You may address other players.
   Speak entirely in first person. Do not refer to yourself by name.`;
 }

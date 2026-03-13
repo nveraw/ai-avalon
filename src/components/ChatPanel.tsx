@@ -24,8 +24,6 @@ const ChatPanel = ({ playerNames, className }: ChatPanelProps) => {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-
     messages?.forEach((msg, i) => {
       setTimeout(() => {
         setTyping(msg.from);
@@ -33,6 +31,7 @@ const ChatPanel = ({ playerNames, className }: ChatPanelProps) => {
         setTimeout(() => {
           setTyping(null);
           setDisplayMessages((prev) => [...prev, msg]);
+          bottomRef.current?.scrollIntoView({ behavior: "smooth" });
         }, 800);
       }, i * 1200);
     });

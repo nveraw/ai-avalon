@@ -7,7 +7,7 @@ export const TeamSelectionSchema = z.object({
   privateReasoning: z
     .string()
     .describe(
-      "Your private strategic reasoning for this choice. Never shown to other players.",
+      "Your private strategic reasoning for this choice. Include suspicionTable:<name><probability> and riskEvaluation:<number>. Never shown to other players.",
     ),
   publicMessage: z
     .string()
@@ -24,7 +24,7 @@ export const VoteSchema = z.object({
   privateReasoning: z
     .string()
     .describe(
-      "Your private strategic reasoning. Never shown to other players.",
+      "Your private strategic reasoning. Include suspicionTable:<name><probability> and riskEvaluation:<number>. Never shown to other players.",
     ),
 });
 export type VoteOutput = z.infer<typeof VoteSchema>;
@@ -48,7 +48,9 @@ export const AssassinationSchema = z.object({
   target: z.string().describe("The name of the player you believe is Merlin"),
   privateReasoning: z
     .string()
-    .describe("Your reasoning for this assassination attempt."),
+    .describe(
+      "Your reasoning for this assassination attempt. Include merlinSuspicionTable:<name><probability>.",
+    ),
   publicMessage: z
     .string()
     .describe("What the Assassin says dramatically before striking."),
@@ -63,9 +65,15 @@ export const ChatResponseSchema = z.object({
 export type ChatResponseOutput = z.infer<typeof ChatResponseSchema>;
 
 export const SummarySchema = z.object({
-  previousSummary: z.string().describe("Previous summary untouched"),
-  newSummary: z
+  public: z
     .string()
-    .describe("A concise factual summary of key chat moments. 3–5 sentences."),
+    .describe(
+      "A concise factual summary of public information. (1-2 sentence per round)",
+    ),
+  content: z
+    .string()
+    .describe(
+      "A concise factual summary of key chat moments. (1-2 sentence per player)",
+    ),
 });
 export type SummaryOutput = z.infer<typeof SummarySchema>;

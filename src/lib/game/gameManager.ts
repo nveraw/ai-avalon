@@ -25,12 +25,12 @@ export const initGame = async (
   playerNames: string[],
 ): Promise<InitGameResponse> => {
   const activeRoles = roleList.slice(0, playerNames.length);
-  // const shuffled = randomised(activeRoles);
+  const shuffled = randomised(activeRoles);
   // comment above and uncomment below to set human as assassin for testing
-  const shuffled = [
-    roleList[2],
-    ...randomised(activeRoles.filter((role) => role !== "assassin")),
-  ];
+  // const shuffled = [
+  //   roleList[2],
+  //   ...randomised(activeRoles.filter((role) => role !== "assassin")),
+  // ];
 
   const humanRole = shuffled[0];
   const players = createLlmModel(playerNames, shuffled);
@@ -43,6 +43,7 @@ export const initGame = async (
     rejectCount: 0,
     questResults: [],
     selectedTeam: [],
+    stateHistory: {},
     summary: "",
     summarizerModel: new ChatMistralAI({
       model: "mistral-small-latest",
@@ -81,8 +82,8 @@ export const setTeam = async (
   };
   if (!state) return defaultOutput;
 
-  const teamSelectionOutput = await runTeamSelection(names, state);
-  const output: TeamSelectionResponse = teamSelectionOutput ?? defaultOutput;
+  const output: TeamSelectionResponse =
+    (await runTeamSelection(names, state)) ?? defaultOutput;
 
   return output;
 };
@@ -116,10 +117,21 @@ export const addVote = async (
       rejectCount: state.rejectCount + 1, // 5 -> evil wins
       leaderIndex: (state.leaderIndex + 1) % state.players.length,
       selectedTeam: [],
+      stateHistory: {
+        ...state.stateHistory,
+        [`round-${state.round}`]: {
+          ...(state.stateHistory[`round-${state.round}`] ?? {}),
+          votes: allVotes,
+        },
+      },
     };
     setGameState(newState);
   } else {
     state.rejectCount = 0; // reset after approve
+    state.stateHistory[`round-${state.round}`] = {
+      ...(state.stateHistory[`round-${state.round}`] ?? {}),
+      votes: allVotes,
+    };
     setGameState(state);
   }
   const newState = getGameState() ?? state;
@@ -159,6 +171,11 @@ export const setQuest = async (
 
   const { cards, messages } = await runQuestCards(state, humanCard);
   const result = cards.includes("fail") ? "fail" : "success";
+  state.stateHistory[`round-${state.round}`] = {
+    ...(state.stateHistory[`round-${state.round}`] ?? {}),
+    failCards: cards.filter((c) => c === "fail").length,
+    result,
+  };
   state.leaderIndex = (state.leaderIndex + 1) % state.players.length;
   state.questResults = [...state.questResults, result];
   state.round = state.round + 1;

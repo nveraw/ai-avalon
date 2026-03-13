@@ -2,6 +2,22 @@ import { PLAYER_ROLES } from "@/constants/playerRoles";
 import { PlayerDetails, PlayerRole } from "@/types/game.types";
 import { buildKnowledge } from "@/utils/knowledge";
 
+const merlinIdentificationModel = `Signs of Merlin:
+* Correctly avoids evil players on quests
+* Makes accurate accusations
+* Influences team selection effectively
+
+Maintain a Merlin probability estimate.
+
+Example:
+
+Merlin suspicion:
+Red: 0.10
+Blue: 0.50
+Yellow: 0.40
+
+Use this model when making the final assassination decision.`;
+
 const royalServantPrompt = `ROLE: Loyal Servant of Arthur
 ALIGNMENT: Good
 
@@ -44,6 +60,8 @@ YOUR GOALS: Help Good win quests and protect Merlin's identity so assassin canno
 STRATEGY:
 - Observation: Watch player who helped success the quest in critical time (Round 3-5) because Morgana will pretend to help at the start and Merlin will pretend to allow failing quest at start.
 - Protection: Avoid publicly revealing Merlin.
+
+${merlinIdentificationModel}
 `,
   loyal1: royalServantPrompt,
   loyal2: royalServantPrompt,
@@ -60,21 +78,7 @@ STRATEGY:
 - Suspicion Tracking: Players who tried to guide others to doubt evil players are more likely to be Merlin.
 - Team Selection: Always include yourself or at most one evil player (whoever evil player who succeeded quest the most) in the quest.
 
-Signs of Merlin:
-* Correctly avoids evil players on quests
-* Makes accurate accusations
-* Influences team selection effectively
-
-Maintain a Merlin probability estimate.
-
-Example:
-
-Merlin suspicion:
-Red: 0.10
-Blue: 0.50
-Yellow: 0.40
-
-Use this model when making the final assassination decision.
+${merlinIdentificationModel}
 `,
   morgana: `ROLE: Morgana
 ALIGNMENT: Evil

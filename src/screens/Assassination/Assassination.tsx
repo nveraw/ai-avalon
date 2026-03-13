@@ -6,7 +6,7 @@ import { messagesAtom } from "@/store/chat";
 import { AssassinationResponse } from "@/types/api.types";
 import type { PlayerDetails } from "@/types/game.types";
 import { useSetAtom } from "jotai";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type AssassinationProps = {
   player: PlayerDetails;
@@ -21,25 +21,15 @@ const Assassination = ({
 }: AssassinationProps) => {
   const [target, setTarget] = useState<string>("");
   const [assassinName, setAssassinName] = useState<string>("");
-  const [data, setData] = useState<AssassinationResponse>();
   const addMessages = useSetAtom(messagesAtom);
-
-  useEffect(() => {
-    if (player.role !== "assassin") {
-      handleAssassination();
-    } else {
-      setAssassinName(player.name);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [player]);
 
   const handleClick = async () => {
     if (player.role === "assassin") {
-      const res = await handleAssassination();
-      onReveal(res);
-    } else {
-      if (data) onReveal(data);
+      setAssassinName(player.name);
+      if (!target) return;
     }
+    const res = await handleAssassination();
+    onReveal(res);
   };
 
   const handleAssassination = async () => {
@@ -47,7 +37,6 @@ const Assassination = ({
       name: target,
     });
     addMessages(res.messages);
-    setData(res);
     setAssassinName(
       res?.players?.find((p) => p.role === "assassin")?.name || "",
     );
@@ -117,7 +106,7 @@ const Assassination = ({
       )}
 
       <button
-        disabled={player.role === "assassin" ? !target : !data}
+        disabled={player.role === "assassin" && !target}
         onClick={handleClick}
         className="w-full py-4 rounded-xl cinzel text-base tracking-widest transition-all border
           bg-linear-to-br from-red-900 to-red-950 border-red-600 text-red-300 cursor-pointer hover:brightness-110

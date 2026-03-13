@@ -1,5 +1,5 @@
 import { PlayerRole } from "@/types/game.types";
-import { CompletedQuestStatus } from "@/types/quest.types";
+import { CompletedQuestStatus, VotedStatus } from "@/types/quest.types";
 import { ChatMistralAI } from "@langchain/mistralai";
 
 export type AgentPlayer = {
@@ -9,6 +9,14 @@ export type AgentPlayer = {
   privateMemory?: string[];
 };
 
+type HistoryEntry = {
+  leader: string;
+  teams: string[];
+  votes: Record<string, VotedStatus>;
+  failCards: number;
+  result: CompletedQuestStatus;
+};
+
 export interface GameState {
   players: AgentPlayer[];
   leaderIndex: number;
@@ -16,6 +24,7 @@ export interface GameState {
   rejectCount: number;
   questResults: CompletedQuestStatus[];
   selectedTeam: string[];
+  stateHistory: Record<string, HistoryEntry>;
   summary: string; // rolling summary from summarizer AI
   summarizerModel: ChatMistralAI;
 }

@@ -16,6 +16,11 @@ export async function runTeamSelection(
   let leaderMessage;
   if (names.length > 0) {
     state.selectedTeam = names;
+    state.stateHistory[`round-${state.round}`] = {
+      ...(state.stateHistory[`round-${state.round}`] ?? {}),
+      teams: names,
+      leader: leader.name,
+    };
     setGameState(state);
   } else {
     const questSizes = QUEST_SIZES[state.players.length] ?? QUEST_SIZES[7];
@@ -64,6 +69,11 @@ export async function runTeamSelection(
         ),
       ];
     }
+    state.stateHistory[`round-${state.round}`] = {
+      ...(state.stateHistory[`round-${state.round}`] ?? {}),
+      teams: selectedTeam,
+      leader: leader.name,
+    };
     setGameState(state);
 
     console.log("runTeamSelection", {
