@@ -14,6 +14,7 @@ export async function runTeamSelection(
   let selectedTeam = names;
   const leader = state.players[state.leaderIndex];
   let leaderMessage;
+  // team had been selected
   if (names.length > 0) {
     state.selectedTeam = names;
     state.stateHistory[`round-${state.round}`] = {
@@ -22,7 +23,9 @@ export async function runTeamSelection(
       leader: leader.name,
     };
     setGameState(state);
-  } else {
+  }
+  // ai is the leader, ai select team
+  else {
     const questSizes = QUEST_SIZES[state.players.length] ?? QUEST_SIZES[7];
     const teamSize = questSizes[state.round - 1];
     const playerNames = state.players.map((p) => p.name).join(", ");
@@ -63,6 +66,13 @@ export async function runTeamSelection(
       leader.privateMemory.push(
         `Round ${state.round} ${leader.name} (my) team selection: ${selectedTeam.join(", ")}. Reasoning: ${output.privateReasoning}`,
       );
+      console.log(
+        "reason",
+        "runTeamSelection",
+        leader.name,
+        leader.role,
+        leader.privateMemory,
+      );
       state.players = [
         ...state.players.map((player) =>
           player.name === leader.name ? { ...leader } : player,
@@ -75,17 +85,11 @@ export async function runTeamSelection(
       leader: leader.name,
     };
     setGameState(state);
-
-    console.log("runTeamSelection", {
-      name: leader.name,
-      role: leader.role,
-      privateMemory: leader.privateMemory,
-    });
     leaderMessage = { from: leader.name, text: output.publicMessage };
   }
 
   const messages = await getTeamSelectionResponse(
-    names,
+    selectedTeam,
     getGameState() ?? state,
   );
   if (leaderMessage) {
@@ -106,7 +110,7 @@ const getTeamSelectionResponse = async (
   const leaderName = state.players[state.leaderIndex].name;
 
   const nonLeaderPlayers = state.players.filter(
-    (player) => names.length > 0 || player.name !== leaderName,
+    (player) => names.length > 0 && player.name !== leaderName,
   );
   const messages = await runActionResponses(
     nonLeaderPlayers,

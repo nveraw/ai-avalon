@@ -37,17 +37,18 @@ Choose wisely. If you kill Merlin, Evil wins.
     assassin.privateMemory.push(
       `Assassination target: ${finalTarget}. Reasoning: ${output.privateReasoning}`,
     );
+    console.log(
+      "debugging",
+      "runAssassination",
+      assassin.name,
+      assassin.privateMemory,
+    );
     state.players = [
       ...state.players.map((player) =>
         player.name === assassin.name ? { ...assassin } : player,
       ),
     ];
     setGameState(state);
-    console.log("runAssassination", {
-      name: assassin.name,
-      role: assassin.role,
-      privateMemory: assassin.privateMemory,
-    });
   }
 
   return finalTarget;

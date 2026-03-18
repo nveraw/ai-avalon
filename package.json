@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@langchain/mistralai": "^1.0.7",
+    "@langchain/ollama": "^1.2.6",
     "clsx": "^2.1.1",
     "ioredis": "^5.10.0",
     "jotai": "^2.18.0",

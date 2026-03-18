@@ -38,17 +38,19 @@ Note: the human player's vote is unknown to you.`;
         player.privateMemory.push(
           `Round ${state.round} vote on ${leaderName}${leaderName === player.name ? " (my)" : ""} selected team [${teamNames}]: ${output.vote}. Reasoning: ${output.privateReasoning}`,
         );
+        console.log(
+          "reason",
+          "runVoting",
+          player.name,
+          player.role,
+          player.privateMemory,
+        );
         state.players = [
           ...state.players.map((p) =>
             p.name === player.name ? { ...player } : p,
           ),
         ];
       }
-      console.log("runVoting", {
-        name: player.name,
-        role: player.role,
-        privateMemory: player.privateMemory,
-      });
 
       return {
         name: player.name,

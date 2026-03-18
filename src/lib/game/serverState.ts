@@ -1,11 +1,10 @@
 import { PlayerRole } from "@/types/game.types";
 import { CompletedQuestStatus, VotedStatus } from "@/types/quest.types";
-import { ChatMistralAI } from "@langchain/mistralai";
 
 export type AgentPlayer = {
   name: string;
   role: PlayerRole;
-  model?: ChatMistralAI; // the actual LLM instance
+  model?: any; // the actual LLM instance
   privateMemory?: string[];
 };
 
@@ -26,7 +25,7 @@ export interface GameState {
   selectedTeam: string[];
   stateHistory: Record<string, HistoryEntry>;
   summary: string; // rolling summary from summarizer AI
-  summarizerModel: ChatMistralAI;
+  summarizerModel: any;
 }
 
 // In-memory store — cleared on new game or server restart

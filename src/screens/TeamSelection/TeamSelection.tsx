@@ -24,9 +24,7 @@ const TeamSelection = ({
   const addMessages = useSetAtom(messagesAtom);
 
   const [selected, setSelected] = useState<string[]>([]);
-  const [phase, setPhase] = useState<"thinking" | "reveal" | "done">(
-    "thinking",
-  );
+  const [phase, setPhase] = useState<"thinking" | "done">("thinking");
 
   useEffect(() => {
     if (leader === humanName) return;
@@ -43,8 +41,7 @@ const TeamSelection = ({
       setSelected(
         playerNames.filter((name) => res.proposedTeam.includes(name)),
       );
-      setPhase("reveal");
-      setTimeout(() => setPhase("done"), res.proposedTeam.length * 420 + 600);
+      setPhase("done");
 
       addMessages(res.messages);
     });
@@ -100,7 +97,6 @@ const TeamSelection = ({
         )}
       </div>
 
-      {/* Thinking spinner */}
       {leader !== humanName && phase === "thinking" && (
         <LoadingState
           icon="👑"
@@ -108,82 +104,78 @@ const TeamSelection = ({
         />
       )}
 
-      {/* Player grid — lights up as AI picks */}
-      <div>
-        <div className="grid grid-cols-2 gap-3 mb-7">
-          {playerNames.map((name) => {
-            const isSelected = selected.includes(name);
-            const isLeaderToken = name === leader;
+      <div className="grid grid-cols-2 gap-3 mb-7">
+        {playerNames.map((name) => {
+          const isSelected = selected.includes(name);
+          const isLeaderToken = name === leader;
 
-            return (
+          return (
+            <div
+              role="button"
+              key={name}
+              onClick={() => {
+                if (leader === humanName) handleToggleSelection(name);
+              }}
+              className={`flex items-center gap-3 px-4 py-3.5 rounded-xl border transition-all duration-500 ${
+                isSelected
+                  ? "bg-amber-950/20 border-amber-700 opacity-100"
+                  : isLeaderToken
+                    ? "bg-violet-950/20 border-violet-800"
+                    : "bg-slate-950 border-indigo-950"
+              } ${leader === humanName ? "cursor-pointer" : ""}`}
+            >
               <div
-                role="button"
-                key={name}
-                onClick={() => {
-                  if (leader === humanName) handleToggleSelection(name);
-                }}
-                className={`flex items-center gap-3 px-4 py-3.5 rounded-xl border transition-all duration-500 ${
+                className={`w-10 h-10 rounded-full flex items-center justify-center text-base font-serif font-bold text-slate-200 border-2 transition-all duration-500 ${
                   isSelected
-                    ? "bg-amber-950/20 border-amber-700 opacity-100"
+                    ? "border-amber-400 token-selected"
                     : isLeaderToken
-                      ? "bg-violet-950/20 border-violet-800"
-                      : "bg-slate-950 border-indigo-950"
-                } ${leader === humanName ? "cursor-pointer" : ""}`}
+                      ? "border-violet-500 token-base"
+                      : "border-indigo-800 token-base"
+                }`}
               >
+                {isLeaderToken ? "👑" : name[0]}
+              </div>
+              <div className="flex-1">
                 <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center text-base font-serif font-bold text-slate-200 border-2 transition-all duration-500 ${
-                    isSelected
-                      ? "border-amber-400 token-selected"
-                      : isLeaderToken
-                        ? "border-violet-500 token-base"
-                        : "border-indigo-800 token-base"
+                  className={`font-serif text-sm transition-colors duration-300 ${
+                    isSelected ? "text-amber-200" : "text-slate-400"
                   }`}
                 >
-                  {isLeaderToken ? "👑" : name[0]}
+                  {name}
                 </div>
-                <div className="flex-1">
-                  <div
-                    className={`font-serif text-sm transition-colors duration-300 ${
-                      isSelected ? "text-amber-200" : "text-slate-400"
-                    }`}
-                  >
-                    {name}
-                  </div>
-                  {isLeaderToken && (
-                    <div className="text-xs text-violet-400">Leader</div>
-                  )}
-                </div>
-                {isSelected && <span className="">✦</span>}
+                {isLeaderToken && (
+                  <div className="text-xs text-violet-400">Leader</div>
+                )}
               </div>
-            );
-          })}
-        </div>
-
-        {/* Slot indicators */}
-        <div className="flex gap-2.5 justify-center mb-7">
-          {Array.from({ length: teamSize }).map((_, i) => {
-            return (
-              <div
-                key={i}
-                className={`w-11 h-11 rounded-full flex items-center justify-center ${
-                  selected[i] !== undefined
-                    ? "border-amber-400 bg-amber-950/20 text-amber-400"
-                    : "border-indigo-900 bg-slate-950/80 text-indigo-800"
-                } text-sm font-serif font-bold border-2 transition-all duration-500`}
-              >
-                {selected[i]?.[0] ?? "?"}
-              </div>
-            );
-          })}
-        </div>
-
-        <GoldButton
-          onClick={handleOnClick}
-          disabled={selected.length !== teamSize}
-        >
-          {buttonLabel}
-        </GoldButton>
+              {isSelected && <span className="">✦</span>}
+            </div>
+          );
+        })}
       </div>
+
+      <div className="flex gap-2.5 justify-center mb-7">
+        {Array.from({ length: teamSize }).map((_, i) => {
+          return (
+            <div
+              key={i}
+              className={`w-11 h-11 rounded-full flex items-center justify-center ${
+                selected[i] !== undefined
+                  ? "border-amber-400 bg-amber-950/20 text-amber-400"
+                  : "border-indigo-900 bg-slate-950/80 text-indigo-800"
+              } text-sm font-serif font-bold border-2 transition-all duration-500`}
+            >
+              {selected[i]?.[0] ?? "?"}
+            </div>
+          );
+        })}
+      </div>
+
+      <GoldButton
+        onClick={handleOnClick}
+        disabled={selected.length !== teamSize}
+      >
+        {buttonLabel}
+      </GoldButton>
     </div>
   );
 };

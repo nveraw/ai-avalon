@@ -169,7 +169,7 @@ export function buildSummaryPrompt(state: GameState): string {
 
   return `You are a neutral game narrator summarising an ongoing Avalon game.
 Summarise only public information — what happened in quests, who voted how, and what players said.
-Do not speculate about hidden roles. Be factual and concise (${limit}-${2*limit} sentences).
+Do not speculate about hidden roles. Be factual and concise (${state.players.length}-${limit} sentences).
 
 ${publicCtx}`;
 }

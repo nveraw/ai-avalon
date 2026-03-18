@@ -12,9 +12,8 @@ import { ChatMessage } from "@/types/chat.types";
 import { CompletedQuestStatus, VotedStatus } from "@/types/quest.types";
 import { buildKnowledge } from "@/utils/knowledge";
 import { randomised } from "@/utils/shuffle";
-import { ChatMistralAI } from "@langchain/mistralai";
 import { runActionResponses, runChatResponses } from "../agents/chatResponse";
-import { createLlmModel } from "../agents/factory";
+import { createPlayerModel, createSummaryModel } from "../agents/factory";
 import { runAssassination } from "../agents/phases/assassin";
 import { runQuestCards } from "../agents/phases/quest";
 import { runTeamSelection } from "../agents/phases/team";
@@ -33,7 +32,7 @@ export const initGame = async (
   // ];
 
   const humanRole = shuffled[0];
-  const players = createLlmModel(playerNames, shuffled);
+  const players = createPlayerModel(playerNames, shuffled);
   const leaderIndex = Math.floor(Math.random() * playerNames.length);
 
   setGameState({
@@ -45,9 +44,7 @@ export const initGame = async (
     selectedTeam: [],
     stateHistory: {},
     summary: "",
-    summarizerModel: new ChatMistralAI({
-      model: "mistral-small-latest",
-    }),
+    summarizerModel: createSummaryModel(),
   });
 
   return {
@@ -82,10 +79,9 @@ export const setTeam = async (
   };
   if (!state) return defaultOutput;
 
-  const output: TeamSelectionResponse =
-    (await runTeamSelection(names, state)) ?? defaultOutput;
+  const output = await runTeamSelection(names, state);
 
-  return output;
+  return output ?? defaultOutput;
 };
 
 export const addVote = async (

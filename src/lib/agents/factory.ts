@@ -1,9 +1,9 @@
 import { PlayerRole } from "@/types/game.types";
-import { ChatMistralAI } from "@langchain/mistralai";
+import { ChatOllama } from "@langchain/ollama";
 import { AgentPlayer } from "../game/serverState";
 import { roleDescription } from "./prompts/role";
 
-export const createLlmModel = (
+export const createPlayerModel = (
   names: string[],
   roles: PlayerRole[],
 ): AgentPlayer[] =>
@@ -24,7 +24,13 @@ export const createLlmModel = (
     return {
       name,
       role: role,
-      model: new ChatMistralAI({ model: "mistral-small-latest" }),
+      model: new ChatOllama({ model: "llama3.1", temperature: 0.3 }),
+      // model: new ChatMistralAI({ model: "mistral-small-latest" }),
       privateMemory: [roleCtx.knowledge],
     };
   });
+
+export const createSummaryModel = () => {
+  return new ChatOllama({ model: "llama3.1", temperature: 0.3 });
+  // return new ChatMistralAI({ model: "mistral-small-latest" });
+};

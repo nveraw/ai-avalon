@@ -45,18 +45,17 @@ Consider the current score and whether now is the right moment to betray.`;
         player.privateMemory.push(
           `Round ${state.round} quest card: ${output.card}. Reasoning: ${output.privateReasoning}`,
         );
+        console.log("reason", "runQuestCards evil", {
+          name: player.name,
+          role: player.role,
+          privateMemory: player.privateMemory,
+        });
         state.players = [
           ...state.players.map((p) =>
             p.name === player.name ? { ...player } : p,
           ),
         ];
       }
-
-      console.log("runQuestCards loyal", {
-        name: player.name,
-        role: player.role,
-        privateMemory: player.privateMemory,
-      });
 
       return output.card;
     },
