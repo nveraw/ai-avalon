@@ -99,7 +99,7 @@ const Knowledge = ({
         </p>
       </div>
 
-      <GoldButton onClick={onDone}>I&apos;ve seen enough</GoldButton>
+      <GoldButton onClick={onDone}>Understood — I&apos;m ready</GoldButton>
     </div>
   );
 };

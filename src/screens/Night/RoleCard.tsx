@@ -1,4 +1,5 @@
 import CardBox from "@/components/CardBox";
+import GoldButton from "@/components/GoldButton";
 import Header from "@/components/Header";
 import { PLAYER_ROLES } from "@/constants/playerRoles";
 import type { PlayerRole } from "@/types/game.types";
@@ -69,18 +70,18 @@ const RoleCard = ({
           </p>
         </CardBox>
 
-        <button
-          onClick={onContinue}
-          className={`w-full py-4 rounded-xl border cinzel text-sm tracking-widest cursor-pointer transition-all ${
-            isEvil
-              ? "border-red-800 bg-red-950/40 text-red-300 hover:brightness-110"
-              : "border-indigo-700 bg-indigo-950/50 text-indigo-300 hover:brightness-110"
-          }`}
-        >
-          {hasKnowledge
-            ? "See what the night reveals →"
-            : "Understood — I'm ready →"}
-        </button>
+        {hasKnowledge ? (
+          <button
+            onClick={onContinue}
+            className="w-full py-4 rounded-xl border cinzel text-sm tracking-widest cursor-pointer transition-all border-indigo-700 bg-indigo-950/50 text-indigo-300 hover:brightness-110"
+          >
+            See what the night reveals →
+          </button>
+        ) : (
+          <GoldButton onClick={onContinue}>
+            Understood — I&apos;m ready
+          </GoldButton>
+        )}
       </div>
     </div>
   );
