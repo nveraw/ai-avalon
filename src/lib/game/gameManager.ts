@@ -12,13 +12,17 @@ import { ChatMessage } from "@/types/chat.types";
 import { CompletedQuestStatus, VotedStatus } from "@/types/quest.types";
 import { buildKnowledge } from "@/utils/knowledge";
 import { randomised } from "@/utils/shuffle";
-import { runActionResponses, runChatResponses } from "../agents/chatResponse";
-import { createPlayerModel, createSummaryModel } from "../agents/factory";
-import { runAssassination } from "../agents/phases/assassin";
-import { runQuestCards } from "../agents/phases/quest";
-import { runTeamSelection } from "../agents/phases/team";
-import { runVoting } from "../agents/phases/vote";
-import { triggerSummarization } from "../agents/summarizer";
+import {
+  createPlayerModel,
+  createSummaryModel,
+  runActionResponses,
+  runAssassination,
+  runChatResponses,
+  runQuestCards,
+  runTeamSelection,
+  runVoting,
+  triggerSummarization,
+} from "../agents";
 
 export const initGame = async (
   playerNames: string[],
@@ -54,6 +58,11 @@ export const initGame = async (
       [...players].map((agent) => ({ name: agent.name, role: agent.role })),
     ).map((player) => player.name),
     leader: playerNames[leaderIndex],
+    state: {
+      questResults: [],
+      rejectCount: 0,
+      round: 1,
+    },
   };
 };
 
@@ -79,7 +88,7 @@ export const setTeam = async (
   };
   if (!state) return defaultOutput;
 
-  const output = await runTeamSelection(names, state);
+  const output = await runTeamSelection(state, names);
 
   return output ?? defaultOutput;
 };
@@ -89,10 +98,10 @@ export const addVote = async (
 ): Promise<VoteResponse> => {
   const state = getGameState();
   const defaultOutput: VoteResponse = {
-    nextLeader: "",
-    rejectCount: 0,
+    leader: "",
     result: "approve",
     votes: {},
+    selectedTeam: [],
   };
   if (!state) return defaultOutput;
 
@@ -132,18 +141,26 @@ export const addVote = async (
   }
   const newState = getGameState() ?? state;
   const output: VoteResponse = {
-    nextLeader: newState.players[newState.leaderIndex].name,
-    rejectCount: newState.rejectCount,
+    ...defaultOutput,
+    leader: newState.players[newState.leaderIndex].name,
     result,
     votes: allVotes,
+    selectedTeam: newState.selectedTeam,
   };
   if (newState.rejectCount >= 5) {
+    console.log("addVote", "winner: evil", "rejectCount", newState.rejectCount);
     output["winner"] = {
       players: [...newState.players].map((player) => ({
         name: player.name,
         role: player.role,
       })),
       team: "evil",
+    };
+  } else {
+    output["state"] = {
+      questResults: newState.questResults,
+      rejectCount: newState.rejectCount,
+      round: newState.round,
     };
   }
   return output;
@@ -155,13 +172,9 @@ export const setQuest = async (
   const state = getGameState();
   const defaultOutput: QuestResponse = {
     cards: [],
-    nextLeader: "",
+    leader: "",
     result: "success",
     messages: [],
-    winner: {
-      team: "good",
-      players: [],
-    },
   };
   if (!state) return defaultOutput;
 
@@ -181,13 +194,20 @@ export const setQuest = async (
   await triggerSummarization(newState, messages);
 
   const output: QuestResponse = {
+    ...defaultOutput,
     cards,
-    nextLeader: newState.players[newState.leaderIndex].name,
+    leader: newState.players[newState.leaderIndex].name,
     result,
     messages,
   };
 
   if (newState.questResults.filter((r) => r === "success").length >= 3) {
+    console.log(
+      "setQuest",
+      "winner: good",
+      "questResults",
+      newState.questResults,
+    );
     output["winner"] = {
       players: [...newState.players].map((player) => ({
         name: player.name,
@@ -196,12 +216,24 @@ export const setQuest = async (
       team: "good",
     };
   } else if (newState.questResults.filter((r) => r === "fail").length >= 3) {
+    console.log(
+      "setQuest",
+      "winner: evil",
+      "questResults",
+      newState.questResults,
+    );
     output["winner"] = {
       players: [...newState.players].map((player) => ({
         name: player.name,
         role: player.role,
       })),
       team: "evil",
+    };
+  } else {
+    output["state"] = {
+      questResults: newState.questResults,
+      rejectCount: newState.rejectCount,
+      round: newState.round,
     };
   }
   return output;
@@ -214,8 +246,10 @@ export const assassinate = async (
   const defaultOutput: AssassinationResponse = {
     targetName: "",
     messages: [],
-    team: "good",
-    players: [],
+    winner: {
+      team: "good",
+      players: [],
+    },
   };
   if (!state) return defaultOutput;
 
@@ -232,14 +266,25 @@ export const assassinate = async (
     `The assassin had marked ${target}. The target is ${isCorrect ? "" : "not"} Merlin.`,
   );
   const filtered = messages.filter((msg) => !!msg);
+  console.log(
+    "assassinate",
+    "winner: evil",
+    "target",
+    target,
+    "merlin",
+    isCorrect,
+  );
 
   return {
+    ...defaultOutput,
     targetName: target,
-    team: isCorrect ? "evil" : "good",
-    players: [...state.players].map((player) => ({
-      name: player.name,
-      role: player.role,
-    })),
+    winner: {
+      team: isCorrect ? "evil" : "good",
+      players: [...state.players].map((player) => ({
+        name: player.name,
+        role: player.role,
+      })),
+    },
     messages: filtered,
   };
 };

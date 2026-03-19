@@ -65,7 +65,7 @@ Consider the current score and whether now is the right moment to betray.`;
   setGameState(state);
 
   // Add human card if they were on the team
-  const allCards: Array<CompletedQuestStatus> = cards.filter((c) => !!c);
+  const allCards: CompletedQuestStatus[] = cards.filter((c) => !!c);
   if (!!humanCard) {
     allCards.push(humanCard);
   }

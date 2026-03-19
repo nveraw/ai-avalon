@@ -4,7 +4,7 @@ import LoadingState from "@/components/LoadingState";
 import { submitTeam } from "@/services/api";
 import { messagesAtom } from "@/store/chat";
 import { useSetAtom } from "jotai";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type TeamSelectionProps = {
   playerNames: string[];
@@ -24,32 +24,42 @@ const TeamSelection = ({
   const addMessages = useSetAtom(messagesAtom);
 
   const [selected, setSelected] = useState<string[]>([]);
-  const [phase, setPhase] = useState<"thinking" | "done">("thinking");
+  const isLoading = useRef(false);
 
-  useEffect(() => {
-    if (leader === humanName) return;
+  const isHumanLeader = leader === humanName;
 
-    setPhase("thinking");
-    handleSubmitTeam();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleSubmitTeam = () => {
-    submitTeam({
-      names: leader === humanName ? selected.map((name) => name) : [],
-    }).then((res) => {
-      setSelected(
-        playerNames.filter((name) => res.proposedTeam.includes(name)),
-      );
-      setPhase("done");
+  const handleSubmitTeam = useCallback(
+    async (selectedTeam: string[] = []) => {
+      const res = await submitTeam({
+        names: selectedTeam,
+      });
+      let i = 0;
+      playerNames.forEach((name) => {
+        if (res.proposedTeam.includes(name)) {
+          setTimeout(
+            () => setSelected((prevSelected) => [...prevSelected, name]),
+            600 + i * 280,
+          );
+          i++;
+        }
+      });
+      isLoading.current = false;
 
       addMessages(res.messages);
-    });
-  };
+    },
+    [addMessages, playerNames],
+  );
+
+  useEffect(() => {
+    if (isLoading.current || isHumanLeader) return;
+
+    isLoading.current = true;
+    handleSubmitTeam();
+  }, [handleSubmitTeam, isHumanLeader]);
 
   const handleOnClick = () => {
-    if (leader === humanName) {
-      handleSubmitTeam();
+    if (isHumanLeader) {
+      handleSubmitTeam(selected);
     }
     onConfirm(selected);
   };
@@ -64,27 +74,26 @@ const TeamSelection = ({
 
   const buttonLabel =
     leader !== humanName
-      ? phase === "done"
-        ? "⚔️ Send This Fellowship"
-        : "Picking..."
+      ? isLoading.current
+        ? "Picking..."
+        : "⚔️ Send This Fellowship"
       : selected.length === teamSize
         ? "⚔️ Propose This Team"
         : `Select ${teamSize - selected.length} more knight${teamSize - selected.length !== 1 ? "s" : ""}`;
 
-  const AiSubtitle =
-    phase === "thinking" ? "The Leader Deliberates..." : "Fellowship Chosen";
+  const AiSubtitle = isLoading.current
+    ? "The Leader Deliberates..."
+    : "Fellowship Chosen";
 
   return (
     <div className="max-w-lg mx-auto px-5 py-8">
       <div className="text-center mb-7">
         <Header
           title="TEAM SELECTION"
-          subtitle={
-            leader === humanName ? "Choose Your Fellowship" : AiSubtitle
-          }
+          subtitle={isHumanLeader ? "Choose Your Fellowship" : AiSubtitle}
           hasFollowup={true}
         />
-        {leader === humanName ? (
+        {isHumanLeader ? (
           <p className="text-gray-500 font-serif text-sm">
             <span className="text-violet-400">{leader}</span> must choose{" "}
             {teamSize} knights
@@ -97,7 +106,7 @@ const TeamSelection = ({
         )}
       </div>
 
-      {leader !== humanName && phase === "thinking" && (
+      {leader !== humanName && isLoading.current && (
         <LoadingState
           icon="👑"
           title={`${leader} studies the table in silence...`}
@@ -114,7 +123,7 @@ const TeamSelection = ({
               role="button"
               key={name}
               onClick={() => {
-                if (leader === humanName) handleToggleSelection(name);
+                if (isHumanLeader) handleToggleSelection(name);
               }}
               className={`flex items-center gap-3 px-4 py-3.5 rounded-xl border transition-all duration-500 ${
                 isSelected
@@ -122,7 +131,7 @@ const TeamSelection = ({
                   : isLeaderToken
                     ? "bg-violet-950/20 border-violet-800"
                     : "bg-slate-950 border-indigo-950"
-              } ${leader === humanName ? "cursor-pointer" : ""}`}
+              } ${isHumanLeader ? "cursor-pointer" : ""}`}
             >
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center text-base font-serif font-bold text-slate-200 border-2 transition-all duration-500 ${

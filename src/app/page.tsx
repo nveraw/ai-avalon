@@ -1,7 +1,6 @@
 "use client";
 
 import ChatPanel from "@/components/ChatPanel";
-import StarField from "@/components/StarField";
 import { QUEST_SIZES } from "@/constants/questConfigs";
 import Assassination from "@/screens/Assassination/Assassination";
 import Board from "@/screens/Board/Board";
@@ -18,150 +17,160 @@ import {
   QuestResponse,
   VoteResponse,
 } from "@/types/api.types";
-import type { PlayerDetails, PlayerTeam } from "@/types/game.types";
-import { CompletedQuestStatus } from "@/types/quest.types";
+import type { PlayerDetails } from "@/types/game.types";
 import { useState } from "react";
 
-type Stage =
-  | "lobby"
-  | "night"
-  | "game"
-  | "team"
-  | "vote"
-  | "quest"
-  | "assassin"
-  | "results";
+interface InitStage extends InitGameResponse {
+  screen: "lobby" | "night" | "game" | "team";
+}
+interface VoteStage extends VoteResponse {
+  screen: "result" | "game" | "quest";
+}
+interface QuestState extends QuestResponse {
+  screen: "assassin" | "result" | "game";
+}
+interface AssassinState extends AssassinationResponse {
+  screen: "result";
+}
+type GameData =
+  | InitStage
+  | { screen: "vote"; selectedTeam: string[] }
+  | VoteStage
+  | QuestState
+  | AssassinState
+  | undefined;
 
 const Game = () => {
   const [playerNames, setPlayerNames] = useState<string[]>([]);
-  const [player, setPlayer] = useState<PlayerDetails | null>(null);
-  const [knowledge, setKnowledge] = useState<InitGameResponse | null>(null);
-  const [screen, setScreen] = useState<Stage>("lobby");
-  const [round, setRound] = useState(1);
-  const [leader, setLeader] = useState<string>("");
-  const [rejectCount, setRejectCount] = useState(0);
-  const [questResults, setQuestResults] = useState<CompletedQuestStatus[]>([]);
-  const [selectedTeam, setSelectedTeam] = useState<string[]>([]);
-  const [assassinated, setAssassinated] = useState<string>("");
-  const [winner, setWinner] = useState<PlayerTeam | null>(null);
-  const [allPlayers, setAllPlayers] = useState<PlayerDetails[]>([]); // result: reveal all roles
+  const [player, setPlayer] = useState<PlayerDetails>();
+  const [data, setData] = useState<GameData>();
 
   const handleReady = async (playerNames: string[]) => {
     setPlayerNames(playerNames);
     const res = await startGame({ playerNames });
-    setKnowledge(res);
-    setPlayer({ name: playerNames[0], role: res.humanRole });
-    setLeader(res.leader);
-    setScreen("night");
+    if (res) {
+      setData({ ...res, screen: "night" });
+      setPlayer({ name: playerNames[0], role: res.humanRole });
+    }
   };
 
   const handleStart = () => {
-    setScreen("game");
+    setData((prevData) => ({ ...prevData, screen: "game" }) as InitStage);
   };
 
-  const handleProposeTeam = (selected: string[]) => {
-    setSelectedTeam(selected);
-    setScreen("vote");
+  const handleSelectTeam = () => {
+    setData((prevData) => ({ ...prevData, screen: "team" }) as InitStage);
+  };
+
+  const handleProposeTeam = (selectedTeam: string[]) => {
+    setData({ selectedTeam, screen: "vote" });
   };
 
   const handleVotingResult = (res: VoteResponse) => {
-    setRejectCount(res.rejectCount);
     if (res.result === "reject") {
-      setLeader(res.nextLeader || "");
-      if (res.rejectCount >= 5 || res.winner?.team === "evil") {
-        setWinner(res.winner?.team || "evil");
-        setAllPlayers(res.winner?.players || []);
-        setScreen("results");
-        return;
+      const rejectCount = res.state?.rejectCount || 0;
+      if (rejectCount >= 5 || res.winner?.team === "evil") {
+        setData({ ...res, screen: "result" });
+      } else {
+        setData({ ...res, screen: "game" });
       }
-      setScreen("game");
     } else {
-      setScreen("quest");
+      setData({ ...res, screen: "quest" });
     }
   };
 
   const handleQuestResult = (res: QuestResponse) => {
-    setQuestResults((prev) => [...prev, res.result]);
-    setLeader(res.nextLeader);
-    if (res.winner?.team === "good") {
-      setScreen("assassin");
-    } else if (res.winner?.team === "evil") {
-      setWinner(res.winner?.team || "evil");
-      setAllPlayers(res.winner?.players || []);
-      setScreen("results");
-    } else {
-      setRound((r) => r + 1);
-      setScreen("game");
+    switch (res.winner?.team) {
+      case "good":
+        setData({ ...res, screen: "assassin" });
+        break;
+
+      case "evil":
+        setData({ ...res, screen: "result" });
+        break;
+
+      default:
+        setData({ ...res, screen: "game" });
+        break;
     }
   };
 
   const handleRevealAssassination = (res: AssassinationResponse) => {
-    setAllPlayers(res.players || []);
-    setAssassinated(res.targetName);
-    setWinner(res.team || null);
-    setScreen("results");
+    setData({ ...res, screen: "result" });
   };
 
-  const showChat = !["lobby", "night"].includes(screen);
+  if (!data) {
+    return <Lobby onStart={handleReady} />;
+  }
+
+  const showChat = !["lobby", "night"].includes(data.screen);
 
   return (
-    <div className="flex min-h-screen min-w-178.25 overflow-auto text-slate-200 app-bg">
-      <StarField />
+    <>
       <div className="relative h-screen overflow-auto z-10 transition-all duration-300 flex-1">
-        {screen === "lobby" && <Lobby onStart={handleReady} />}
-        {screen === "night" && playerNames.length > 1 && knowledge && (
+        {data.screen === "lobby" && <Lobby onStart={handleReady} />}
+        {data.screen === "night" && playerNames.length > 1 && (
           <Night
             playerNames={playerNames}
-            knowledge={knowledge}
+            knowledge={{
+              humanRole: data.humanRole,
+              playerRevelation: data.playerRevelation,
+            }}
             onDone={handleStart}
           />
         )}
-        {screen === "game" && (
+
+        {data.screen === "game" && (
           <Board
-            leader={leader}
-            onSelectTeam={() => setScreen("team")}
+            leader={data.leader ?? ""}
+            onSelectTeam={handleSelectTeam}
             playerNames={playerNames}
-            questResults={questResults}
-            rejectCount={rejectCount}
-            round={round}
+            questResults={data.state?.questResults || []}
+            rejectCount={data.state?.rejectCount || 0}
+            round={data.state?.round || 0}
           />
         )}
-        {screen === "team" && (
+
+        {data.screen === "team" && (
           <TeamSelection
-            leader={leader}
+            leader={data.leader}
             onConfirm={handleProposeTeam}
             humanName={player!.name}
             playerNames={playerNames}
-            teamSize={QUEST_SIZES[playerNames.length][round - 1]}
+            teamSize={QUEST_SIZES[playerNames.length][data.state?.round - 1]}
           />
         )}
-        {screen === "vote" && (
+
+        {data.screen === "vote" && (
           <Voting
             playerNames={playerNames}
             humanName={player!.name}
-            team={selectedTeam}
+            team={data.selectedTeam}
             onResult={handleVotingResult}
           />
         )}
-        {screen === "quest" && player && (
+
+        {data.screen === "quest" && (
           <Quest
-            player={player}
-            team={selectedTeam}
+            player={player!}
+            team={data.selectedTeam}
             onResult={handleQuestResult}
           />
         )}
-        {screen === "assassin" && player && (
+
+        {data.screen === "assassin" && (
           <Assassination
-            player={player}
+            player={player!}
             playerNames={playerNames}
             onReveal={handleRevealAssassination}
           />
         )}
-        {screen === "results" && winner && (
+
+        {data.screen === "result" && (
           <Results
-            allPlayers={allPlayers}
-            assassinated={assassinated}
-            winner={winner}
+            allPlayers={data.winner?.players || []}
+            assassinated={"targetName" in data ? (data.targetName ?? "") : ""}
+            winner={data.winner?.team || "good"}
             onRestart={() => window.location.reload()}
           />
         )}
@@ -169,11 +178,11 @@ const Game = () => {
       {showChat && (
         <ChatPanel
           className="top-14 right-0 bottom-0 z-30 w-72 h-screen flex flex-col
-      border-l border-indigo-950 bg-black/95 backdrop-blur-xl"
+          border-l border-indigo-950 bg-black/95 backdrop-blur-xl"
           playerNames={playerNames}
         />
       )}
-    </div>
+    </>
   );
 };
 

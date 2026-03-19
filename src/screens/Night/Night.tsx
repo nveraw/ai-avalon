@@ -1,11 +1,14 @@
-import { InitGameResponse } from "@/types/api.types";
+import { PlayerRole } from "@/types/game.types";
 import { useState } from "react";
 import Knowledge from "./Knowledge";
 import RoleCard from "./RoleCard";
 
 type NightProps = {
   playerNames: string[];
-  knowledge: InitGameResponse;
+  knowledge: {
+    humanRole: PlayerRole;
+    playerRevelation: string[];
+  };
   onDone: () => void;
 };
 
@@ -35,11 +38,7 @@ const Night = ({ playerNames, onDone, knowledge }: NightProps) => {
         />
       )}
       {phases[phase] === "knowledge" && (
-        <Knowledge
-          humanRole={knowledge.humanRole}
-          playerRevelation={knowledge.playerRevelation}
-          onDone={next}
-        />
+        <Knowledge knowledge={knowledge} onDone={next} />
       )}
     </div>
   );

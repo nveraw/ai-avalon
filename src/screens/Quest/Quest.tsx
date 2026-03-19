@@ -25,24 +25,22 @@ const Quest = ({ team, player, onResult }: QuestProps) => {
   const addMessages = useSetAtom(messagesAtom);
 
   const [phase, setPhase] = useState<QuestPhase>("pick");
-  const [allCards, setAllCards] = useState<CompletedQuestStatus[]>([]);
+  const [data, setData] = useState<QuestResponse>();
   const [revealedCount, setRevealedCount] = useState(0);
-  const [showResult, setShowResult] = useState(false);
 
   const humanOnTeam = team.includes(player.name);
 
   const submitCard = async (card?: CompletedQuestStatus) => {
     setPhase("waiting");
     const res = await submitQuest({ humanCard: card ?? null });
-    setAllCards(res.cards);
+    setData(res);
     addMessages(res.messages);
 
     setTimeout(() => setPhase("reveal"), 900);
     res.cards.forEach((_, i) => {
       setTimeout(() => setRevealedCount(i + 1), 1100 + i * 350);
     });
-    setTimeout(() => setShowResult(true), 1100 + res.cards.length * 350 + 400);
-    setTimeout(() => onResult(res), 1100 + res.cards.length * 350 + 2200);
+    setTimeout(() => setPhase("result"), 1100 + res.cards.length * 350 + 400);
   };
 
   const humanIsEvil =
@@ -109,10 +107,20 @@ const Quest = ({ team, player, onResult }: QuestProps) => {
 
       {(phase === "reveal" || phase === "result") && (
         <CardReveal
-          allCards={allCards}
+          allCards={data?.cards || []}
           revealedCount={revealedCount}
-          showResult={showResult}
+          showResult={phase === "result"}
         />
+      )}
+
+      {phase === "result" && (
+        <GoldButton
+          className="mt-6"
+          disabled={!data}
+          onClick={() => data && onResult(data)}
+        >
+          CONTINUE
+        </GoldButton>
       )}
     </div>
   );

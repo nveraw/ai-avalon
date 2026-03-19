@@ -1,3 +1,4 @@
+import StarField from "@/components/StarField";
 import type { Metadata } from "next";
 import "./globals.css";
 
@@ -16,7 +17,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <div className="flex min-h-screen min-w-178.25 overflow-auto text-slate-200 app-bg">
+          <StarField />
+          {children}
+        </div>
+      </body>
     </html>
   );
 }

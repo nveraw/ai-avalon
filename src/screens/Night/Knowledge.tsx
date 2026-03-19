@@ -3,15 +3,18 @@ import Header from "@/components/Header";
 import { PLAYER_ROLES } from "@/constants/playerRoles";
 import type { PlayerRole } from "@/types/game.types";
 
-const KnowledgeScreen = ({
-  humanRole,
-  playerRevelation,
-  onDone,
-}: {
-  humanRole: PlayerRole;
-  playerRevelation: string[];
+type KnowledgeProps = {
+  knowledge: {
+    humanRole: PlayerRole;
+    playerRevelation: string[];
+  };
   onDone: () => void;
-}) => {
+};
+
+const Knowledge = ({
+  knowledge: { humanRole, playerRevelation },
+  onDone,
+}: KnowledgeProps) => {
   const knowledge = PLAYER_ROLES[humanRole].knowledge;
 
   const cardStyle =
@@ -101,4 +104,4 @@ const KnowledgeScreen = ({
   );
 };
 
-export default KnowledgeScreen;
+export default Knowledge;

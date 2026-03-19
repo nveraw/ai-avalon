@@ -1,3 +1,4 @@
+import GoldButton from "@/components/GoldButton";
 import Header from "@/components/Header";
 import LoadingState from "@/components/LoadingState";
 import { submitVote } from "@/services/api";
@@ -19,16 +20,16 @@ type VotingPhase = "pick" | "waiting" | "reveal" | "result";
 const Voting = ({ playerNames, humanName, team, onResult }: VotingProps) => {
   const [playerVote, setPlayerVote] = useState<VotedStatus | null>(null);
   const [phase, setPhase] = useState<VotingPhase>("pick");
-  const [botVotes, setBotVotes] = useState<Record<string, VotedStatus>>({});
   const [visibleCards, setVisibleCards] = useState(0);
-  const [outcome, setOutcome] = useState<VotedStatus | null>(null);
+  const [data, setData] = useState<VoteResponse>();
+  const [outcome, setOutcome] = useState<VotedStatus>();
 
   const handleVoting = async (vote: VotedStatus) => {
     setPlayerVote(vote);
     setPhase("waiting");
 
     const res = await submitVote({ humanVote: vote });
-    setBotVotes(res.votes);
+    setData(res);
 
     setTimeout(() => setPhase("reveal"), 400);
     // stagger reveal as before
@@ -42,10 +43,7 @@ const Voting = ({ playerNames, humanName, team, onResult }: VotingProps) => {
       },
       600 + playerNames.length * 280 + 400,
     );
-    setTimeout(() => onResult(res), 600 + playerNames.length * 280 + 2000);
   };
-
-  const allVotesMap = { [humanName]: playerVote, ...botVotes };
 
   return (
     <div className="max-w-lg mx-auto px-5 py-8">
@@ -92,9 +90,19 @@ const Voting = ({ playerNames, humanName, team, onResult }: VotingProps) => {
           playerNames={playerNames}
           showResult={phase === "result"}
           approved={outcome === "approve"}
-          allVotesMap={allVotesMap}
+          allVotesMap={{ [humanName]: playerVote, ...data?.votes }}
           visibleCards={visibleCards}
         />
+      )}
+
+      {phase === "result" && (
+        <GoldButton
+          className="mt-6"
+          disabled={!data}
+          onClick={() => data && onResult(data)}
+        >
+          Move on to quest
+        </GoldButton>
       )}
     </div>
   );

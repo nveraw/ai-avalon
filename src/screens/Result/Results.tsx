@@ -95,7 +95,7 @@ const Results = ({
                 } ${
                   PLAYER_ROLES[player.role].team === "good"
                     ? "bg-green-950/30 border-green-900"
-                    : "bg-red-950/30 border-red-950"
+                    : "bg-red-950/30 border-red-900"
                 }`}
               >
                 {player.name === assassinated && (

@@ -8,8 +8,8 @@ import { buildAgentSystemPrompt } from "../prompts/builder";
 import { triggerSummarization } from "../summarizer";
 
 export async function runTeamSelection(
-  names: string[],
   state: GameState,
+  names: string[],
 ): Promise<{ proposedTeam: string[]; messages: ChatMessage[] } | undefined> {
   let selectedTeam = names;
   const leader = state.players[state.leaderIndex];

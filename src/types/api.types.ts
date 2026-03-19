@@ -2,7 +2,18 @@
 
 import { ChatMessage } from "@/types/chat.types";
 import { PlayerDetails, PlayerRole, PlayerTeam } from "./game.types";
-import { CompletedQuestStatus, VotedStatus } from "./quest.types";
+import { CompletedQuestStatus, QuestStatus, VotedStatus } from "./quest.types";
+
+type GameStatus = {
+  questResults: QuestStatus[];
+  rejectCount: number;
+  round: number;
+};
+
+type EndGameResponse = {
+  team?: PlayerTeam;
+  players?: PlayerDetails[];
+};
 
 export type InitGameRequest = {
   playerNames: string[]; // index 0 is always the human
@@ -12,6 +23,7 @@ export type InitGameResponse = {
   humanRole: PlayerRole; // e.g. "merlin"
   playerRevelation: string[];
   leader: string; // player name
+  state: GameStatus;
 };
 
 // ── Chat ─────────────────────────────────────────
@@ -44,9 +56,10 @@ export type VoteRequest = {
 export type VoteResponse = {
   votes: Record<string, VotedStatus>; // player name: all votes including human's
   result: VotedStatus; // majority
-  nextLeader: string | null; // null if vote passed
-  rejectCount: number; // +1 if vote failed
+  leader: string | null; // null if vote passed
   winner?: EndGameResponse;
+  state?: GameStatus;
+  selectedTeam: string[];
 };
 
 // ── Quest ─────────────────────────────────────────
@@ -55,17 +68,13 @@ export type QuestRequest = {
   humanCard: CompletedQuestStatus | null; // null if human not on team
 };
 
-type EndGameResponse = {
-  team?: PlayerTeam;
-  players?: PlayerDetails[];
-};
-
 export type QuestResponse = {
   cards: Array<CompletedQuestStatus>; // shuffled, anonymous
   result: CompletedQuestStatus;
-  nextLeader: string; // player name
+  leader: string; // player name
   messages: ChatMessage[];
   winner?: EndGameResponse;
+  state?: GameStatus;
 };
 
 // ── Assassination ─────────────────────────────────────────
@@ -74,7 +83,8 @@ export type AssassinationRequest = {
   name: string;
 };
 
-export interface AssassinationResponse extends EndGameResponse {
+export type AssassinationResponse = {
   targetName: string;
   messages: ChatMessage[];
-}
+  winner: EndGameResponse;
+};
