@@ -2,6 +2,9 @@
 
 A single-player implementation of [The Resistance: Avalon](<https://en.wikipedia.org/wiki/The_Resistance_(game)>) where all bot players are driven by real AI agents (Mistral Large via LangChain). The human plays against fully autonomous agents that reason, deceive, coordinate, and remember across the entire game.
 
+[24.03.2026 11_52.webm](https://github.com/user-attachments/assets/17d617d3-84b9-4d7a-922d-f87150617418)
+
+
 ---
 
 ## Tech Stack
@@ -40,6 +43,9 @@ MISTRAL_API_KEY=your_key_here
 ```
 
 ### Run
+
+For using ollama agent, go to src/libs/agent/index.ts, set IS_TESTING = true. Set it to false if using Mistral AI.
+For changing agent, go to src/libs/agent/factory.ts replace new ChatMistralAI
 
 ```bash
 npm run dev
